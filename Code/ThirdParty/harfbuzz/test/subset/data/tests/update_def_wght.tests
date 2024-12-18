@@ -1,0 +1,16 @@
+FONTS:
+SourceSerifVariable-Roman.ttf
+
+PROFILES:
+default.txt
+
+SUBSETS:
+*
+
+INSTANCES:
+wght=300:600
+wght=500:800
+
+IUP_OPTIONS:
+Yes
+No

@@ -1,0 +1,25 @@
+#include <Foundation/Basics.h>
+
+// Configure the DLL Import/Export Define
+#if NS_ENABLED(NS_COMPILE_ENGINE_AS_DLL)
+#  ifdef BUILDSYSTEM_BUILDING_WDVIDEO_CORE_LIB
+#    define NS_WDVIDEO_DLL NS_DECL_EXPORT
+#    define NS_WDVIDEO_DLL_FRIEND NS_DECL_EXPORT_FRIEND
+#  else
+#    define NS_WDVIDEO_DLL NS_DECL_IMPORT
+#    define NS_WDVIDEO_DLL_FRIEND NS_DECL_IMPORT_FRIEND
+#  endif
+#else
+#  define NS_WDVIDEO_DLL
+#  define NS_WDVIDEO_DLL_FRIEND
+#endif
+
+
+#define UVPX_THREAD_ERROR_DESC_SIZE (512)
+#define UVPX_FAILED_TO_READ_FRAME           (-1)
+#define UVPX_FAILED_TO_DECODE_FRAME         (-2)
+#define UVPX_FAILED_TO_READ_FRAME_HEADER    (-3)
+#define UVPX_UNSUPPORTED_IMAGE_FORMAT       (-4)
+#define UVPX_AUDIO_DECODE_ERROR             (-5)
+
+//#define BUILDSYSTEM_BUILDING_APERTUREUICORE_LIB

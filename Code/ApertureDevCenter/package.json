@@ -1,0 +1,24 @@
+{
+  "name": "apertureuidevcenter",
+  "version": "0.1.0-develop",
+  "description": "Developer Interface for debugging a Aperture UI instance on the fly! (Similar to Chrome Dev Tools)",
+  "main": "ADCIndex.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/WatchDogStudios/APUI.git"
+  },
+  "keywords": [
+    "dev-tools",
+    "aperture-ui",
+    "chrome-dev-tools"
+  ],
+  "author": "WD Studios L.L.C. & Mikael Aboagye",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/WatchDogStudios/APUI/issues"
+  },
+  "homepage": "https://github.com/WatchDogStudios/APUI#readme"
+}

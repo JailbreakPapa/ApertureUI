@@ -1,0 +1,42 @@
+[submodule "Code/ThirdParty/harfbuzz"]
+	path = Code/ThirdParty/harfbuzz
+	url = https://github.com/harfbuzz/harfbuzz.git
+[submodule "Code/ThirdParty/rlottie"]
+	path = Code/ThirdParty/rlottie
+	url = https://github.com/Samsung/rlottie.git
+[submodule "Code/ThirdParty/freetype"]
+	path = Code/ThirdParty/freetype
+	url = https://github.com/freetype/freetype.git
+[submodule "Code/ThirdParty/yoga"]
+	path = Code/ThirdParty/yoga
+	url = https://github.com/facebook/yoga.git
+[submodule "Code/ThirdParty/uriparser"]
+	path = Code/ThirdParty/uriparser
+	url = https://github.com/uriparser/uriparser.git
+[submodule "doxygenutil/doxygen-awesome-css"]
+	path = doxygenutil/doxygen-awesome-css
+	url = https://github.com/jothepro/doxygen-awesome-css.git
+[submodule "Code/ThirdParty/vorbis"]
+	path = Code/ThirdParty/vorbis
+	url = https://github.com/xiph/vorbis.git
+[submodule "Code/ThirdParty/ogg"]
+	path = Code/ThirdParty/ogg
+	url = https://github.com/xiph/ogg.git
+[submodule "Code/ThirdParty/opus"]
+	path = Code/ThirdParty/opus
+	url = https://github.com/xiph/opus.git
+[submodule "Code/ThirdParty/cryptolens-cpp"]
+	path = Code/ThirdParty/cryptolens-cpp
+	url = https://github.com/WatchDogStudios/cryptolens-cpp.git
+[submodule "Code/ThirdParty/curl"]
+	path = Code/ThirdParty/curl
+	url = https://github.com/curl/curl.git
+[submodule "Code/ThirdParty/Boost.Parser"]
+	path = Code/ThirdParty/Boost.Parser
+	url = https://github.com/boostorg/parser.git
+[submodule "Code/ThirdParty/sentry-native"]
+	path = Code/ThirdParty/sentry-native
+	url = https://github.com/getsentry/sentry-native.git
+[submodule "Code/ThirdParty/mimalloc"]
+	path = Code/ThirdParty/mimalloc
+	url = https://github.com/microsoft/mimalloc.git
