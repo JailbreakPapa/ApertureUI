@@ -34,6 +34,8 @@ target_link_libraries(${PROJECT_NAME}
   yogacore
   stb_image
   uriparser
+  harfbuzz
+  freetype
   gumbo
   rlottie
   lunasvg
@@ -43,6 +45,8 @@ add_dependencies(${PROJECT_NAME}
   pugixml
   yogacore
   gumbo
+  harfbuzz
+  freetype
   stb_image
   uriparser
   rlottie
