@@ -1,0 +1,53 @@
+name: Build V8 for Windows
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Install dependencies
+        run: |
+          choco install python3 git visualstudio2019buildtools ninja -y
+          refreshenv
+
+      - name: Set up depot tools
+        run: |
+          git clone https://chromium.googlesource.com/chromium/tools/depot_tools.git
+          echo "::add-path::${{ github.workspace }}/depot_tools"
+        shell: cmd
+
+      - name: Pull V8 source at specified commit
+        run: |
+          mkdir v8 && cd v8
+          fetch v8
+          cd v8
+          git checkout 458ba60046610bfc1251d10f671c6d1e99052cfd
+          gclient sync
+
+      - name: Build V8
+        run: |
+          cd v8
+          gn gen out/Release --args="is_debug=false target_os=\"win\" target_cpu=\"x64\" is_component_build=true"
+          ninja -C out/Release
+
+      - name: Archive artifacts
+        run: |
+          cd v8/out
+          tar -czvf v8-windows-build.tar.gz Release
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: v8-windows-build
+          path: v8/out/v8-windows-build.tar.gz

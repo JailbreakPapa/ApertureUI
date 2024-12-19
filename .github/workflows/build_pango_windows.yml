@@ -1,0 +1,47 @@
+name: Build Pango for Windows
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up MSYS2
+        uses: msys2/setup-msys2@v2
+        with:
+          msystem: MINGW64
+          update: true
+
+      - name: Install dependencies
+        run: |
+          pacman -S --noconfirm mingw-w64-x86_64-toolchain mingw-w64-x86_64-cmake mingw-w64-x86_64-pkg-config mingw-w64-x86_64-glib2 mingw-w64-x86_64-cairo mingw-w64-x86_64-harfbuzz
+
+      - name: Build Pango
+        run: |
+          git clone https://gitlab.gnome.org/GNOME/pango.git
+          cd pango
+          mkdir build && cd build
+          cmake -G "MinGW Makefiles" .. -DCMAKE_INSTALL_PREFIX="/mingw64"
+          mingw32-make
+          mingw32-make install
+
+      - name: Archive artifacts
+        run: |
+          tar -czvf pango-windows-build.tar.gz /mingw64
+        shell: msys2 {0}
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: pango-windows-build
+          path: pango-windows-build.tar.gz
