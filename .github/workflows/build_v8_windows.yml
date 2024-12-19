@@ -51,7 +51,6 @@ jobs:
 
       - name: Pull V8 source at specified commit
         run: |
-          set PATH=%GITHUB_WORKSPACE%\depot_tools;%PATH%
           mkdir v8 && cd v8
           call gclient sync --revision src@458ba60046610bfc1251d10f671c6d1e99052cfd
 
