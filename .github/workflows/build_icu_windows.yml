@@ -33,25 +33,27 @@ jobs:
     - name: Download ICU source
       run: |
         curl -LO https://github.com/unicode-org/icu/releases/download/release-73-1/icu4c-73_1-src.zip
-        tar -xf icu4c-73_1-src.zip
+        unzip icu4c-73_1-src.zip
         move icu icu4c-src
 
-    - name: Configure Build
+    - name: Set up ICU environment
       run: |
-        mkdir build
-        cd build
-        cmake ../icu4c-src/source -G "Ninja" -DCMAKE_INSTALL_PREFIX=../install -DCMAKE_BUILD_TYPE=Release
+        cd icu4c-src/source
+        set PATH=%PATH%;C:\Program Files\CMake\bin
+        set ICUPROJ=msvc
 
     - name: Build ICU Libraries
       run: |
-        cmake --build build --target all --config Release
+        cd icu4c-src/source
+        nmake /f Makefile.msc
 
     - name: Install ICU Libraries
       run: |
-        cmake --build build --target install
+        cd icu4c-src/source
+        nmake /f Makefile.msc install
 
     - name: Archive Build Artifacts
       uses: actions/upload-artifact@v3
       with:
         name: icu-build
-        path: install
+        path: icu4c-src/source/bin
