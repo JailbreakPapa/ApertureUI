@@ -16,39 +16,45 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
+      - name: Install Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.x'
+
       - name: Install dependencies (1st attempt)
         run: |
-          choco install python3 git visualstudio2019buildtools ninja -y || exit 0
+          choco install git visualstudio2019buildtools ninja -y || exit 0
           refreshenv
 
       - name: Install dependencies (2nd attempt)
         run: |
-          choco install python3 git visualstudio2019buildtools ninja -y || exit 0
+          choco install git visualstudio2019buildtools ninja -y || exit 0
           refreshenv
 
       - name: Set up depot tools
         run: |
+          set DEPOT_TOOLS_WIN_TOOLCHAIN=0
           git clone https://chromium.googlesource.com/chromium/tools/depot_tools.git
           echo "::add-path::${{ github.workspace }}/depot_tools"
+          gclient
+          gclient sync
+          gclient config https://chromium.googlesource.com/v8/v8
         shell: cmd
 
       - name: Pull V8 source at specified commit
         run: |
           mkdir v8 && cd v8
-          fetch v8
-          cd v8
-          git checkout 458ba60046610bfc1251d10f671c6d1e99052cfd
-          gclient sync
-
+          gclient sync --revision src@458ba60046610bfc1251d10f671c6d1e99052cfd
       - name: Build V8
         run: |
           cd v8
-          gn gen out/Release --args="is_debug=false target_os=\"win\" target_cpu=\"x64\" is_component_build=true"
-          ninja -C out/Release
+          python tools/dev/v8gen.py x64.release
+          gn gen out.gn/x64.release --args="is_debug=false target_os=\"win\" target_cpu=\"x64\" is_component_build=true"
+          ninja -C out.gn/x64.release x64.release
 
       - name: Archive artifacts
         run: |
-          cd v8/out
+          cd out.gn/x64.release
           tar -czvf v8-windows-build.tar.gz Release
 
       - name: Upload artifact

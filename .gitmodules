@@ -13,9 +13,6 @@
 [submodule "Code/ThirdParty/uriparser"]
 	path = Code/ThirdParty/uriparser
 	url = https://github.com/uriparser/uriparser.git
-[submodule "doxygenutil/doxygen-awesome-css"]
-	path = doxygenutil/doxygen-awesome-css
-	url = https://github.com/jothepro/doxygen-awesome-css.git
 [submodule "Code/ThirdParty/vorbis"]
 	path = Code/ThirdParty/vorbis
 	url = https://github.com/xiph/vorbis.git
@@ -25,9 +22,6 @@
 [submodule "Code/ThirdParty/opus"]
 	path = Code/ThirdParty/opus
 	url = https://github.com/xiph/opus.git
-[submodule "Code/ThirdParty/cryptolens-cpp"]
-	path = Code/ThirdParty/cryptolens-cpp
-	url = https://github.com/WatchDogStudios/cryptolens-cpp.git
 [submodule "Code/ThirdParty/curl"]
 	path = Code/ThirdParty/curl
 	url = https://github.com/curl/curl.git
