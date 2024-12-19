@@ -45,16 +45,20 @@ jobs:
           cd depot_tools
 
           gclient
-          cd..
+          cd ..
+          echo %PATH%
+          echo __CALLING_GCLIENT_CONFIG__
           call gclient config https://chromium.googlesource.com/v8/v8
         shell: cmd
 
       - name: Pull V8 source at specified commit
+        shell: cmd
         run: |
           mkdir v8 && cd v8
           call gclient sync --revision src@458ba60046610bfc1251d10f671c6d1e99052cfd
-
+          
       - name: Build V8
+        shell: cmd
         run: |
           cd v8
           python tools/dev/v8gen.py x64.release
