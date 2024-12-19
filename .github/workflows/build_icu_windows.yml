@@ -39,8 +39,9 @@ jobs:
     - name: Set up ICU environment
       run: |
         cd icu4c-src/source
-        set PATH=%PATH%;C:\Program Files\CMake\bin
+        set PATH="%PATH%;C:\Program Files\CMake\bin"
         set ICUPROJ=msvc
+  
 
     - name: Build ICU Libraries
       run: |

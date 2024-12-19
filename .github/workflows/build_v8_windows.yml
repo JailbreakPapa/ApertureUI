@@ -24,8 +24,7 @@ jobs:
       - name: Install dependencies (1st attempt)
         run: |
           choco install git visualstudio2019buildtools ninja -y
-          refreshenv
-
+          
       - name: Set up depot tools
         run: |
           set DEPOT_TOOLS_WIN_TOOLCHAIN=0
