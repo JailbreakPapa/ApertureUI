@@ -41,17 +41,21 @@ jobs:
         cd icu4c-src/source
         set PATH="%PATH%;C:\Program Files\CMake\bin"
         set ICUPROJ=msvc
-  
+
+    - name: Generate Makefile with configure
+      run: |
+        cd icu4c-src/source
+        perl ./runConfigureICU MSVC --prefix=../install
 
     - name: Build ICU Libraries
       run: |
         cd icu4c-src/source
-        nmake /f Makefile.msc
+        nmake
 
     - name: Install ICU Libraries
       run: |
         cd icu4c-src/source
-        nmake /f Makefile.msc install
+        nmake install
 
     - name: Archive Build Artifacts
       uses: actions/upload-artifact@v3
