@@ -16,9 +16,14 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Install dependencies
+      - name: Install dependencies (1st attempt)
         run: |
-          choco install python3 git visualstudio2019buildtools ninja -y
+          choco install python3 git visualstudio2019buildtools ninja -y || exit 0
+          refreshenv
+
+      - name: Install dependencies (2nd attempt)
+        run: |
+          choco install python3 git visualstudio2019buildtools ninja -y || exit 0
           refreshenv
 
       - name: Set up depot tools
