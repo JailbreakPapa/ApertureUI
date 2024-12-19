@@ -50,6 +50,15 @@ namespace aperture
   static class NS_COREAPENGINE_DLL ApertureSDK
   {
   public:
+    /// @brief The Text Encoding that the SDK will use.
+    enum class ESDKTextEncoding : nsUInt8
+    {
+      UTF8 = 1,
+      UTF16 = 2,
+      UTF16LE = 3,
+    };
+
+  public:
     // @note We scope lock write access to these values for protection.
     // @note Also, we do not allow for the values to be changed after the SDK is active.
     static NS_ALWAYS_INLINE void SetScriptThreadCount(nsUInt8 p_threadcount)
@@ -136,9 +145,27 @@ namespace aperture
     {
       return m_bSDKActive;
     }
+    static NS_ALWAYS_INLINE void SetSDKTextEncoding(ESDKTextEncoding p_textencoding)
+    {
+      if (IsSDKActive())
+      {
+        nsLog::SeriousWarning("ApertureSDK: Cannot change the Text Encoding after the SDK has been initialized. Please reinitialize your platform, then retry.");
+        return;
+      }
+      {
+        NS_LOCK(m_SDKLocker);
+        m_eTextEncoding = p_textencoding;
+      }
+    }
+    static NS_ALWAYS_INLINE ESDKTextEncoding GetSDKTextEncoding()
+    {
+      return m_eTextEncoding;
+    }
     static void SetSDKActive(bool p_active);
 
   private:
+    /// @brief The Text Encoding that the SDK will use.
+    static inline ESDKTextEncoding m_eTextEncoding;
     /// @brief Sets the amount of threads that aperture can create/use for Script Compiling/Execution.
     static inline nsUInt8 m_pScriptThreadCount;
     /// @brief Sets the amount of threads that aperture can create/use for Rendering.
