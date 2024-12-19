@@ -23,12 +23,7 @@ jobs:
 
       - name: Install dependencies (1st attempt)
         run: |
-          choco install git visualstudio2019buildtools ninja -y || exit 0
-          refreshenv
-
-      - name: Install dependencies (2nd attempt)
-        run: |
-          choco install git visualstudio2019buildtools ninja -y || exit 0
+          choco install git visualstudio2019buildtools ninja -y || exit 1
           refreshenv
 
       - name: Set up depot tools
