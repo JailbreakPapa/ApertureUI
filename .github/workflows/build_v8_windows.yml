@@ -45,10 +45,12 @@ jobs:
           gclient
         shell: cmd
         
-      - name: Add to PATH
-        uses: shimataro/path-action@v2
-        with:
-          add-path: ${{ github.workspace }}/depot_tools
+      - name: Update PATH with depot_tools
+        run: |
+          cd %GITHUB_WORKSPACE%
+          set PATH=%PATH%;%GITHUB_WORKSPACE%\depot_tools;
+          setx /M path "%path%;%GITHUB_WORKSPACE%\depot_tools"
+        shell: cmd
           
       - name: Pull V8 source at specified commit
         shell: cmd
