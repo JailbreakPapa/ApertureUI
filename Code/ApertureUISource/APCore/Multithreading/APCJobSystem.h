@@ -98,7 +98,11 @@ namespace aperture::core::threading
     /// @param p_allowCreationOfNewThreadsOnOverfill If the Job System should create new threads if the Job Queue is full.
     void InitializeJobSystem(const APCJobSystemConfig& p_config);
 
+    /// @brief Runs All Jobs in the Job System. This is meant for FreeThreads, that are not locked to a specific type of work.
+		void RunGeneral();
 
+    void RunThreadsOfType(const core::CommandType& p_runtype);
+    void RunThreadsOfType(const core::Runtype& p_runtype);
     /**
      * @brief Waits for all threads to complete their tasks.
      */
@@ -140,6 +144,7 @@ namespace aperture::core::threading
     template <typename T>
     void AddLifetimeObject(T* p_object)
     {
+      std::scoped_lock<std::mutex> lock(wakeMutex);
       m_LifetimeObjects.PushBack(p_object);
     }
 
@@ -174,7 +179,8 @@ namespace aperture::core::threading
      * @brief Shuts down the job system, terminating all threads.
      */
     void Shutdown();
-
+    /// @brief Safely Polls the Job System. This Prevents Deadlocks.
+    void SafePoll();
     /**
      * @brief Gets the number of active threads.
      * @return The number of active threads.
@@ -223,16 +229,35 @@ namespace aperture::core::threading
      */
     void AddCommandGroup(const CommandGroup& p_group);
 
+		void AddJob(const IAPCCommandQueue& p_uJob);
   protected:
+    /// @brief The list of GENERAL lifetime objects managed by the job system.
     template <typename T>
     static nsHybridArray<T, 1> m_LifetimeObjects;
 
+    template <typename T>
+    static nsHybridArray<T, 1> m_ScriptLifetimeObjects;
+
+    template <typename T>
+    static nsHybridArray<T, 1> m_RenderingLifetimeObjects;
+
+    template <typename T>
+    static nsHybridArray<T, 1> m_ParsingLifetimeObjects;
+
+    std::mutex wakeMutex;
+    std::condition_variable wakeCondition;
     nsDeque<CommandGroup> m_CommandGroups;
     nsDeque<std::pair<nsUuid, IAPCCommandQueue*>> m_CompositionQueues;
     nsDeque<std::pair<nsUuid, IAPCCommandQueue*>> m_ScriptQueues;
     nsDeque<std::pair<nsUuid, IAPCCommandQueue*>> m_RenderingQueues;
     nsDeque<std::pair<nsUuid, IAPCCommandQueue*>> m_ParsingQueues;
 
+    nsHybridArray<std::thread, 1> m_CompositionThreads;
+    nsHybridArray<std::thread, 1> m_ScriptThreads;
+    nsHybridArray<std::thread, 1> m_RenderingThreads;
+    nsHybridArray<std::thread, 1> m_ParsingThreads;
+
+    bool m_bAllowCreationOfNewThreadsOnOverfill = false;
     std::atomic<nsUInt8> m_ActiveThreads;
     std::atomic<nsUInt8> m_MaxThreads;
     std::atomic<nsUInt8> m_ActiveCompositionThreads;

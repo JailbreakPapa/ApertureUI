@@ -48,6 +48,7 @@ namespace aperture::core
     Composition,
     Layout,
     Rendering,
+    Scripting,
     Presentation,
     Custom
   };

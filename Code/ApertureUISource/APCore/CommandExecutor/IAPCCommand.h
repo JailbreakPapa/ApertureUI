@@ -26,7 +26,6 @@ namespace aperture::core
       , m_barewexecuting(false)
     {
     }
-
     virtual ~IAPCCommand() = default;
 
     void SetParentCommandList(IAPCCommandList& queue) { m_parentCommandList = &queue; }
@@ -57,7 +56,6 @@ namespace aperture::core
         m_barewexecuting = false;
       }
     }
-    virtual nsResult RequestJoinFromParentQueue() = 0;
 
     bool IsExecuting() const { return m_barewexecuting; }
 

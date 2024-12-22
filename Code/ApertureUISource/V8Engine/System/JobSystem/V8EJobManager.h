@@ -35,14 +35,23 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #pragma once
 
+#include <V8Engine/System/Utils/Multithreading/V8EThreadSafeIsolate.h>
 #include <V8Engine/V8EngineDLL.h>
+#include <APCore/Multithreading/APCJobSystem.h>
 #include <libplatform/libplatform.h>
 
 namespace aperture::v8::jobsystem
 {
+  static NS_ALWAYS_INLINE std::function<void()> CreateFunctionFromTask(::v8::Task* task)
+  {
+    return [task = std::move(task)]()
+    { task->Run(); };
+  }
   class NS_V8ENGINE_DLL V8EWorkerTaskRunner : public ::v8::TaskRunner
   {
   public:
+    using TimeFunction = nsTime (*)();
+    V8EWorkerTaskRunner(nsUInt32 p_iThreadPoolSize, TimeFunction p_uTimeFunction);
     /**
      * Returns true if idle tasks are enabled for this TaskRunner.
      */
@@ -71,7 +80,25 @@ namespace aperture::v8::jobsystem
       const ::v8::SourceLocation& location) override;
     virtual void PostIdleTaskImpl(std::unique_ptr<::v8::IdleTask> task,
       const ::v8::SourceLocation& location) override;
+
   private:
+    class V8EWorkerThread
+    {
+      NS_DISALLOW_COPY_AND_ASSIGN(V8EWorkerThread);
+    public:
+      explicit V8EWorkerThread(V8EWorkerTaskRunner* runner);
+      ~V8EWorkerThread();
+      // This thread attempts to get tasks in a loop from |runner_| and run them.
+      void Run();
+
+      void RenameWorkerThread(const char* p_iWorkerThread);
+
+      const char* GetWorkerThreadName();
+    private:
+      nsString m_sThreadName;
+      V8EWorkerTaskRunner* runner_;
+    };
+    nsHybridArray<nsUniquePtr<V8EWorkerThread>, 2> thread_pool;
   };
   class NS_V8ENGINE_DLL V8EPlatform : public ::v8::Platform
   {
@@ -79,6 +106,7 @@ namespace aperture::v8::jobsystem
     explicit V8EPlatform(int thread_pool_size, ::v8::platform::IdleTaskSupport idle_task_support, ::v8::platform::InProcessStackDumping in_process_stack_dumping, std::unique_ptr<::v8::TracingController> tracing_controller, ::v8::platform::PriorityMode priority_mode);
 
   private:
+    nsMap<V8EThreadSafeIsolate*, std::shared_ptr<V8EWorkerTaskRunner>> m_workerTaskRunners;
     nsUniquePtr<V8EWorkerTaskRunner> m_workerTaskRunner;
   };
   /*
@@ -89,7 +117,17 @@ namespace aperture::v8::jobsystem
   class NS_V8ENGINE_DLL V8EJobManager
   {
   public:
-    
+    bool Initialize();
+    void Shutdown();
+
+    void PostJob(std::unique_ptr<::v8::Task> task, const ::v8::SourceLocation& location);
+    void PostBatchedJob(std::unique_ptr<::v8::Task> task, const ::v8::SourceLocation& location);
+
+    nsUInt32 GetFrameCount() const;
+  protected:
+    core::IAPCCommandQueue* CreateQueueFromJobs(const nsString& p_sJobName, const nsHybridArray<::v8::Task*, 1>& p_aJobs);
   private:
+    nsUniquePtr<aperture::core::threading::APCJobSystem> m_pJobSystem;
+    std::atomic<nsUInt32> m_iV8EJobManagerFrameCount;
   };
 } // namespace aperture::v8::jobsystem

@@ -1,9 +1,11 @@
+
 #include <V8Engine/Utils/V8EValueMover.h>
 
 namespace aperture::v8
 {
   V8EValueMover::V8EValueMover(const nsUniquePtr<class V8EEngineRealm>& in_realm, const ::v8::Local<::v8::Value>& in_value)
   {
+
   }
   bool V8EValueMover::is_valid() const
   {

@@ -61,109 +61,41 @@ namespace aperture
   public:
     // @note We scope lock write access to these values for protection.
     // @note Also, we do not allow for the values to be changed after the SDK is active.
-    static NS_ALWAYS_INLINE void SetScriptThreadCount(nsUInt8 p_threadcount)
-    {
-      if (IsSDKActive())
-      {
-        nsLog::SeriousWarning("ApertureSDK: Cannot change the amount of Script Threads after the SDK has been initialized.");
-        return;
-      }
-      {
-        NS_LOCK(m_SDKLocker);
-        m_pScriptThreadCount = p_threadcount;
-      }
-    }
-    static NS_ALWAYS_INLINE nsUInt8 GetScriptThreadCount()
-    {
-      return m_pScriptThreadCount;
-    }
-    static NS_ALWAYS_INLINE void SetRenderThreadCount(nsUInt8 p_threadcount)
-    {
-      if (IsSDKActive())
-      {
-        nsLog::SeriousWarning("ApertureSDK: Cannot change the amount of Render Threads after the SDK has been initialized.");
-        return;
-      }
-      {
-        NS_LOCK(m_SDKLocker);
-        m_pRenderThreadCount = p_threadcount;
-      }
-    }
-    static NS_ALWAYS_INLINE nsUInt8 GetRenderThreadCount()
-    {
-      return m_pRenderThreadCount;
-    }
-    static NS_ALWAYS_INLINE void SetCompositionThreadCount(nsUInt8 p_threadcount)
-    {
-      if (IsSDKActive())
-      {
-        nsLog::SeriousWarning("ApertureSDK: Cannot change the amount of Composition Threads after the SDK has been initialized.");
-        return;
-      }
-      {
-        NS_LOCK(m_SDKLocker);
-        m_pCompositionThreadCount = p_threadcount;
-      }
-    }
-    static NS_ALWAYS_INLINE nsUInt8 GetCompositionThreadCount()
-    {
-      return m_pCompositionThreadCount;
-    }
-    static NS_ALWAYS_INLINE void SetPlatformName(const nsString& p_platformname)
-    {
-      if (IsSDKActive())
-      {
-        nsLog::SeriousWarning("ApertureSDK: Cannot change the Platform Name after the SDK has been initialized.");
-        return;
-      }
-      {
-        NS_LOCK(m_SDKLocker);
-        m_sPlatformName = p_platformname;
-      }
-    }
-    static NS_ALWAYS_INLINE nsString GetPlatformName()
-    {
-      return m_sPlatformName;
-    }
-    static NS_ALWAYS_INLINE void SetPlatformVersion(const nsString& p_platformversion)
-    {
-      if (IsSDKActive())
-      {
-        nsLog::SeriousWarning("ApertureSDK: Cannot change the Platform Version after the SDK has been initialized.");
-        return;
-      }
-      {
-        NS_LOCK(m_SDKLocker);
-        m_sPlatformVersion = p_platformversion;
-      }
-    }
-    static NS_ALWAYS_INLINE nsString GetPlatformVersion()
-    {
-      return m_sPlatformVersion;
-    }
-    static NS_ALWAYS_INLINE bool IsSDKActive()
-    {
-      return m_bSDKActive;
-    }
-    static NS_ALWAYS_INLINE void SetSDKTextEncoding(ESDKTextEncoding p_textencoding)
-    {
-      if (IsSDKActive())
-      {
-        nsLog::SeriousWarning("ApertureSDK: Cannot change the Text Encoding after the SDK has been initialized. Please reinitialize your platform, then retry.");
-        return;
-      }
-      {
-        NS_LOCK(m_SDKLocker);
-        m_eTextEncoding = p_textencoding;
-      }
-    }
-    static NS_ALWAYS_INLINE ESDKTextEncoding GetSDKTextEncoding()
-    {
-      return m_eTextEncoding;
-    }
+    static void SetScriptThreadCount(nsUInt8 p_threadcount);
+
+    static nsUInt8 GetScriptThreadCount();
+
+    static void SetRenderThreadCount(nsUInt8 p_threadcount);
+
+    static nsUInt8 GetRenderThreadCount();
+
+    static void SetCompositionThreadCount(nsUInt8 p_threadcount);
+
+    static nsUInt8 GetCompositionThreadCount();
+
+    static void SetPlatformName(const nsString& p_platformname);
+
+    static nsString GetPlatformName();
+
+    static void SetPlatformVersion(const nsString& p_platformversion);
+
+    static nsString GetPlatformVersion();
+
+    static bool IsSDKActive();
+
+    static void SetSDKTextEncoding(ESDKTextEncoding p_textencoding);
+    
+    static ESDKTextEncoding GetSDKTextEncoding();
+   
     static void SetSDKActive(bool p_active);
 
+    static bool IsNDAPlatform();
+    
   private:
+    /// @brief Is Serialization Allowed for the SDK? This is a core feature about Aperture that allows for Performance improvements, e.g. Script Compilation, Binding Classes to V8, etc.
+    static inline bool m_bIsSerializationAllowedforSDK = false;
+    /// @brief Is the SDK in NDA Mode?/Is the Platform NDA Protected? We need to know this for certain features.
+    static inline bool m_bIsNDAPlatform = false;
     /// @brief The Text Encoding that the SDK will use.
     static inline ESDKTextEncoding m_eTextEncoding;
     /// @brief Sets the amount of threads that aperture can create/use for Script Compiling/Execution.

@@ -93,5 +93,16 @@ private:
   T* m_pInstance = nullptr;
   nsAllocator* m_pAllocator = nullptr;
 };
-
+/// <summary>
+/// Function to create a unique ptr with a new instance of T. this is simular to std::make_unique.
+/// </summary>
+/// <typeparam name="T"></typeparam>
+/// <typeparam name="...Args"></typeparam>
+/// <param name="...args"></param>
+/// <returns></returns>
+template <typename T, typename... Args>
+NS_ALWAYS_INLINE nsUniquePtr<T> nsMakeUnique(Args&&... args)
+{
+  return nsUniquePtr<T>(new T(std::forward<Args>(args)...));
+}
 #include <Foundation/Types/Implementation/UniquePtr_inl.h>
