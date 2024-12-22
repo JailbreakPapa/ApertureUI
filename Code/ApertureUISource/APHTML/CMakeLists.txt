@@ -1,5 +1,7 @@
 option(APUI_MATRIX_ROW_MAJOR "Tells Harrlow to Use/Convert to row-major matrices. Column-major matrices are used by default." OFF)
 
+find_package(ICU COMPONENTS uc i18n REQUIRED)
+
 if(NS_APUI_COMPILE_AS_LIB)
   list(APPEND CORE_PUBLIC_DEFS -DAPUI_STATIC_LIB)
   message("-- Building static libraries. Make sure to #define APUI_STATIC_LIB before including APUI in your project.")

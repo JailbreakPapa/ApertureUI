@@ -366,6 +366,7 @@ Code/ThirdParty/hermes_prospero_build/**
 Code/ThirdParty/v8/v8_prebuilt/v8_prebuilt/**
 Code/ThirdParty/v8/v8_prebuiltzip/**
 CPMCache/**
+*..7z.extracted
 
 *.dat
 *.x86
