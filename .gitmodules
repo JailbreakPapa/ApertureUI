@@ -34,6 +34,6 @@
 [submodule "Code/ThirdParty/mimalloc"]
 	path = Code/ThirdParty/mimalloc
 	url = https://github.com/microsoft/mimalloc.git
-[submodule "Code/ThirdParty/Boost.Locale"]
-	path = Code/ThirdParty/Boost.Locale
-	url = https://github.com/boostorg/locale.git
+[submodule "Code/ThirdParty/libwebsockets"]
+	path = Code/ThirdParty/libwebsockets
+	url = https://libwebsockets.org/repo/libwebsockets

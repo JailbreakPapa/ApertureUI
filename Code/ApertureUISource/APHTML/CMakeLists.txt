@@ -11,6 +11,7 @@ ns_vcpkg_init()
 ns_vcpkg_install(icu)
 
 
+
 # Get the name of this folder as the project name
 set(PROJECT_NAME "apertureuihtmlengine")
 
@@ -31,6 +32,10 @@ if(MSVC)
   target_compile_options(${PROJECT_NAME} PRIVATE /W4 /-WX /GR)
 endif()
 
+ns_integrate_vcpkg(${PROJECT_NAME} icu) 
+
+target_include_directories(${PROJECT_NAME} PRIVATE ${CMAKE_SOURCE_DIR}/Code/ThirdParty/Boost.Parser/include)
+
 target_link_libraries(${PROJECT_NAME}
   PUBLIC
   apertureuicore
@@ -46,6 +51,7 @@ target_link_libraries(${PROJECT_NAME}
   Foundation
 )
 add_dependencies(${PROJECT_NAME}
+
   pugixml
   yogacore
   gumbo
