@@ -42,6 +42,8 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 namespace aperture::v8::jobsystem
 {
+  class V8EJobManager;
+  class V8EPlatform;
   static NS_ALWAYS_INLINE std::function<void()> CreateFunctionFromTask(::v8::Task* task)
   {
     return [task = std::move(task)]()
@@ -50,6 +52,8 @@ namespace aperture::v8::jobsystem
   class V8EWorkerTaskRunner : public ::v8::TaskRunner
   {
   public:
+    void SetJobManager(V8EJobManager* jobManager);
+
     using TimeFunction = nsTime (*)();
     V8EWorkerTaskRunner(nsUInt32 p_iThreadPoolSize, TimeFunction p_uTimeFunction);
     /**
@@ -82,35 +86,19 @@ namespace aperture::v8::jobsystem
       const ::v8::SourceLocation& location) override;
 
   private:
-    class V8EWorkerThread
-    {
-      NS_DISALLOW_COPY_AND_ASSIGN(V8EWorkerThread);
-
-    public:
-      explicit V8EWorkerThread(V8EWorkerTaskRunner* runner);
-      ~V8EWorkerThread();
-      // This thread attempts to get tasks in a loop from |runner_| and run them.
-      void Run();
-
-      void RenameWorkerThread(const char* p_iWorkerThread);
-
-      const char* GetWorkerThreadName();
-
-    private:
-      nsString m_sThreadName;
-      V8EWorkerTaskRunner* runner_;
-    };
-    nsHybridArray<nsUniquePtr<V8EWorkerThread>, 2> thread_pool;
+    V8EJobManager* m_pJobManager;
   };
   class V8EPlatform : public ::v8::Platform
   {
   public:
     explicit V8EPlatform(int thread_pool_size, ::v8::platform::IdleTaskSupport idle_task_support, ::v8::platform::InProcessStackDumping in_process_stack_dumping, std::unique_ptr<::v8::TracingController> tracing_controller, ::v8::platform::PriorityMode priority_mode);
 
+    void SetJobManager(V8EJobManager* jobManager);
   private:
     nsMap<V8EThreadSafeIsolate*, std::shared_ptr<V8EWorkerTaskRunner>> m_workerTaskRunners;
     nsUniquePtr<V8EWorkerTaskRunner> m_workerTaskRunner;
     std::atomic<nsUInt8> workerthreads;
+    V8EJobManager* m_pJobManager;
 
     // Inherited via Platform
     ::v8::PageAllocator* GetPageAllocator() override;
@@ -137,6 +125,8 @@ namespace aperture::v8::jobsystem
     void PostBatchedJob(std::unique_ptr<::v8::Task> task, const ::v8::SourceLocation& location);
 
     nsUInt32 GetFrameCount() const;
+
+    void SetPlatform(V8EPlatform* platform);
 
   protected:
     core::IAPCCommandQueue* CreateQueueFromJobs(const nsString& p_sJobName, const nsHybridArray<::v8::Task*, 1>& p_aJobs);

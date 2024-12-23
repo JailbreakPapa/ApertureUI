@@ -4,17 +4,17 @@
 #include <APCore/CommandExecutor/IAPCCommandQueue.h>
 #include <Foundation/Profiling/Profiling.h>
 #include <V8Engine/System/JobSystem/V8EJobManager.h>
-
+#include <Foundation/Time/Clock.h>
+void aperture::v8::jobsystem::V8EWorkerTaskRunner::SetJobManager(V8EJobManager* jobManager)
+{
+  m_pJobManager = jobManager;
+}
 aperture::v8::jobsystem::V8EWorkerTaskRunner::V8EWorkerTaskRunner(nsUInt32 p_iThreadPoolSize, TimeFunction p_uTimeFunction)
 {
   if (p_iThreadPoolSize > ApertureSDK::GetScriptThreadCount())
   {
     nsLog::Error("V8EJobManager(V8EWorkerTaskRunner): The ThreadPoolSize provided, goes over the listed amount in ApertureSDK::GetScriptThreadCount(). it is being set to the max allowed value.");
     p_iThreadPoolSize = ApertureSDK::GetScriptThreadCount();
-  }
-  for (nsUInt32 i = 0; i < p_iThreadPoolSize; i++)
-  {
-    thread_pool.PushBack(nsMakeUnique<V8EWorkerThread>(this));
   }
 }
 
@@ -32,45 +32,33 @@ bool aperture::v8::jobsystem::V8EWorkerTaskRunner::NonNestableDelayedTasksEnable
 }
 void aperture::v8::jobsystem::V8EWorkerTaskRunner::PostTaskImpl(std::unique_ptr<::v8::Task> task, const ::v8::SourceLocation& location)
 {
+  nsLog::Debug("V8EWorkerTaskRunner::PostTask: Posting Task from File: {0}", location.FileName());
+  m_pJobManager->PostBatchedJob(std::move(task), location);
 }
+
 void aperture::v8::jobsystem::V8EWorkerTaskRunner::PostNonNestableTaskImpl(std::unique_ptr<::v8::Task> task, const ::v8::SourceLocation& location)
 {
+  nsLog::Debug("V8EWorkerTaskRunner::PostNonNestableTask: Posting Non Nestable Task from File: {0}", location.FileName());
+  m_pJobManager->PostBatchedJob(std::move(task), location);
 }
 
 void aperture::v8::jobsystem::V8EWorkerTaskRunner::PostDelayedTaskImpl(std::unique_ptr<::v8::Task> task, double delay_in_seconds, const ::v8::SourceLocation& location)
 {
+  nsLog::Debug("V8EWorkerTaskRunner::PostDelayedTask: Posting Delayed Task from File: {0}", location.FileName());
+  m_pJobManager->PostBatchedJob(std::move(task), location);
 }
 
 void aperture::v8::jobsystem::V8EWorkerTaskRunner::PostNonNestableDelayedTaskImpl(std::unique_ptr<::v8::Task> task, double delay_in_seconds, const ::v8::SourceLocation& location)
 {
+  nsLog::Debug("V8EWorkerTaskRunner::PostNonNestableDelayedTask: Posting Non Nestable Delayed Task from File: {0}", location.FileName());
+  m_pJobManager->PostBatchedJob(std::move(task), location);
 }
 
 void aperture::v8::jobsystem::V8EWorkerTaskRunner::PostIdleTaskImpl(std::unique_ptr<::v8::IdleTask> task, const ::v8::SourceLocation& location)
 {
+
 }
 
-aperture::v8::jobsystem::V8EWorkerTaskRunner::V8EWorkerThread::V8EWorkerThread(V8EWorkerTaskRunner* runner)
-{
-}
-
-aperture::v8::jobsystem::V8EWorkerTaskRunner::V8EWorkerThread::~V8EWorkerThread()
-{
-}
-
-void aperture::v8::jobsystem::V8EWorkerTaskRunner::V8EWorkerThread::Run()
-{
-  NS_PROFILE_SCOPE("V8EWorkerTaskRunner::V8EWorkerThread::Run");
-}
-
-void aperture::v8::jobsystem::V8EWorkerTaskRunner::V8EWorkerThread::RenameWorkerThread(const char* p_iWorkerThread)
-{
-  m_sThreadName = p_iWorkerThread;
-}
-
-const char* aperture::v8::jobsystem::V8EWorkerTaskRunner::V8EWorkerThread::GetWorkerThreadName()
-{
-  return m_sThreadName;
-}
 
 aperture::v8::jobsystem::V8EPlatform::V8EPlatform(int thread_pool_size, ::v8::platform::IdleTaskSupport idle_task_support, ::v8::platform::InProcessStackDumping in_process_stack_dumping, std::unique_ptr<::v8::TracingController> tracing_controller, ::v8::platform::PriorityMode priority_mode)
 {
@@ -79,6 +67,10 @@ aperture::v8::jobsystem::V8EPlatform::V8EPlatform(int thread_pool_size, ::v8::pl
     nsLog::Error("V8EJobManager(V8EPlatform): The ThreadPoolSize provided, goes over the listed amount in ApertureSDK::GetScriptThreadCount(). it is being set to the max allowed value.");
     thread_pool_size = ApertureSDK::GetScriptThreadCount();
   }
+}
+
+void aperture::v8::jobsystem::V8EPlatform::SetJobManager(V8EJobManager* jobManager)
+{
 }
 
 ::v8::PageAllocator* aperture::v8::jobsystem::V8EPlatform::GetPageAllocator()
@@ -93,12 +85,12 @@ int aperture::v8::jobsystem::V8EPlatform::NumberOfWorkerThreads()
 
 double aperture::v8::jobsystem::V8EPlatform::MonotonicallyIncreasingTime()
 {
-  return 0.0;
+  return nsTime::Now().GetSeconds();
 }
 
 double aperture::v8::jobsystem::V8EPlatform::CurrentClockTimeMillis()
 {
-  return 0.0;
+  return nsTime::Now().GetMilliseconds();
 }
 
 ::v8::TracingController* aperture::v8::jobsystem::V8EPlatform::GetTracingController()
@@ -113,12 +105,30 @@ std::unique_ptr<::v8::JobHandle> aperture::v8::jobsystem::V8EPlatform::CreateJob
 
 void aperture::v8::jobsystem::V8EPlatform::PostTaskOnWorkerThreadImpl(::v8::TaskPriority priority, std::unique_ptr<::v8::Task> task, const ::v8::SourceLocation& location)
 {
+  nsLog::Debug("V8EWorkerTaskRunner::PostTaskOnWorkerThreadImpl: Posting Idle Task from File: {0}", location.FileName());
+  nsHybridArray<::v8::Task*, 1> taskArray;
+  taskArray.PushBack(task.get()); // Pass the raw pointer
+  m_pJobManager->PostBatchedJob(std::move(task), location);
 }
 
 void aperture::v8::jobsystem::V8EPlatform::PostDelayedTaskOnWorkerThreadImpl(::v8::TaskPriority priority, std::unique_ptr<::v8::Task> task, double delay_in_seconds, const ::v8::SourceLocation& location)
 {
-
+  nsLog::Debug("V8EWorkerTaskRunner::PostDelayedTaskOnWorkerThreadImpl: Posting Idle Task from File: {0}", location.FileName());
+  nsHybridArray<::v8::Task*, 1> taskArray;
+  taskArray.PushBack(task.get()); // Pass the raw pointer
+  m_pJobManager->PostBatchedJob(std::move(task), location);
 }
+
+void aperture::v8::jobsystem::V8EJobManager::PostJob(std::unique_ptr<::v8::Task> task, const ::v8::SourceLocation& location)
+{
+  NS_PROFILE_SCOPE("V8EJobManager::PostJob");
+  nsLog::Debug("V8EJobManager::PostJob: Posting Task from File: {0}", location.FileName());
+  nsHybridArray<::v8::Task*, 1> taskArray;
+  taskArray.PushBack(task.get()); // Pass the raw pointer
+  m_pJobSystem->AddJob(*CreateQueueFromJobs("V8EJobManager::PostJob", taskArray));
+}
+
+
 
 bool aperture::v8::jobsystem::V8EJobManager::Initialize()
 {
@@ -141,17 +151,10 @@ bool aperture::v8::jobsystem::V8EJobManager::Initialize()
 void aperture::v8::jobsystem::V8EJobManager::Shutdown()
 {
   NS_PROFILE_SCOPE("V8EJobManager::Shutdown");
+  this->m_pJobSystem->Shutdown();
   nsLog::Debug("V8EJobManager: Shutting down.");
 }
 
-void aperture::v8::jobsystem::V8EJobManager::PostJob(std::unique_ptr<::v8::Task> task, const ::v8::SourceLocation& location)
-{
-  NS_PROFILE_SCOPE("V8EJobManager::PostJob");
-  nsLog::Debug("V8EJobManager::PostJob: Posting Task from File: {0}", location.FileName());
-  nsHybridArray<::v8::Task*, 1> taskArray;
-  taskArray.PushBack(task.get());
-  m_pJobSystem->AddJob(*CreateQueueFromJobs("V8EJobManager::PostJob", taskArray));
-}
 
 void aperture::v8::jobsystem::V8EJobManager::PostBatchedJob(std::unique_ptr<::v8::Task> task, const ::v8::SourceLocation& location)
 {
@@ -164,8 +167,9 @@ nsUInt32 aperture::v8::jobsystem::V8EJobManager::GetFrameCount() const
   return m_iV8EJobManagerFrameCount.load();
 }
 
-void aperture::v8::jobsystem::V8EJobManager::SetPlatform(const V8EPlatform* platform)
+void aperture::v8::jobsystem::V8EJobManager::SetPlatform(V8EPlatform* platform)
 {
+  m_pPlatform = (platform);
 }
 
 aperture::core::IAPCCommandQueue* aperture::v8::jobsystem::V8EJobManager::CreateQueueFromJobs(const nsString& p_sJobName, const nsHybridArray<::v8::Task*, 1>& p_aJobs)

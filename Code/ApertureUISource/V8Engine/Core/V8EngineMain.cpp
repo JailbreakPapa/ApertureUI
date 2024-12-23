@@ -12,16 +12,16 @@ bool aperture::v8::jobsystem::V8EEngineMain::InitializeV8Engine(const char* p_cc
     if (::v8::V8::InitializeICUDefaultLocation(s.c_str(), finalicuDatafile.GetData()))
     {
       ::v8::V8::InitializeExternalStartupData(p_ccResources);
-      m_pV8EPlatform = std::make_unique<aperture::v8::jobsystem::V8EPlatform>(
-        ApertureSDK::GetScriptThreadCount(),
-        ::v8::platform::IdleTaskSupport::kEnabled,
-        ::v8::platform::InProcessStackDumping::kDisabled,
-        std::vector<std::string>(), // TODO: Implement Tracing Controller.
-        ::v8::platform::PriorityMode::kApply);
+      m_pV8EPlatform = std::make_unique<V8EPlatform>(ApertureSDK::GetScriptThreadCount(), ::v8::platform::IdleTaskSupport::kEnabled, ::v8::platform::InProcessStackDumping::kEnabled, nullptr, ::v8::platform::PriorityMode::kApply);
 
       ::v8::V8::InitializePlatform(GetV8EEnginePlatform());
-      ::v8::V8::Initialize();
+      if (::v8::V8::Initialize())
+      {
+        nsLog::Success("V8Engine: Successfully Initialized V8.");
+        return true;
+      }
     }
+    else
     {
       nsLog::Error("V8Engine: Failed to initialize ICU Data file.");
       return false;
@@ -32,9 +32,7 @@ bool aperture::v8::jobsystem::V8EEngineMain::InitializeV8Engine(const char* p_cc
     nsLog::Error("V8Engine: Resource path provided (p_ccResources) is nullptr.");
     return false;
   }
-  nsLog::Success("V8Engine: Successfully Initialized V8.");
 }
-
 aperture::v8::jobsystem::V8EJobManager* aperture::v8::jobsystem::V8EEngineMain::GetV8EJobManager()
 {
   return m_pV8EJobManager.get();
