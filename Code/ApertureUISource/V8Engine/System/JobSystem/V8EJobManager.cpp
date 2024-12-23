@@ -12,7 +12,7 @@ aperture::v8::jobsystem::V8EWorkerTaskRunner::V8EWorkerTaskRunner(nsUInt32 p_iTh
     nsLog::Error("V8EJobManager(V8EWorkerTaskRunner): The ThreadPoolSize provided, goes over the listed amount in ApertureSDK::GetScriptThreadCount(). it is being set to the max allowed value.");
     p_iThreadPoolSize = ApertureSDK::GetScriptThreadCount();
   }
-  for (nsUInt32 i; i < p_iThreadPoolSize; i++)
+  for (nsUInt32 i = 0; i < p_iThreadPoolSize; i++)
   {
     thread_pool.PushBack(nsMakeUnique<V8EWorkerThread>(this));
   }
@@ -81,6 +81,45 @@ aperture::v8::jobsystem::V8EPlatform::V8EPlatform(int thread_pool_size, ::v8::pl
   }
 }
 
+::v8::PageAllocator* aperture::v8::jobsystem::V8EPlatform::GetPageAllocator()
+{
+  return nullptr;
+}
+
+int aperture::v8::jobsystem::V8EPlatform::NumberOfWorkerThreads()
+{
+  return this->workerthreads.load();
+}
+
+double aperture::v8::jobsystem::V8EPlatform::MonotonicallyIncreasingTime()
+{
+  return 0.0;
+}
+
+double aperture::v8::jobsystem::V8EPlatform::CurrentClockTimeMillis()
+{
+  return 0.0;
+}
+
+::v8::TracingController* aperture::v8::jobsystem::V8EPlatform::GetTracingController()
+{
+  return nullptr;
+}
+
+std::unique_ptr<::v8::JobHandle> aperture::v8::jobsystem::V8EPlatform::CreateJobImpl(::v8::TaskPriority priority, std::unique_ptr<::v8::JobTask> job_task, const ::v8::SourceLocation& location)
+{
+  return std::unique_ptr<::v8::JobHandle>();
+}
+
+void aperture::v8::jobsystem::V8EPlatform::PostTaskOnWorkerThreadImpl(::v8::TaskPriority priority, std::unique_ptr<::v8::Task> task, const ::v8::SourceLocation& location)
+{
+}
+
+void aperture::v8::jobsystem::V8EPlatform::PostDelayedTaskOnWorkerThreadImpl(::v8::TaskPriority priority, std::unique_ptr<::v8::Task> task, double delay_in_seconds, const ::v8::SourceLocation& location)
+{
+
+}
+
 bool aperture::v8::jobsystem::V8EJobManager::Initialize()
 {
   NS_PROFILE_SCOPE("V8EJobManager::Initialize");
@@ -108,7 +147,7 @@ void aperture::v8::jobsystem::V8EJobManager::Shutdown()
 void aperture::v8::jobsystem::V8EJobManager::PostJob(std::unique_ptr<::v8::Task> task, const ::v8::SourceLocation& location)
 {
   NS_PROFILE_SCOPE("V8EJobManager::PostJob");
-  nsLog::Debug("V8EJobManager::PostJob: Posting Task at Location: {0}", location.ToString().c_str());
+  nsLog::Debug("V8EJobManager::PostJob: Posting Task from File: {0}", location.FileName());
   nsHybridArray<::v8::Task*, 1> taskArray;
   taskArray.PushBack(task.get());
   m_pJobSystem->AddJob(*CreateQueueFromJobs("V8EJobManager::PostJob", taskArray));
@@ -117,7 +156,7 @@ void aperture::v8::jobsystem::V8EJobManager::PostJob(std::unique_ptr<::v8::Task>
 void aperture::v8::jobsystem::V8EJobManager::PostBatchedJob(std::unique_ptr<::v8::Task> task, const ::v8::SourceLocation& location)
 {
   NS_PROFILE_SCOPE("V8EJobManager::PostBatchedJob");
-  nsLog::Debug("V8EJobManager::PostJob: Posting Batched Task at Location: {0}", location.ToString().c_str());
+  nsLog::Debug("V8EJobManager::PostJob: Posting Batched Task File: {0}", location.FileName());
 }
 
 nsUInt32 aperture::v8::jobsystem::V8EJobManager::GetFrameCount() const
@@ -125,16 +164,20 @@ nsUInt32 aperture::v8::jobsystem::V8EJobManager::GetFrameCount() const
   return m_iV8EJobManagerFrameCount.load();
 }
 
+void aperture::v8::jobsystem::V8EJobManager::SetPlatform(const V8EPlatform* platform)
+{
+}
+
 aperture::core::IAPCCommandQueue* aperture::v8::jobsystem::V8EJobManager::CreateQueueFromJobs(const nsString& p_sJobName, const nsHybridArray<::v8::Task*, 1>& p_aJobs)
 {
-  core::IAPCCommandQueue pQueue;
-  core::IAPCCommandList pList;
+  auto pQueue = nsMakeUnique<core::IAPCCommandQueue>();
+  auto pList = nsMakeUnique<core::IAPCCommandList>();
   for (auto& job : p_aJobs)
   {
     core::IAPCCommand command(aperture::core::CommandType::Scripting, aperture::core::Runtype::FreeThread_Scripting);
     command.SetFunction(CreateFunctionFromTask(job));
-    pList.AddCommand(command);
+    pList->AddCommand(command);
   }
-  pQueue.AddCommandList(pList);
-  return &pQueue;
+  pQueue->AddCommandList(*pList);
+  return pQueue.Release();
 }

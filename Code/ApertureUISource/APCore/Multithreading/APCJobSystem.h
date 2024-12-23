@@ -252,10 +252,10 @@ namespace aperture::core::threading
     nsDeque<std::pair<nsUuid, IAPCCommandQueue*>> m_RenderingQueues;
     nsDeque<std::pair<nsUuid, IAPCCommandQueue*>> m_ParsingQueues;
 
-    nsHybridArray<std::thread, 1> m_CompositionThreads;
-    nsHybridArray<std::thread, 1> m_ScriptThreads;
-    nsHybridArray<std::thread, 1> m_RenderingThreads;
-    nsHybridArray<std::thread, 1> m_ParsingThreads;
+    nsHybridArray<std::thread*, 1> m_CompositionThreads;
+    nsHybridArray<std::thread*, 1> m_ScriptThreads;
+    nsHybridArray<std::thread*, 1> m_RenderingThreads;
+    nsHybridArray<std::thread*, 1> m_ParsingThreads;
 
     bool m_bAllowCreationOfNewThreadsOnOverfill = false;
     std::atomic<nsUInt8> m_ActiveThreads;

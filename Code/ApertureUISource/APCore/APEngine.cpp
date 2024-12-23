@@ -126,7 +126,3 @@ bool aperture::ApertureSDK::IsNDAPlatform()
   return m_bIsNDAPlatform;
 }
 
-aperture::v8::jobsystem::V8EJobManager* aperture::ApertureSDK::GetV8EJobManager()
-{
-  return nullptr;
-}

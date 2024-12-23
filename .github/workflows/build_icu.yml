@@ -1,0 +1,61 @@
+name: Build ICU
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        platform:
+          - linux-x86_64
+          - windows-x86_64
+        include:
+          - platform: windows-x86_64
+            os: windows-latest
+          - platform: linux-x86_64
+            os: ubuntu-latest
+    runs-on: ${{ matrix.os }}
+
+    env:
+      ICU_BUILD_VERSION: "76.1"
+      ICU_BUILD_HASH: "dfacb46bfe4747410472ce3e1144bf28a102feeaa4e3875bac9b4c6cf30f4f3e"
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          submodules: recursive
+
+      - name: Configure Build
+        run: |
+          mkdir build-${{ matrix.platform }}
+          cd build-${{ matrix.platform }}
+          case "${{ matrix.platform }}" in
+            linux-x86_64)
+              cmake -GNinja ../ -DBUILD_ICU=ON -DICU_BUILD_VERSION=$ICU_BUILD_VERSION -DICU_BUILD_HASH=$ICU_BUILD_HASH
+              ;;
+            windows-x86_64)
+              cmake -GNinja ../ -DBUILD_ICU=ON -DICU_BUILD_VERSION=$ICU_BUILD_VERSION -DICU_BUILD_HASH=$ICU_BUILD_HASH -DCMAKE_TOOLCHAIN_FILE=../cmake-modules/toolchains/mingw64-x86_64.cmake
+              ;;
+          esac
+
+      - name: Build ICU
+        run: |
+          cd build-${{ matrix.platform }}
+          ninja
+
+      - name: Upload Build Artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: icu-${{ matrix.platform }}
+          path: build-${{ matrix.platform }}
+
+      - name: Use Prebuilt ICU (Fallback)
+        if: failure()
+        run: |
+          curl -u $PREBUILT_AUTH -o prebuilt-icu.tar.gz https://builds.viaduck.org/prebuilts/icu/${{ matrix.platform }}/icu-${{ env.ICU_BUILD_VERSION }}-${{ env.ICU_BUILD_HASH }}.tar.gz
+          tar -xzf prebuilt-icu.tar.gz -C build-${{ matrix.platform }}

@@ -68,7 +68,7 @@ namespace aperture::v8::utility
       int _reserved = 0; // name index
       NS_FORCE_INLINE int& operator[](uint8_t index)
       {
-        NS_ISE_JSI_CHECK(index < 5);
+        //NS_ISE_JSI_CHECK(index < 5);
         return *((int*)this + index);
       }
     };

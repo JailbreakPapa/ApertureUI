@@ -5,7 +5,8 @@ set(NS_V8_ROOT "${CMAKE_SOURCE_DIR}/${NS_CMAKE_RELPATH_CODE}/ThirdParty/v8" CACH
 set(NS_V8_BUILD_PATH "${CMAKE_SOURCE_DIR}/${NS_CMAKE_RELPATH_CODE}/ThirdParty/v8" CACHE PATH "Path to the directory where v8 will be cloned and built.")
 set(NS_V8_READY_TO_BUILD ON CACHE BOOL "Are you ready to build v8? Make sure that you set up depot_tools. you should open the extracted directory and put: (gclient) to fully initialize everything.")
 set(NS_V8_MANUAL_BUILD OFF CACHE BOOL "If you want to build the latest provided version of v8, then you can manually build v8. WARNING: May have Breaking API Changes.")
-set(NS_V8_PREBUILTNAME "v8_prebuilt" CACHE STRING "Name of the v8_prebuilt zip. allows us to find everything faster.")
+set(NS_V8_BINARY_PATH_NAME "windows_x86_64_release" CACHE STRING "Name of the binary path for v8. This is used to find the correct path to the v8 binaries.")
+set(NS_V8_PREBUILTNAME "v8_prebuiltzip" CACHE STRING "Name of the prebuilt v8 directory.")
 set(NS_V8_PREBUILT ON CACHE BOOL "If manually building ends up failing, you can use the latest uploaded version of v8 that works with apertureui.")
 set(NS_V8_DLL_TYPE "x64.release")
 
@@ -86,29 +87,40 @@ function(ns_v8_build)
 endfunction(ns_v8_build)
 
 function(ns_link_v8_target TARGET_PROJECT)
-    # Define variables
+ # Define variables
     # Link target to libraries.
-    ns_glob_library_files(${NS_V8_ROOT}/${NS_V8_PREBUILTNAME}/out.gn/x64.release V8_NEEDED_LIBS)
-
+    message(STATUS "Finding V8 libraries at: ${NS_V8_ROOT}/v8_prebuiltzip/${NS_V8_BINARY_PATH_NAME}")
+    ns_glob_library_files("${NS_V8_ROOT}/v8_prebuiltzip/${NS_V8_BINARY_PATH_NAME}" V8_NEEDED_LIBS)
+    message(STATUS "Linking V8 libraries: ${V8_NEEDED_LIBS}")
     target_link_libraries(${TARGET_PROJECT} PUBLIC ${V8_NEEDED_LIBS})
 
     # Link target to dynamic link libraries.
-    ns_glob_dynamiclink_files(${NS_V8_ROOT}/${NS_V8_PREBUILTNAME}/out.gn/x64.release V8_DLLS)
+    ns_glob_dynamiclink_files(${NS_V8_ROOT}/v8_prebuiltzip/${NS_V8_BINARY_PATH_NAME} V8_DLLS)
 
-    # Make DLLs export to target output directory.
+    # Target's output directory for runtime artifacts (DLLs and executables)
+    set(TARGET_OUTPUT_DIR $<TARGET_FILE_DIR:${TARGET_PROJECT}>)
+
+    # Copy DLLs to the target output directory
     add_custom_command(TARGET ${TARGET_PROJECT} POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${V8_DLLS} $<TARGET_FILE_DIR:${TARGET_PROJECT}>
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${V8_DLLS} ${TARGET_OUTPUT_DIR}
         WORKING_DIRECTORY ${CMAKE_CURRENT_FUNCTION_LIST_DIR}
     )
-        file(MAKE_DIRECTORY ${NS_OUTPUT_DIRECTORY_DLL}/${NS_CMAKE_PLATFORM_PREFIX}${NS_CMAKE_GENERATOR_PREFIX}${NS_CMAKE_COMPILER_POSTFIX}${CMAKE_BUILD_TYPE}${NS_CMAKE_ARCHITECTURE_POSTFIX}/resources)
-        set(respath  ${NS_OUTPUT_DIRECTORY_DLL}/${NS_CMAKE_PLATFORM_PREFIX}${NS_CMAKE_GENERATOR_PREFIX}${NS_CMAKE_COMPILER_POSTFIX}${CMAKE_BUILD_TYPE}${NS_CMAKE_ARCHITECTURE_POSTFIX}/resources)
-    # Make target include V8 headers.
+
+    # Create a resources directory inside the target's output directory
+    set(RESOURCES_DIR ${TARGET_OUTPUT_DIR}/resources)
+    add_custom_command(TARGET ${TARGET_PROJECT} POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E make_directory ${RESOURCES_DIR}
+    )
+
+    # Copy V8 resources to the target's resources directory
+    add_custom_command(TARGET ${TARGET_PROJECT} POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different 
+            ${NS_V8_ROOT}/${NS_V8_PREBUILTNAME}/resources/icudtl.dat 
+            ${NS_V8_ROOT}/${NS_V8_PREBUILTNAME}/resources/snapshot_blob.bin 
+            ${RESOURCES_DIR}
+        WORKING_DIRECTORY ${CMAKE_CURRENT_FUNCTION_LIST_DIR}
+    )
+
+    # Include V8 headers in the target's include directories
     target_include_directories(${TARGET_PROJECT} PUBLIC ${NS_V8_ROOT}/${NS_V8_PREBUILTNAME}/include)
-    # Export needed resources for NS_V8 to work.
-    add_custom_command(TARGET ${TARGET_PROJECT} POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${NS_V8_ROOT}/${NS_V8_PREBUILTNAME}/resources/${NS_V8_DLL_TYPE}/icudtl.dat ${respath}
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${NS_V8_ROOT}/${NS_V8_PREBUILTNAME}/resources/${NS_V8_DLL_TYPE}/natives_blob.bin ${respath}
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${NS_V8_ROOT}/${NS_V8_PREBUILTNAME}/resources/${NS_V8_DLL_TYPE}/snapshot_blob.bin ${respath}
-        WORKING_DIRECTORY ${CMAKE_CURRENT_FUNCTION_LIST_DIR}
-    )
 endfunction()

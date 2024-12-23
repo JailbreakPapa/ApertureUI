@@ -49,14 +49,15 @@ void aperture::v8::binding::V8EBinder::BindClassVariable(const char* className, 
     ::v8::Local<::v8::FunctionTemplate> classTemplate = it->second.Get(isolate_);
     classTemplate->InstanceTemplate()->SetAccessor(
       ::v8::String::NewFromUtf8(isolate_, memberName.c_str()).ToLocalChecked(),
-      [](v8::Local<v8::String> property, const v8::PropertyCallbackInfo<v8::Value>& info)
+      [](::v8::Local<::v8::String> property, const ::v8::PropertyCallbackInfo<::v8::Value>& info)
       {
         ClassType* self = static_cast<ClassType*>(info.Holder()->GetAlignedPointerFromInternalField(0));
         info.GetReturnValue().Set(self->*member);
       },
-      [](v8::Local<v8::String> property, v8::Local<v8::Value> value, const v8::PropertyCallbackInfo<void>& info)
+      [](::v8::Local<::v8::String> property, ::v8::Local<::v8::Value> value, const ::v8::PropertyCallbackInfo<void>& info)
       {
         ClassType* self = static_cast<ClassType*>(info.Holder()->GetAlignedPointerFromInternalField(0));
+        ::v8::Local<::v8::Value> value = info[0]; // Assuming value is the first argument
         self->*member = value->NumberValue(info.GetIsolate()->GetCurrentContext()).ToChecked();
       });
   }
@@ -71,7 +72,7 @@ void aperture::v8::binding::V8EBinder::BindClassFunction(const char* className, 
     ::v8::Local<::v8::FunctionTemplate> classTemplate = it->second.Get(isolate_);
     classTemplate->PrototypeTemplate()->Set(
       ::v8::String::NewFromUtf8(isolate_, functionName.c_str()).ToLocalChecked(),
-      ::v8::FunctionTemplate::New(isolate_, [func](const v8::FunctionCallbackInfo<v8::Value>& args)
+      ::v8::FunctionTemplate::New(isolate_, [func](const ::v8::FunctionCallbackInfo<::v8::Value>& args)
         {
                 ClassType* self = static_cast<ClassType*>(args.Holder()->GetAlignedPointerFromInternalField(0));
                 if constexpr (std::is_void_v<ReturnType>) {

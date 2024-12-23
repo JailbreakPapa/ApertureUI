@@ -22,6 +22,7 @@
 #include <v8-inspector.h>
 #include <v8-persistent-handle.h>
 #include <v8-version-string.h>
+#include <v8-source-location.h>
 #include <v8.h>
 
 // TODO: ??? OBSOLETE.

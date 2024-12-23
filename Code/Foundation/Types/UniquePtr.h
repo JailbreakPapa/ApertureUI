@@ -103,6 +103,7 @@ private:
 template <typename T, typename... Args>
 NS_ALWAYS_INLINE nsUniquePtr<T> nsMakeUnique(Args&&... args)
 {
-  return nsUniquePtr<T>(new T(std::forward<Args>(args)...));
+  return nsUniquePtr<T>(new T(std::forward<Args>(args)...), nullptr);
 }
+
 #include <Foundation/Types/Implementation/UniquePtr_inl.h>

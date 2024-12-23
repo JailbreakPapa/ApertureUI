@@ -13,5 +13,11 @@
 #include <Foundation/Types/SharedPtr.h>
 #include <Foundation/Containers/DynamicArray.h>
 
+// STD INCLUDES
+#include <mutex>
+#include <thread>
+#include <condition_variable>
+#include <atomic>
+
 /// NOTE: The DLL/PCH Header should always be included last.
 #include <APHTML/APEngineDLL.h>

@@ -122,7 +122,7 @@ namespace aperture::core::threading
                 wakeCondition.wait(lock);
               }
             } });
-          m_CompositionThreads.PushBack(m_r_CompositionThread);
+          m_CompositionThreads.PushBack(&m_r_CompositionThread);
           m_r_CompositionThread.detach();
         }
         break;
@@ -153,7 +153,7 @@ namespace aperture::core::threading
                 wakeCondition.wait(lock);
               }
             } });
-          m_ScriptThreads.PushBack(m_r_ScriptThread);
+          m_ScriptThreads.PushBack(&m_r_ScriptThread);
           m_r_ScriptThread.detach();
         }
         break;
@@ -184,7 +184,7 @@ namespace aperture::core::threading
                 wakeCondition.wait(lock);
               }
             } });
-          m_RenderingThreads.PushBack(m_r_RenderingThread);
+          m_RenderingThreads.PushBack(&m_r_RenderingThread);
           m_r_RenderingThread.detach();
         }
         break;
@@ -215,7 +215,8 @@ namespace aperture::core::threading
                 wakeCondition.wait(lock);
               }
             } });
-          m_ParsingThreads.PushBack(m_r_ParsingThread);
+          std::unique_ptr<std::thread> a = std::make_unique<std::thread>();
+          m_ParsingThreads.PushBack(a.get());
           m_r_ParsingThread.detach();
         }
         break;
@@ -356,122 +357,88 @@ namespace aperture::core::threading
   }
   void APCJobSystem::RunThreadsOfType(const core::CommandType& p_runtype)
   {
-    switch (p_runtype)
+    nsHybridArray<std::thread*, 1> m_r_TypeThreads;
+    if (m_bAllowCreationOfNewThreadsOnOverfill)
     {
-      default:
-        for (auto& thread : m_CompositionThreads)
+      switch (p_runtype)
+      {
+        case core::CommandType::Composition:
+          m_r_TypeThreads = m_CompositionThreads;
+          break;
+        case core::CommandType::Scripting:
+          m_r_TypeThreads = m_ScriptThreads;
+          break;
+        case core::CommandType::Rendering:
+          m_r_TypeThreads = m_RenderingThreads;
+          break;
+        case core::CommandType::Layout:
+          m_r_TypeThreads = m_ParsingThreads;
+          break;
+        default:
+          nsLog::Error("Invalid command type: {0}.", static_cast<int>(p_runtype));
+          return;
+      }
+      for (auto& thread : m_r_TypeThreads)
+      {
+        if (thread->joinable())
         {
-          if (thread.joinable())
-          {
-            thread.join();
-          }
-          else
-          {
-            nsLog::Error("Thread {0} not joinable.", thread.get_id());
-            continue;
-          }
-          if (m_bAllowCreationOfNewThreadsOnOverfill)
-          {
-            std::thread m_r_OverfillThread([&]()
-              {
-                nsLog::BroadcastLoggingEvent(nullptr, nsLogMsgType::WarningMsg, "ALERT: Overfill thread Created! Attempting to run overflowed tasks!");
-                RunGeneral(); });
-          }
+          thread->join();
         }
-        break;
+        else
+        {
+          nsLog::Error("Local Thread not joinable.");
+          continue;
+        }
+        std::thread m_r_OverfillThread([&]()
+          {
+          nsLog::BroadcastLoggingEvent(nullptr, nsLogMsgType::WarningMsg, "ALERT: Overfill thread Created! Attempting to run overflowed tasks!");
+          RunGeneral(); });
+      }
+    }
+    else
+    {
+      nsLog::Warning("Dynamic thread creation disabled. Running All Jobs To Complete Overruled ones");
     }
   }
+
   void APCJobSystem::RunThreadsOfType(const core::Runtype& p_runtype)
   {
-    switch (p_runtype)
+    nsHybridArray<std::thread*, 1> m_r_TypeThreads;
+    if (m_bAllowCreationOfNewThreadsOnOverfill)
     {
-      case core::Runtype::FreeThread_Composition:
-        for (auto& thread : m_CompositionThreads)
-        {
-          if (thread.joinable())
+      switch (p_runtype)
+      {
+        case core::Runtype::FreeThread_Composition:
+          m_r_TypeThreads = m_CompositionThreads;
+        case core::Runtype::FreeThread_Scripting:
+          m_r_TypeThreads = m_ScriptThreads;
+        case core::Runtype::FreeThread_Rendering:
+          m_r_TypeThreads = m_RenderingThreads;
+        case core::Runtype::FreeThread_Layout:
+          m_r_TypeThreads = m_ParsingThreads;
+        default:
+          for (auto& thread : m_r_TypeThreads)
           {
-            thread.join();
-          }
-          else
-          {
-            nsLog::Error("Thread {0} not joinable.", thread.get_id());
-            continue;
-          }
-          if (m_bAllowCreationOfNewThreadsOnOverfill)
-          {
+            if (thread->joinable())
+            {
+              thread->join();
+            }
+            else
+            {
+              nsLog::Error("Local Thread not joinable.");
+              continue;
+            }
             std::thread m_r_OverfillThread([&]()
               {
                 nsLog::BroadcastLoggingEvent(nullptr, nsLogMsgType::WarningMsg, "ALERT: Overfill thread Created! Attempting to run overflowed tasks!");
                 RunGeneral(); });
           }
-        }
-        break;
-      case core::Runtype::FreeThread_Scripting:
-        for (auto& thread : m_ScriptThreads)
-        {
-          if (thread.joinable())
-          {
-            thread.join();
-          }
-          else
-          {
-            nsLog::Error("Thread {0} not joinable.", thread.get_id());
-            continue;
-          }
-          if (m_bAllowCreationOfNewThreadsOnOverfill)
-          {
-            std::thread m_r_OverfillThread([&]()
-              {
-                nsLog::BroadcastLoggingEvent(nullptr, nsLogMsgType::WarningMsg, "ALERT: Overfill thread Created! Attempting to run overflowed tasks!");
-                RunGeneral(); });
-          }
-        }
-        break;
-      case core::Runtype::FreeThread_Rendering:
-        for (auto& thread : m_RenderingThreads)
-        {
-          if (thread.joinable())
-          {
-            thread.join();
-          }
-          else
-          {
-            nsLog::Error("Thread {0} not joinable.", thread.get_id());
-            continue;
-          }
-          if (m_bAllowCreationOfNewThreadsOnOverfill)
-          {
-            std::thread m_r_OverfillThread([&]()
-              {
-                nsLog::BroadcastLoggingEvent(nullptr, nsLogMsgType::WarningMsg, "ALERT: Overfill thread Created! Attempting to run overflowed tasks!");
-                RunGeneral(); });
-          }
-        }
-        break;
-      case core::Runtype::FreeThread_Layout:
-        for (auto& thread : m_ParsingThreads)
-        {
-          if (thread.joinable())
-          {
-            thread.join();
-          }
-          else
-          {
-            nsLog::Error("Thread {0} not joinable.", thread.get_id());
-            continue;
-          }
-          if (m_bAllowCreationOfNewThreadsOnOverfill)
-          {
-            std::thread m_r_OverfillThread([&]()
-              {
-                nsLog::BroadcastLoggingEvent(nullptr, nsLogMsgType::WarningMsg, "ALERT: Overfill thread Created! Attempting to run overflowed tasks!");
-                RunGeneral(); });
-          }
-        }
-        break;
-      default:
-        nsLog::Error("Invalid runtype: {0}.", static_cast<int>(p_runtype));
-        break;
+          break;
+      }
+    }
+    else
+    {
+      nsLog::Warning("Dynamic thread creation disabled. Running All Jobs To Complete Overruled ones");
     }
   }
   void APCJobSystem::AddJob(const IAPCCommandQueue& p_uJob)
@@ -482,22 +449,19 @@ namespace aperture::core::threading
       nsLog::Error("Cannot add job to queue with Type: {0}. Queue is locked.", CommandTypeToString(p_uJob.GetType()));
       return;
     }
+    nsUuid sUuid = sUuid.MakeUuid();
     switch (p_uJob.GetType())
     {
       case CommandType::Composition:
-        nsUuid sUuid = sUuid.MakeUuid();
         m_CompositionQueues.PushBack(std::make_pair(sUuid, (IAPCCommandQueue*)&p_uJob));
         break;
       case CommandType::Scripting:
-        nsUuid sUuid = sUuid.MakeUuid();
         m_ScriptQueues.PushBack(std::make_pair(sUuid, (IAPCCommandQueue*)&p_uJob));
         break;
       case CommandType::Rendering:
-        nsUuid sUuid = sUuid.MakeUuid();
         m_RenderingQueues.PushBack(std::make_pair(sUuid, (IAPCCommandQueue*)&p_uJob));
         break;
       case aperture::core::CommandType::Layout:
-        nsUuid sUuid = sUuid.MakeUuid();
         m_ParsingQueues.PushBack(std::make_pair(sUuid, (IAPCCommandQueue*)&p_uJob));
         break;
       default:

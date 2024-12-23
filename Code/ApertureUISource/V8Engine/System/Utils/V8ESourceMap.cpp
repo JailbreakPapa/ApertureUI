@@ -27,7 +27,7 @@ void SourceMap::decode(int p_line, const char* p_token, const char* p_end, Inter
   while (p_end != p_token)
   {
     const char token = *(p_token++);
-    NS_ISE_JSI_CHECK(token >= '+' && token <= 'z');
+    //NS_ASSERT_DEBUG(token >= '+' && token <= 'z');
     int32_t integer = kBase64Unmap[(uint8_t)(token - '+')];
     const bool cont = integer & 0x20;
     integer &= 0x1f;

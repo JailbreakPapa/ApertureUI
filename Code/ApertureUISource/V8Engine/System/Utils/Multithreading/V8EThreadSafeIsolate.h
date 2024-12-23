@@ -36,35 +36,38 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #pragma once
 
 #include <APCore/Interfaces/APCPlatform.h>
-#include <Foundation/Threading/Mutex.h>
 #include <Foundation/Threading/LockedObject.h>
+#include <Foundation/Threading/Mutex.h>
 #include <V8Engine/V8EngineDLL.h>
 
 namespace aperture::v8
 {
-    // @brief "Thread Safe" Access to a Isolate. this should be created per Script Thread, due to access rules.
-    class NS_V8ENGINE_DLL V8EThreadSafeIsolate
-    {
-        public:
-        virtual ~V8EThreadSafeIsolate() = default;
+  // @brief "Thread Safe" Access to a Isolate. this should be created per Script Thread, due to access rules.
+  class NS_V8ENGINE_DLL V8EThreadSafeIsolate
+  {
+  public:
+    virtual ~V8EThreadSafeIsolate() = default;
 
-        /// @brief Creates the internal isolate object. This Function REQUIRES you to create this on the Main Thread.
-        /// @param params custom options
-        /// @return If assigning and creating the isolate was successful.
-        bool CreateIsolate(::v8::Isolate::CreateParams& params);
-        
-        NS_ALWAYS_INLINE ::v8::Isolate* AccessInternalIsolate()
-        {
-            if(mangaged_isolate.isValid())
-            {
-                return mangaged_isolate.Borrow();
-            }
-            else
-            {
-                nsLog::Error("The Isolate Provided Is nullptr. Did you initialize it correctly?");
-            }
-        }
-        private:
-            nsLockedObject<nsMutex,::v8::Isolate> mangaged_isolate;
-    };
-}
+    /// @brief Creates the internal isolate object. This Function REQUIRES you to create this on the Main Thread.
+    /// @param params custom options
+    /// @return If assigning and creating the isolate was successful.
+    bool CreateIsolate(::v8::Isolate::CreateParams& params);
+
+    NS_ALWAYS_INLINE ::v8::Isolate* AccessInternalIsolate()
+    {
+      if (mangaged_isolate != nullptr)
+      {
+        return mangaged_isolate;
+      }
+      else
+      {
+        nsLog::Error("The Isolate Provided Is nullptr. Did you initialize it correctly?");
+        return nullptr;
+      }
+    }
+
+  private:
+    nsMutex mangaged_isolate_mutex;
+    ::v8::Isolate* mangaged_isolate;
+  };
+} // namespace aperture::v8

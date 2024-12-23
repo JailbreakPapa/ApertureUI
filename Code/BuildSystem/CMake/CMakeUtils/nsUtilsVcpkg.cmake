@@ -9,6 +9,7 @@ function(ns_vcpkg_show_info)
 	message("")
 endfunction()
 
+
 # #####################################
 # ## ns_vcpkg_init()
 # #####################################
@@ -43,6 +44,9 @@ function(ns_vcpkg_init)
 	set_property(GLOBAL PROPERTY "NS_VCPKG_ROOT" ${NS_VCPKG_ROOT})
 endfunction()
 
+
+
+
 # #####################################
 # ## ns_vcpkg_install(<packages>)
 # #####################################
@@ -56,6 +60,12 @@ function(ns_vcpkg_install PACKAGES)
 			set(VCPKG_TARGET_TRIPLET "x64-windows")
 		else()
 			set(VCPKG_TARGET_TRIPLET "x86-windows")
+		endif()
+	elseif(NS_CMAKE_PLATFORM_LINUX)
+		if(NS_CMAKE_ARCHITECTURE_64BIT)
+			set(VCPKG_TARGET_TRIPLET "x64-linux")
+		else()
+			set(VCPKG_TARGET_TRIPLET "x86-linux")
 		endif()
 	else()
 		message(FATAL_ERROR "vcpkg target triplet is not configured for this platform")
