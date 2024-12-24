@@ -8,9 +8,8 @@ option(APUI_MATRIX_ROW_MAJOR "Tells Harrlow to Use/Convert to row-major matrices
 ns_cmake_init()
 
 ns_vcpkg_init()
+
 ns_vcpkg_install(icu)
-
-
 
 # Get the name of this folder as the project name
 set(PROJECT_NAME "apertureuihtmlengine")

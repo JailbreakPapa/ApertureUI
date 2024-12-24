@@ -25,15 +25,6 @@
 #include <v8-source-location.h>
 #include <v8.h>
 
-// TODO: ??? OBSOLETE.
-NS_FORCE_INLINE void v8_basics (void* ptr)
-{
-  if (ptr == nullptr)
-  {
-    nsLog::Error("V8Engine: JSB Error: {0}", "JSB is not initialized");
-  }
-}
-
 #define NS_ISE_JSI_CHECK(CHECKER) \
 if(!CHECKER)  \
 {                     \

@@ -2,7 +2,7 @@
 
 ## Introduction
 
-This Aperture UI represents a complete CSS parser and in-memory representation of a CSS rule-set.
+Aperture UI represents a complete CSS parser and in-memory representation of a CSS rule-set.
 
 APUI Aims for a Fully Compliant CSS3 (2023) Feature set, with some extra properties that are specific to the engine.
 
@@ -10,8 +10,11 @@ APUI Aims for a Fully Compliant CSS3 (2023) Feature set, with some extra propert
 
 CSS covers a wide array of properties and selectors.
 The in-memory representation provided here makes use of variants, optionals, etc. whenever they fit the bill naturally.
-The parser is written using Boost.Spirit.X3.
+
+The parser is written using Boost.Parser.
+
 # Key
+
 :heavy_check_mark: - This means that the feature is Fully supported, as in it compliant with the W3C's standard.
 
 :sweat: - This means that the feature **IS Supported** isn't fully compliant with W3C Standards, and you should **NOT** expect this to work as it would on a native browser.
@@ -113,7 +116,7 @@ The below tables attempts to track what has already been implemented.
 ### Properties (Aperture UI)
 | Property      | Representation     | Parser             | Notes                                                                                                                                                         |
 | ------------- | ------------------ | ------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| apui-sdf-font | :heavy_check_mark: | :heavy_check_mark: | Similar Coherent's 'coh-sdf-font', Aperture uses this property to enable SDF Generated Data for the font to pass to the RenderView. this executes on the GPU. |
+| apui-sdf-font | :heavy_check_mark: | :heavy_check_mark: | Similar to Coherent's 'coh-sdf-font', Aperture uses this property to enable SDF Generated Data for the font to pass to the RenderView. this executes on the GPU. |
 ### Properties (W3C)
 
 | Property                   | Representation     | Parser             | Notes |

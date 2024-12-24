@@ -40,6 +40,7 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <functional>
 #include <type_traits>
 #include <unordered_map>
+#include <mutex>
 #include <v8.h>
 
 namespace aperture::v8::binding
@@ -55,6 +56,8 @@ namespace aperture::v8::binding
 
     template <typename ReturnType, typename... Args>
     void BindFunctionToJS(const char* name, ReturnType (*func)(Args...));
+
+    void BindFunctionToJS(const char* name, const std::function<void()>& func);
 
     template <typename T>
     void BindVariable(const char* name, const T& value);
@@ -72,8 +75,12 @@ namespace aperture::v8::binding
     void BindClassFunction(const char* className, const std::string& functionName, ReturnType (ClassType::*func)(Args...));
 
     ::v8::Local<::v8::Object> CreateJSModule(const char* name);
-    
+
+    void SetIsolate(::v8::Isolate* isolate);
+
+    ::v8::Isolate* GetIsolate() const;
   private:
+    std::mutex mutex_;
     ::v8::Isolate* isolate_;
     ::v8::Global<::v8::ObjectTemplate> global_template_;
     std::unordered_map<std::string, ::v8::Global<::v8::FunctionTemplate>> class_templates_;

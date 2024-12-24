@@ -59,6 +59,8 @@ namespace aperture
     };
 
   public:
+    /// @brief Initializes the SDK. This should be called before using the SDK, and always succeeds, but will assert on values that are incorrect.
+    static void Initialize();
     // @note We scope lock write access to these values for protection.
     // @note Also, we do not allow for the values to be changed after the SDK is active.
     static void SetScriptThreadCount(nsUInt8 p_threadcount);
@@ -84,13 +86,14 @@ namespace aperture
     static bool IsSDKActive();
 
     static void SetSDKTextEncoding(ESDKTextEncoding p_textencoding);
-    
+
     static ESDKTextEncoding GetSDKTextEncoding();
-   
-    static void SetSDKActive(bool p_active);
 
     static bool IsNDAPlatform();
-    
+
+  private:
+    static void SetSDKActive(bool p_active);
+
   private:
     /// @brief Is Serialization Allowed for the SDK? This is a core feature about Aperture that allows for Performance improvements, e.g. Script Compilation, Binding Classes to V8, etc.
     static inline bool m_bIsSerializationAllowedforSDK = false;

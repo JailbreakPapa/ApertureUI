@@ -7,7 +7,7 @@
         <include src="file://{resources}/scripts/myscript.js"/>
     </script>
     <div class="main_panel">
-        <Label text="Hello, Aperture UI!"/>
-        <Button class="my_button" onactivate="OnMyButtonPressed()"/>
+        <h1 text="Hello, Aperture UI!"/>
+        <button class="my_button" onactivate="OnMyButtonPressed()"/>
     </div>
 </root>

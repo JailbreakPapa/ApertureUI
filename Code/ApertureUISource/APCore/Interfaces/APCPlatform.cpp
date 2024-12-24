@@ -6,7 +6,6 @@ bool aperture::core::IAPCPlatform::InitializePlatform(const char* licensekey)
 {
   // NOTE(Mikael A.): Removing All CryptoLens API calls for FOSS release.
   // TODO: #1: Implement Resources Check(https://github.com/WatchDogStudios/ApertureUI/issues/1).
-  aperture::ApertureSDK::SetSDKActive(true);
   m_bEngineStatus = true;
   return true;
 }

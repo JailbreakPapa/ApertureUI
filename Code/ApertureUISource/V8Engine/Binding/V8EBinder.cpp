@@ -83,9 +83,47 @@ void aperture::v8::binding::V8EBinder::BindClassFunction(const char* className, 
   }
 }
 
+void aperture::v8::binding::V8EBinder::BindFunctionToJS(const char* name, const std::function<void()>& func)
+{
+  ::v8::HandleScope handle_scope(isolate_);
+
+  // Wrap the std::function in a lambda that forwards to the original function
+  auto js_func = ::v8::Function::New(
+    isolate_->GetCurrentContext(),
+    [](const ::v8::FunctionCallbackInfo<::v8::Value>& args)
+    {
+      auto* func = static_cast<std::function<void()>*>(args.Data().As<::v8::External>()->Value());
+      if (func)
+      {
+        (*func)(); // Invoke the original function
+      }
+    },
+    ::v8::External::New(isolate_, new std::function<void()>(func)))
+                   .ToLocalChecked();
+
+  // Assign the function to the global object in V8
+  isolate_->GetCurrentContext()
+    ->Global()
+    ->Set(isolate_->GetCurrentContext(),
+      ::v8::String::NewFromUtf8(isolate_, name).ToLocalChecked(),
+      js_func)
+    .Check();
+}
+
 ::v8::Local<::v8::Object> aperture::v8::binding::V8EBinder::CreateJSModule(const char* name)
 {
   ::v8::Local<::v8::ObjectTemplate> global = global_template_.Get(isolate_);
   ::v8::Local<::v8::Object> module = global->NewInstance(isolate_->GetCurrentContext()).ToLocalChecked();
   return module;
+}
+
+::v8::Isolate* aperture::v8::binding::V8EBinder::GetIsolate() const
+{
+  return isolate_;
+}
+
+void aperture::v8::binding::V8EBinder::SetIsolate(::v8::Isolate* isolate)
+{
+  std::scoped_lock lock(mutex_);
+  isolate_ = isolate;
 }

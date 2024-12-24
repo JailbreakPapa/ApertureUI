@@ -170,6 +170,7 @@ nsUInt32 aperture::v8::jobsystem::V8EJobManager::GetFrameCount() const
 void aperture::v8::jobsystem::V8EJobManager::SetPlatform(V8EPlatform* platform)
 {
   m_pPlatform = (platform);
+  platform->SetJobManager(this);
 }
 
 aperture::core::IAPCCommandQueue* aperture::v8::jobsystem::V8EJobManager::CreateQueueFromJobs(const nsString& p_sJobName, const nsHybridArray<::v8::Task*, 1>& p_aJobs)

@@ -1,6 +1,14 @@
 #include <APCore/APEngine.h>
 
-void aperture::ApertureSDK::SetScriptThreadCount(nsUInt8 p_threadcount)
+void aperture::ApertureSDK::Initialize()
+{
+  NS_ASSERT_DEBUG(GetScriptThreadCount() > std::thread::hardware_concurrency(), "ApertureSDK: The amount of Script Threads is more than the amount of hardware threads. This may cause issues for the engine.");
+  NS_ASSERT_DEBUG(GetRenderThreadCount() > std::thread::hardware_concurrency(), "ApertureSDK: The amount of Render Threads is more than the amount of hardware threads. This may cause issues for the engine.");
+  NS_ASSERT_DEBUG(GetCompositionThreadCount() > std::thread::hardware_concurrency(), "ApertureSDK: The amount of Composition Threads is more than the amount of hardware threads. This may cause issues for the engine.");
+  NS_ASSERT_DEBUG(GetScriptThreadCount() > 0, "ApertureSDK: The amount of Script Threads is less than 1. This may cause issues for scripts, which could deadlock other work.");
+  SetSDKActive(true);
+}
+void aperture::ApertureSDK::SetScriptThreadCount(nsUInt8 p_threadcount) 
 {
   if (IsSDKActive())
   {
