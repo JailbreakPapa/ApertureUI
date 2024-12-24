@@ -10,10 +10,5 @@ target_link_libraries(${PROJECT_NAME}
   PUBLIC
   Foundation
   apertureuicore
-  boost
-)
-
-target_include_directories(${PROJECT_NAME}
-  PUBLIC
-  ${NS_SOURCE_DIR}/ThirdParty/boost
+  websockets
 )

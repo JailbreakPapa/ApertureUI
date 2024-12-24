@@ -43,8 +43,22 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 namespace aperture::harrlow::renderpath
 {
+    enum ClipMaskOp
+    {
+        ClipMaskOp_None = 0,
+        ClipMaskOp_Set = 1,
+        ClipMaskOp_Add = 2,
+        ClipMaskOp_Subtract = 3,
+        ClipMaskOp_Intersect = 4,
+    };
+
+    enum BlendMode
+    {
+        Blend, // Normal Alpha Blending
+        Replace // Replace the destination with the source
+    };
     /*
-    * Interface for a render path. A render path is a interface for platform specific rendering code. this is REQUIRED.
+    * Interface for a render path. A render path is a interface for platform specific rendering code, and is needed to render anything to the screen.
     */
     class NS_APERTURE_DLL APHIRenderPath
     {

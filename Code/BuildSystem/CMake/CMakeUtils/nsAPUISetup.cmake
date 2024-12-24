@@ -1,6 +1,6 @@
 set(NS_APUI_ALLOW_NETWORKING_PLUGIN ON CACHE BOOL "Enable the networking plugin for APUI")
-set(NS_APUI_ALLOW_JAVASCRIPT_PLUGIN ON CACHE BOOL "Enable the JavaScript pluginS for APUI (v8/JavaScriptCore). Turn this off if you are using a custom scripting language.")
-
+set(NS_APUI_ALLOW_JAVASCRIPT_PLUGIN ON CACHE BOOL "Enable the JavaScript plugin for APUI (v8/JavaScriptCore). Turn this off if you are using a custom scripting language.")
+set(NS_APUI_ALLOW_TEXTTOSPEECH_PLUGIN ON CACHE BOOL "Enable the text-to-speech plugin for APUI")
 function(ns_create_apui_target TARGET_NAME)
     if(NS_APUI_COMPILE_AS_LIB)
         ns_create_target(STATIC_LIBRARY ${TARGET_NAME} NO_NS_PREFIX)

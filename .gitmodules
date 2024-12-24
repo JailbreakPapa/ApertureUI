@@ -37,3 +37,6 @@
 [submodule "Code/ThirdParty/libwebsockets"]
 	path = Code/ThirdParty/libwebsockets
 	url = https://libwebsockets.org/repo/libwebsockets
+[submodule "Code/ThirdParty/piper"]
+	path = Code/ThirdParty/piper
+	url = https://github.com/WatchDogStudios/piper.git

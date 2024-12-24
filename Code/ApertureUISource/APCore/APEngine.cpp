@@ -1,5 +1,4 @@
 #include <APCore/APEngine.h>
-
 void aperture::ApertureSDK::Initialize()
 {
   NS_ASSERT_DEBUG(GetScriptThreadCount() > std::thread::hardware_concurrency(), "ApertureSDK: The amount of Script Threads is more than the amount of hardware threads. This may cause issues for the engine.");

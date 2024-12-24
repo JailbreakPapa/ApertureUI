@@ -93,7 +93,7 @@ namespace aperture
 
   private:
     static void SetSDKActive(bool p_active);
-
+  
   private:
     /// @brief Is Serialization Allowed for the SDK? This is a core feature about Aperture that allows for Performance improvements, e.g. Script Compilation, Binding Classes to V8, etc.
     static inline bool m_bIsSerializationAllowedforSDK = false;
