@@ -22,15 +22,9 @@
 [submodule "Code/ThirdParty/opus"]
 	path = Code/ThirdParty/opus
 	url = https://github.com/xiph/opus.git
-[submodule "Code/ThirdParty/curl"]
-	path = Code/ThirdParty/curl
-	url = https://github.com/curl/curl.git
 [submodule "Code/ThirdParty/Boost.Parser"]
 	path = Code/ThirdParty/Boost.Parser
 	url = https://github.com/boostorg/parser.git
-[submodule "Code/ThirdParty/sentry-native"]
-	path = Code/ThirdParty/sentry-native
-	url = https://github.com/getsentry/sentry-native.git
 [submodule "Code/ThirdParty/mimalloc"]
 	path = Code/ThirdParty/mimalloc
 	url = https://github.com/microsoft/mimalloc.git

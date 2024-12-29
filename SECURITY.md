@@ -4,10 +4,9 @@
 
 | Version | Supported          |
 | ------- | ------------------ |
-| 0.1.x   | :white_check_mark: |
-| 0.0.x   | :x:                |
-| 1.0.x   | :white_check_mark: |
-| < 0.1.0   | :x:              |
+| 24.12.0.1 | :white_check_mark: |
+| 23.xx.x.x   | :x:                |
+| 25.xx.x.x  | :white_check_mark: |
 
 
 
@@ -16,8 +15,6 @@
 ## Introduction
 
 Welcome to the Security Policy of Aperture UI. Please note that this project is currently under active development, and as such, the security practices, protocols, and features are continuously evolving. This document outlines the current approach to security, but changes are expected as the project matures.
-
-
 
 ## Development Status
 Aperture UI is in its development phase. This means:
@@ -62,8 +59,9 @@ As Aperture UI progresses towards a stable release, we plan to:
 Implement comprehensive security audits.
 Establish a formal incident response plan.
 Enhance user and developer security documentation.
+
 Disclaimer
-[Project Name] is provided "as is" during the development phase. While we strive to address security concerns promptly, users should be aware that using development software carries inherent risks.
+Aperture UI is provided "as is" during the development phase. While we strive to address security concerns promptly, users should be aware that using development software carries inherent risks.
 
 ## Conclusion
 Thank you for your interest in the security of Aperture UI. We value the contributions of our community in making the project more secure. Please stay tuned for updates and help us build a safer product.

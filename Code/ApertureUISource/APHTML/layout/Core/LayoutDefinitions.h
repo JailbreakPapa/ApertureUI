@@ -92,4 +92,16 @@ namespace aperture::layout
     int gridRowStart = 0;
     int gridRowEnd = 0;
   };
+  enum class GridSizeType
+  {
+    Fixed,      // Absolute size (e.g., in px)
+    Fractional, // Fractional size (e.g., 1fr, 2fr)
+    Auto        // Automatically determined size
+  };
+
+  struct GridSize
+  {
+    GridSizeType type; // Type of the size
+    float value;       // Value for the size (ignored for Auto)
+  };
 } // namespace aperture::layout

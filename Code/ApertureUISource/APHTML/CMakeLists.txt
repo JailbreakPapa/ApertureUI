@@ -38,22 +38,19 @@ target_include_directories(${PROJECT_NAME} PRIVATE ${CMAKE_SOURCE_DIR}/Code/Thir
 target_link_libraries(${PROJECT_NAME}
   PUBLIC
   apertureuicore
+  apertureuiharrlowengine
   pugixml
   yogacore
   stb_image
   uriparser
   harfbuzz
   freetype
-  gumbo
   rlottie
   lunasvg
-  Foundation
 )
 add_dependencies(${PROJECT_NAME}
-
   pugixml
   yogacore
-  gumbo
   harfbuzz
   freetype
   stb_image

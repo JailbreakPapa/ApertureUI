@@ -8,6 +8,5 @@ target_link_libraries(${PROJECT_NAME}
   PUBLIC
   Foundation
   mimalloc-static
-  libcurl
 )
 

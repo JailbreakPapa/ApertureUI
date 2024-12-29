@@ -44,6 +44,7 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 /// NOTE: The DLL/PCH Header should always be included last.
 #include <APHTML/APEngineDLL.h>
+#include <vector>
 
 namespace aperture::dom
 {

@@ -49,6 +49,7 @@ namespace aperture::layout
         public:
             LayoutManager(LayoutManagerType type) : type_(type) {}
 
+            virtual void layoutChildren(std::shared_ptr<LayoutNode> node) = 0;
             
         private:
             LayoutManagerType type_;

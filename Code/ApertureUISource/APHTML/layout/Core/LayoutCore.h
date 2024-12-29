@@ -41,6 +41,45 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 namespace aperture::layout
 {
+  enum class Display
+  {
+    None,
+    Flex,
+    Grid
+  };
+
+  enum class FlexDirection
+  {
+    Row,
+    Column,
+    RowReverse,
+    ColumnReverse
+  };
+
+  enum class Align
+  {
+    Auto,
+    FlexStart,
+    Center,
+    FlexEnd,
+    Stretch
+  };
+
+  enum class JustifyContent
+  {
+    FlexStart,
+    Center,
+    FlexEnd,
+    SpaceBetween,
+    SpaceAround,
+    SpaceEvenly
+  };
+
+  enum class PositionType
+  {
+    Relative,
+    Absolute
+  };
   enum class LayoutBoxFlag : nsUInt16
   {
     // left to right
@@ -108,5 +147,24 @@ namespace aperture::layout
     // Drawing routines can read this via item pointers as needed after
     // performing layout calculations.
     LAYOUT_BOX_BREAK = 0x200
+  };
+
+  struct LayoutConfig
+  {
+    Display display = Display::Flex;
+    FlexDirection flexDirection = FlexDirection::Row;
+    Align alignItems = Align::Stretch;
+    JustifyContent justifyContent = JustifyContent::Start;
+    PositionType positionType = PositionType::Relative;
+    float flexGrow = 0.0f;
+    float flexShrink = 1.0f;
+    float width = YGUndefined; // Undefined by default (Yoga-compatible)
+    float height = YGUndefined;
+
+    // Margins, paddings, etc.
+    float marginTop = 0.0f;
+    float marginBottom = 0.0f;
+    float marginLeft = 0.0f;
+    float marginRight = 0.0f;
   };
 } // namespace aperture::layout
