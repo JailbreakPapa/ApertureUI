@@ -14,6 +14,11 @@ if(NS_CMAKE_PLATFORM_WINDOWS)
   )
 endif()
 
+target_link_libraries(${PROJECT_NAME}
+  PRIVATE
+  GPUDetect
+)
+
 ns_enable_strict_warnings(${PROJECT_NAME})
 
 if(NS_CMAKE_COMPILER_CLANG)

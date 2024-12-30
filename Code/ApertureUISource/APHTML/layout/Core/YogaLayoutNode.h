@@ -79,8 +79,7 @@ namespace aperture::layout
     {
       YGNodeCalculateLayout(yogaNode, width, height, YGDirectionLTR);
       for (auto child : children)
-      {
-   
+      {   
         child->calculateLayout(getComputedWidth(),getComputedHeight());
       }
     }

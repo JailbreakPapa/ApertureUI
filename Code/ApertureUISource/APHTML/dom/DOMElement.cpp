@@ -1,131 +1,77 @@
 #include "DOMElement.h"
 #include "DOMAttribute.h"
 #include "DOMManager.h"
+#include <memory>
 
 using namespace aperture::dom;
 
-DOMElement::DOMElement(const nsString& tagName, int index)
-  : m_elementname(tagName)
-  , m_index(index)
+DOMElement::DOMElement(const std::string& tagName)
+  : DOMNode(DOMNodeType::ELEMENT_NODE, tagName)
+  , m_tagName(tagName)
 {
 }
 
-void aperture::dom::DOMElement::EmplaceClass(const nsString& in_class_name)
+const std::string& DOMElement::getTagName() const
 {
-  m_elementclass = in_class_name;
+  return m_tagName;
 }
 
-void aperture::dom::DOMElement::EmplaceName(const nsString& in_name)
+std::string DOMElement::getAttribute(const std::string& name) const
 {
-  m_elementname = in_name;
+  auto it = m_attributes.find(name);
+  return it != m_attributes.end() ? it->second : "";
 }
 
-aperture::dom::DOMElement aperture::dom::DOMElement::GetParentElement()
+void DOMElement::setAttribute(const std::string& name, const std::string& value)
 {
-  return parent();
+  m_attributes[name] = value;
 }
 
-bool aperture::dom::DOMElement::operator==(const aperture::dom::DOMElement& r) const
+void DOMElement::removeAttribute(const std::string& name)
 {
-  return m_elementname == r.m_elementname && m_elementclass == r.m_elementclass;
-}
-bool aperture::dom::DOMElement::operator!=(const aperture::dom::DOMElement& r) const
-{
-  return m_elementname != r.m_elementname;
+  m_attributes.erase(name);
 }
 
-bool aperture::dom::DOMElement::operator<(const aperture::dom::DOMElement& r) const
+std::vector<std::shared_ptr<DOMElement>> DOMElement::getElementsByTagName(const std::string& tagName) const
 {
-  if (m_elementname < r.m_elementname && m_elementclass < r.m_elementclass && m_elementvalue < r.m_elementvalue && m_type < r.m_type)
+  std::vector<std::shared_ptr<DOMElement>> elements;
+  for (const auto& child : m_children)
   {
-    for (auto& a : atrributes)
+    if (auto element = std::dynamic_pointer_cast<DOMElement>(child))
     {
-      for (auto& b : r.atrributes)
+      if (element->getTagName() == tagName)
       {
-        if (a < b)
-        {
-          return true;
-        }
-        else
-        {
-          return false;
-        }
+        elements.push_back(element);
       }
+      auto childElements = element->getElementsByTagName(tagName);
+      elements.insert(elements.end(), childElements.begin(), childElements.end());
     }
   }
-  else
-  {
-    return false;
-  }
+  return elements;
 }
 
-bool aperture::dom::DOMElement::operator>(const aperture::dom::DOMElement& r) const
+void DOMElement::appendChild(const std::shared_ptr<DOMNode>& child)
 {
-  if (m_elementname > r.m_elementname && m_elementclass > r.m_elementclass && m_elementvalue > r.m_elementvalue && m_type > r.m_type)
+  if (child)
   {
-    for (auto a : atrributes)
+    m_children.push_back(child);
+    if (auto element = std::dynamic_pointer_cast<DOMElement>(child))
     {
-      for (auto b : r.atrributes)
-      {
-        if (a > b)
-        {
-          return true;
-        }
-        else
-        {
-          return false;
-        }
-      }
+      element->m_parent = std::dynamic_pointer_cast<DOMElement>(shared_from_this());
     }
   }
-  else
+}
+
+void DOMElement::removeChild(const std::shared_ptr<DOMNode>& child)
+{
+  m_children.erase(std::remove(m_children.begin(), m_children.end(), child), m_children.end());
+  if (auto element = std::dynamic_pointer_cast<DOMElement>(child))
   {
-    return false;
+    element->m_parent.reset();
   }
 }
 
-bool aperture::dom::DOMElement::operator<=(const aperture::dom::DOMElement& r) const
+std::shared_ptr<DOMElement> DOMElement::getParentElement() const
 {
-  return !(*this > r);
-}
-
-bool aperture::dom::DOMElement::operator>=(const aperture::dom::DOMElement& r) const
-{
-  return !(*this < r);
-}
-
-bool aperture::dom::DOMElement::empty() const
-{
-  return m_elementname == nullptr;
-}
-
-aperture::dom::DOMNodeType aperture::dom::DOMElement::type() const
-{
-  return this->m_type;
-}
-
-const nsString DOMElement::name() const
-{
-  return (const nsString)m_elementname;
-}
-
-const nsString aperture::dom::DOMElement::value() const
-{
-  return (const nsString)m_elementvalue;
-}
-
-aperture::dom::DOMElement aperture::dom::DOMElement::parent() const
-{
-  // TODO: Check for the very root element!
-  return GlobalDOMManager->GetCurrentActedUponElement(); // This is a placeholder
-}
-
-void aperture::dom::DOMElement::setAttribute(const dom::DOMAttribute& name, const nsString& value)
-{
-  atrributes[atrributes.IndexOf(name)].SetAttrValue(value);
-}
-
-int aperture::dom::DOMElement::getIndex() const
-{
-  return m_index;
+  return m_parent.lock();
 }

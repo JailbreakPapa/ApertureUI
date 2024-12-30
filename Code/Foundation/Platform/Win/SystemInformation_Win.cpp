@@ -8,6 +8,15 @@
 
 #  include <Foundation/Strings/String.h>
 
+#  include <GPUDetect/GPUDetect.h>
+
+// For GPUDetect
+# include <dxgi.h>
+# include <d3d11.h>
+#ifdef _WIN32_WINNT_WIN10
+# include <d3d11_3.h>
+#endif
+
 // Helper function to detect a 64-bit Windows
 bool Is64BitWindows()
 {
@@ -67,7 +76,43 @@ void nsSystemInformation::Initialize()
   //  Get host name
   DWORD bufCharCount = sizeof(s_SystemInformation.m_sHostName);
   GetComputerNameA(s_SystemInformation.m_sHostName, &bufCharCount);
+  // Get GPU information
+  IDXGIAdapter* adapter = nullptr;
+	int initReturnCode = GPUDetect::InitAdapter( &adapter, 0 );
+	if( initReturnCode != EXIT_SUCCESS )
+	{
+		nsLog::Error("GPUDetect Error: {0}",initReturnCode );
+    s_SystemInformation.m_szGPUVendorID = (char**)"Unknown";
+    s_SystemInformation.m_szGPUDeviceID = (char**)"Unknown";
+    s_SystemInformation.m_uiGPUVideoMemory = 0;
+	};
 
+	ID3D11Device* device = nullptr;
+	initReturnCode = GPUDetect::InitDevice( adapter, &device );
+	if( initReturnCode != EXIT_SUCCESS )
+	{
+		nsLog::Error("GPUDetect Error: {0}",initReturnCode );
+		adapter->Release();
+    s_SystemInformation.m_szGPUVendorID = (char**)"Unknown";
+    s_SystemInformation.m_szGPUDeviceID = (char**)"Unknown";
+    s_SystemInformation.m_uiGPUVideoMemory = 0;
+	};
+
+	GPUDetect::GPUData gpuData = {};
+	initReturnCode = GPUDetect::InitExtensionInfo( &gpuData, adapter, device );
+	if( initReturnCode != EXIT_SUCCESS )
+	{
+		nsLog::Error("GPUDetect Error: {0}",initReturnCode);
+    s_SystemInformation.m_szGPUVendorID = (char**)"Unknown";
+    s_SystemInformation.m_szGPUDeviceID = (char**)"Unknown";
+    s_SystemInformation.m_uiGPUVideoMemory = 0;
+	}
+  else
+  {
+    s_SystemInformation.m_szGPUVendorID = (char**)gpuData.vendorID;
+    s_SystemInformation.m_szGPUDeviceID = (char**)gpuData.deviceID;
+    s_SystemInformation.m_uiGPUVideoMemory = gpuData.videoMemory;
+  }
   s_SystemInformation.m_bIsInitialized = true;
 }
 

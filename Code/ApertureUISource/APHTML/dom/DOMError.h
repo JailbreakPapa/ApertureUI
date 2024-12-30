@@ -33,7 +33,7 @@ ANY WAY OUT OF THE USE OR PERFORMANCE OF THIS SOFTWARE OR SOURCE CODE,
 EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 #pragma once
-#include <Foundation/Containers/HybridArray.h>
+
 /// NOTE: The DLL/PCH Header should always be included last.
 #include <APHTML/APEngineDLL.h>
 

@@ -119,6 +119,12 @@ public:
   const char* GetHostName() const { return m_sHostName; }
 
   const char* GetBuildConfiguration() const { return m_szBuildConfiguration; }
+  
+  const char* GetGPUVendorID() const { return m_szGPUVendorID; }
+
+  const char* GetGPUDeviceID() const { return m_szGPUDeviceID; }
+
+  nsUInt32 GetGPUVideoMemory() const { return m_uiGPUVideoMemory; }
 
   /// \brief Returns a struct that contains detailed information about the available CPU features (SIMD support).
   const nsCpuFeatures& GetCpuFeatures() const { return m_CpuFeatures; }
@@ -140,6 +146,9 @@ private:
   nsUInt64 m_uiInstalledMainMemory;
   nsUInt32 m_uiMemoryPageSize;
   nsUInt32 m_uiCPUCoreCount;
+  nsUInt32 m_uiGPUVideoMemory;
+  char** m_szGPUVendorID = nullptr;
+  char** m_szGPUDeviceID = nullptr;
   const char* m_szPlatformName = nullptr;
   const char* m_szBuildConfiguration = nullptr;
   char m_sHostName[256];

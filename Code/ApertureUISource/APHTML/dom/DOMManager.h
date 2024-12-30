@@ -84,7 +84,7 @@ namespace aperture::dom
      */
     nsDynamicArray<DOMElement> DOMElementArray;
     std::vector<aperture::dom::DOMElement> acollection;
-    DOMCollection collection{acollection};
+    DOMCollection collection();
     int m_iterationele = 0;
   };
 } // namespace aperture::dom

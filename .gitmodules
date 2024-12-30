@@ -34,3 +34,6 @@
 [submodule "Code/ThirdParty/piper"]
 	path = Code/ThirdParty/piper
 	url = https://github.com/WatchDogStudios/piper.git
+[submodule "Code/ThirdParty/SDL2"]
+	path = Code/ThirdParty/SDL2
+	url = https://github.com/libsdl-org/SDL.git
