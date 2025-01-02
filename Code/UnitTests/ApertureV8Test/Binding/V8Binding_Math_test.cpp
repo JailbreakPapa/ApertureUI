@@ -9,7 +9,7 @@
 #include <Foundation/Threading/Thread.h>
 
 #include <functional>
-#include <APCore/APEngine.h>
+#include <APHTML/APEngine.h>
 #include <V8Engine/Core/V8EngineMain.h>
 #include <V8Engine/Binding/V8EBinder.h>
 
@@ -33,7 +33,7 @@ NS_CREATE_SIMPLE_TEST(Binding, V8EBinder)
   NS_TEST_BLOCK(nsTestBlock::Enabled, "Setup V8Engine and Run Script.")
   {
     aperture::v8::V8EEngineMain engineMain;
-    NS_TEST_BOOL(engineMain.InitializeV8Engine("resources") == true);
+    NS_TEST_BOOL(engineMain.InitializeV8Engine() == true);
     engineMain.GetV8EJobManager()->Initialize();
     engineMain.GetV8EJobManager()->SetPlatform(engineMain.GetV8EEnginePlatform());
 

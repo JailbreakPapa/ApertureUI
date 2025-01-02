@@ -1,6 +1,5 @@
-#include <APCore/Interfaces/APCPlatform.h>
 #include <NetworkEngine/DevTools/NETDTServer.h>
-#include "NETDTServer.h"
+
 
 using namespace aperture::networking;
 

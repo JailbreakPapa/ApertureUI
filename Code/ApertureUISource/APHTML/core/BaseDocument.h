@@ -34,8 +34,8 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 #pragma once
 
-#include <APCOre/Interfaces/Internal/APCObjectTree.h>
-#include <APCore/Interfaces/Internal/APCBuffer.h>
+#include <APHTML/Interfaces/Internal/APCObjectTree.h>
+#include <APHTML/Interfaces/Internal/APCBuffer.h>
 #include <Foundation/Containers/HybridArray.h>
 #include <Foundation/Containers/List.h>
 #include <Foundation/Containers/Map.h>

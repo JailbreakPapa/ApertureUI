@@ -17,7 +17,7 @@ ns_integrate_vcpkg(${PROJECT_NAME} fmt)
 
 target_link_libraries(${PROJECT_NAME}
   PUBLIC
-  apertureuicore
+  Foundation
   apertureuinetwork
 )
 

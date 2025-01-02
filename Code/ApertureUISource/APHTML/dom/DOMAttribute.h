@@ -33,7 +33,7 @@ ANY WAY OUT OF THE USE OR PERFORMANCE OF THIS SOFTWARE OR SOURCE CODE,
 EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 #pragma once
-#include <APCore/Interfaces/Internal/APCBuffer.h>
+#include <APHTML/Interfaces/Internal/APCBuffer.h>
 #include <Foundation/Containers/HybridArray.h>
 #include <Foundation/Containers/List.h>
 #include <Foundation/Containers/Map.h>

@@ -8,7 +8,7 @@
 #include <Foundation/Logging/VisualStudioWriter.h>
 #include <Foundation/Threading/Thread.h>
 
-#include <APCore/Interfaces/APCPlatform.h>
+#include <APHTML/Interfaces/APCPlatform.h>
 
 NS_CREATE_SIMPLE_TEST_GROUP(Memory);
 

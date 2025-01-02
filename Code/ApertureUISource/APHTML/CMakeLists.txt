@@ -14,7 +14,10 @@ ns_vcpkg_install(icu)
 # Get the name of this folder as the project name
 set(PROJECT_NAME "apertureuihtmlengine")
 
-ns_create_target(SHARED_LIBRARY ${PROJECT_NAME} NO_NS_PREFIX NO_UNITY)
+ns_create_target(SHARED_LIBRARY ${PROJECT_NAME} NO_NS_PREFIX NO_UNITY NO_WARNINGS_AS_ERRORS)
+
+set_property(TARGET ${TARGET_NAME} PROPERTY CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 configure_file(
   resource.h
@@ -37,7 +40,8 @@ target_include_directories(${PROJECT_NAME} PRIVATE ${CMAKE_SOURCE_DIR}/Code/Thir
 
 target_link_libraries(${PROJECT_NAME}
   PUBLIC
-  apertureuicore
+  Foundation
+  mimalloc-static
   apertureuiharrlowengine
   pugixml
   yogacore
@@ -47,6 +51,11 @@ target_link_libraries(${PROJECT_NAME}
   freetype
   rlottie
   lunasvg
+  libvpx
+  libtheora
+  libsimplewebm
+  vorbis
+  
 )
 add_dependencies(${PROJECT_NAME}
   pugixml
@@ -57,4 +66,10 @@ add_dependencies(${PROJECT_NAME}
   uriparser
   rlottie
   lunasvg
+  libvpx
+  libtheora
+  libsimplewebm
+  vorbis
 )
+
+ns_link_v8_target(${PROJECT_NAME})

@@ -35,7 +35,7 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #pragma once
 
 #include <APHarrlow/renderpath/Types.h>
-#include <APCore/Interfaces/Internal/APCBuffer.h>
+#include <APHTML/Interfaces/Internal/APCBuffer.h>
 #include <Foundation/Types/VariantType.h>
 #include <Foundation/Math/Vec2.h>
 #include <Foundation/Types/ObjectPtr.h>

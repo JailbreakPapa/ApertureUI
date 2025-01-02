@@ -1,7 +1,7 @@
-#include <APCore/Interfaces/APCPlatform.h>
+#include <APHTML/Interfaces/APCPlatform.h>
 #include <APHTML/css/functions/CSSVarFunction.h>
 #include <APHTML/core/CSSController.h>
-#include <APCore/Interfaces/APCUtils.h>
+#include <APHTML/Interfaces/APCUtils.h>
 
 void aperture::css::CSSVarFunction::RegisterFunction(const char* in_function, bool is_evaluatable)
 {

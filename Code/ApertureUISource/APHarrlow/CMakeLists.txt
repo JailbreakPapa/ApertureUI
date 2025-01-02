@@ -30,7 +30,6 @@ target_link_libraries(${PROJECT_NAME}
   harfbuzz
   lunasvg
   msdfgen
-  wdvideo_core
   Foundation
 )
 
