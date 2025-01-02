@@ -57,6 +57,7 @@ namespace aperture::dom {
  */
 class NS_APERTURE_DLL DOMCollection {
 public:
+     DOMCollection() = default;
     /**
      * @brief Constructs a DOMCollection object with the given elements.
      * @param elements The vector of DOMElements to be used for constructing the DOMCollection.

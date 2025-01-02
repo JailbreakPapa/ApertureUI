@@ -47,11 +47,13 @@ namespace aperture::layout
   };
   enum class JustifyContent
   {
+    FlexStart,
     Start,
     Center,
     End,
     SpaceBetween,
-    SpaceAround
+    SpaceAround,
+    SpaceEvenly
   };
   enum class AlignItems
   {

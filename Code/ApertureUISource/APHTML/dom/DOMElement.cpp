@@ -57,7 +57,7 @@ void DOMElement::appendChild(const std::shared_ptr<DOMNode>& child)
     m_children.push_back(child);
     if (auto element = std::dynamic_pointer_cast<DOMElement>(child))
     {
-      element->m_parent = std::dynamic_pointer_cast<DOMElement>(shared_from_this());
+      element->m_parent = shared_from_this();
     }
   }
 }
@@ -74,4 +74,28 @@ void DOMElement::removeChild(const std::shared_ptr<DOMNode>& child)
 std::shared_ptr<DOMElement> DOMElement::getParentElement() const
 {
   return m_parent.lock();
+}
+
+std::string aperture::dom::DOMElement::getId() const
+{
+  auto it = m_attributes.find("id");
+  if (it != m_attributes.end())
+  {
+    return it->second;
+  }
+  return "";
+}
+
+int aperture::dom::DOMElement::getIndex() const
+{
+  if (auto parent = getParentElement())
+  {
+    const auto& siblings = parent->getChildNodes();
+    auto it = std::find(siblings.begin(), siblings.end(), shared_from_this());
+    if (it != siblings.end())
+    {
+      return static_cast<int>(std::distance(siblings.begin(), it));
+    }
+  }
+  return -1; // Return -1 if there is no parent or the element is not found.
 }

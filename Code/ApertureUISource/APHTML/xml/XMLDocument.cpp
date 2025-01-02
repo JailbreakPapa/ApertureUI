@@ -58,9 +58,10 @@ void aperture::xml::XMLDocument<ElementType>::ComposeDocumentTree()
         }
         break;
       case pugi::node_element:
+        // TODO: This is a local object, that will get freed, upon resolution. this is unsafe, and should be resolved!
         /// Create Element DOM Object.
         aperture::dom::DOMElement Element;
-        Element.m_elementname = node.name();
+        Element.getNodeName() = node.name();
         if (node == m_internaldocument->_root)
         {
           this->InternalDocumentTree->set_head(Element);

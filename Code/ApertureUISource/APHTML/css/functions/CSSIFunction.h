@@ -4,7 +4,7 @@
  *   You are only allowed access to this code, if given WRITTEN permission by WD Studios L.L.C.
  */
 #pragma once
-#include <APHTML/css/CSSStandard.h>
+
 #include <APHTML/css/syntax/CSSSyntaxProperties.h>
 
 namespace aperture::css
@@ -16,10 +16,10 @@ namespace aperture::css
   public:
     CSSIFunction() = default;
 
-    explicit CSSIFunction(const char* in_functionname, nsDynamicArray<css::CSSSyntaxProperties> in_allowedproperties, css::CSSStandard in_standard = CSSStandard::CSS3)
+    explicit CSSIFunction(const char* in_functionname)
       : m_functionname(in_functionname)
-      , m_allowedproperties(in_allowedproperties)
-      , m_standard(in_standard) {};
+    {
+    }
 
     virtual ~CSSIFunction() = default;
 
@@ -32,7 +32,5 @@ namespace aperture::css
     nsUInt32 m_line;
     nsUInt32 m_column;
     const char* m_functionname;
-    nsDynamicArray<css::CSSSyntaxProperties> m_allowedproperties;
-    css::CSSStandard m_standard;
   };
 } // namespace aperture::css

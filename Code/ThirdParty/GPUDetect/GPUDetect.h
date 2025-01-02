@@ -21,6 +21,8 @@
 
 #include "DeviceId.h"
 
+#pragma comment(lib, "dxgi.lib")
+#pragma comment(lib, "d3d11.lib")
 
 // forward decls
 struct IDXGIAdapter;

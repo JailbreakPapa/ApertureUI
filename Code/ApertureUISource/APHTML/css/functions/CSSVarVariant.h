@@ -8,18 +8,19 @@
 
 namespace aperture::css
 {
-    class NS_APERTURE_DLL CSSVarVariant
+  // TODO: Implement CSSVarVariant
+  class NS_APERTURE_DLL CSSVarVariant
+  {
+  public:
+    enum class UniqueType
     {
-        public:
-            static enum class UniqueType
-            {
-                Number,
-                URL,
-                Gradient,
-                Bezier,
-                Color,
-            };
-            UniqueType m_type;
-            nsVariant m_internalvariant;
+      Number,
+      URL,
+      Gradient,
+      Bezier,
+      Color,
     };
-}
+    UniqueType m_type = UniqueType::URL;
+    nsVariant m_internalvariant;
+  };
+} // namespace aperture::css

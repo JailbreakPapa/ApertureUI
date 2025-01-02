@@ -38,6 +38,7 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <APHTML/APEngineCommonIncludes.h>
 #include <APHTML/layout/Core/LayoutDefinitions.h>
 #include <vector>
+#include <yoga/YGValue.h>
 
 namespace aperture::layout
 {
@@ -65,21 +66,12 @@ namespace aperture::layout
     Stretch
   };
 
-  enum class JustifyContent
-  {
-    FlexStart,
-    Center,
-    FlexEnd,
-    SpaceBetween,
-    SpaceAround,
-    SpaceEvenly
-  };
-
   enum class PositionType
   {
     Relative,
     Absolute
   };
+
   enum class LayoutBoxFlag : nsUInt16
   {
     // left to right

@@ -1,13 +1,12 @@
 #include <APHTML/dom/DOMAttribute.h>
 #include <APHTML/dom/DOMElement.h>
-#include <APHTML/dom/DOMAttribute.h>
 
-#include <APHTML/dom/DOMElement.h>
 #include "DOMManager.h"
 
 aperture::dom::DOMElement aperture::dom::DOMManager::CreateElement(const nsString& in_tagname)
 {
-  aperture::dom::DOMElement newelement(in_tagname);
+  aperture::dom::DOMElement newelement(in_tagname.GetData());
+  // TODO: Why are we returning local objects....
   DOMElementArray.PushBack(newelement);
   return newelement;
 }
@@ -24,11 +23,15 @@ bool aperture::dom::DOMManager::operator<(const DOMManager& rhs) const
 
 void aperture::dom::DOMManager::SerializeDOMCollection()
 {
-  for (int i = 0; i < DOMElementArray.GetCount(); i++)
+  std::vector<std::shared_ptr<aperture::dom::DOMElement>> sharedAcollection;
+  sharedAcollection.reserve(DOMElementArray.GetCount());
+
+  for (size_t i = 0; i < DOMElementArray.GetCount(); i++)
   {
-    acollection.push_back(DOMElementArray[i]);
+    sharedAcollection.push_back(std::make_shared<aperture::dom::DOMElement>(DOMElementArray[static_cast<nsUInt32>(i)]));
   }
-  collection.buildTree(acollection);
+
+  collection.buildTree(sharedAcollection);
 }
 
 aperture::dom::DOMManager::DOMManager()
@@ -46,3 +49,4 @@ void aperture::dom::DOMManager::SetCurrentActedUponElement(const aperture::dom::
 {
   DOMElementArray.PushBack(in_element);
 }
+

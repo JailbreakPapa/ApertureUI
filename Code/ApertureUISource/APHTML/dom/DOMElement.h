@@ -56,7 +56,7 @@ namespace aperture::dom
    * This class is compliant with the W3C DOM specification, providing methods for accessing and
    * manipulating element nodes in the DOM tree.
    */
-  class NS_APERTURE_DLL DOMElement : public DOMNode
+  class NS_APERTURE_DLL DOMElement : public DOMNode, public std::enable_shared_from_this<DOMElement>
   {
   public:
     /**
@@ -124,6 +124,20 @@ namespace aperture::dom
      * @return A shared pointer to the parent element, or nullptr if the element has no parent.
      */
     std::shared_ptr<DOMElement> getParentElement() const;
+
+    /**
+     * @brief Gets the ID of the element.
+     *
+     * @return The ID attribute value of the element, or an empty string if not set.
+     */
+    std::string getId() const;
+
+    /**
+     * @brief Gets the index of the element among its siblings.
+     *
+     * @return The zero-based index of the element, or -1 if the element has no parent.
+     */
+    int getIndex() const;
 
   private:
     std::string m_tagName;                                     ///< The tag name of the element.

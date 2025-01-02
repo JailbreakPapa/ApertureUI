@@ -221,5 +221,4 @@ namespace aperture::css
     word_wrap,
     z_index
   };
-  NS_DECLARE_POD_TYPE(CSSSyntaxProperties);
 }

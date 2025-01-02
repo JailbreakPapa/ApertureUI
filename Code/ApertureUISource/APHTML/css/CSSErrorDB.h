@@ -5,7 +5,7 @@
  */
 #pragma once
 #include <APHTML/APEngineCommonIncludes.h>
-#include <APHTML/css/SpiritIncludes.h>
+
 namespace aperture::css
 {
     struct NS_APERTURE_DLL CSSParsedFileData
@@ -15,6 +15,7 @@ namespace aperture::css
             /// @brief Hard/Memory Internal File path. this may be scuffed
             nsStringView m_filePath;
     };
+    // TODO: Refactor this class.
     class NS_APERTURE_DLL CSSErrorDatabase
     {
         public:

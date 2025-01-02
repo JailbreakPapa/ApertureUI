@@ -120,9 +120,9 @@ public:
 
   const char* GetBuildConfiguration() const { return m_szBuildConfiguration; }
   
-  const char* GetGPUVendorID() const { return m_szGPUVendorID; }
+  char** GetGPUVendorID() { return m_szGPUVendorID; }
 
-  const char* GetGPUDeviceID() const { return m_szGPUDeviceID; }
+  char** GetGPUDeviceID() { return m_szGPUDeviceID; }
 
   nsUInt32 GetGPUVideoMemory() const { return m_uiGPUVideoMemory; }
 

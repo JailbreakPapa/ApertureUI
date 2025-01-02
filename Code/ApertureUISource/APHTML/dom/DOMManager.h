@@ -55,6 +55,7 @@ namespace aperture::dom
     NS_ALLOW_PRIVATE_PROPERTIES(aperture::dom::DOMManager);
 
   public:
+    DOMManager();
     virtual ~DOMManager();
 
     /**
@@ -72,8 +73,6 @@ namespace aperture::dom
     /// </summary>
     void SerializeDOMCollection();
 
-    DOMManager();
-
     void SetCurrentActedUponElement(const aperture::dom::DOMElement& in_element);
     
     /**
@@ -84,7 +83,7 @@ namespace aperture::dom
      */
     nsDynamicArray<DOMElement> DOMElementArray;
     std::vector<aperture::dom::DOMElement> acollection;
-    DOMCollection collection();
+    DOMCollection collection;
     int m_iterationele = 0;
   };
 } // namespace aperture::dom

@@ -37,21 +37,25 @@ std::shared_ptr<DOMNode> DOMNode::getLastChild() const {
 }
 
 std::shared_ptr<DOMNode> DOMNode::getPreviousSibling() const {
-    if (auto parent = getParentNode()) {
-        auto &siblings = parent->getChildNodes();
-        auto it = std::find(siblings.begin(), siblings.end(), this);
-        return (it != siblings.begin() && it != siblings.end()) ? *(it - 1) : nullptr;
-    }
-    return nullptr;
+  if (auto parent = getParentNode())
+  {
+    auto& siblings = parent->getChildNodes();
+    auto it = std::find_if(siblings.begin(), siblings.end(), [this](const std::shared_ptr<DOMNode>& node)
+      { return node.get() == this; });
+    return (it != siblings.end() && it + 1 != siblings.end()) ? *(it + 1) : nullptr;
+  }
+  return nullptr;
 }
 
 std::shared_ptr<DOMNode> DOMNode::getNextSibling() const {
-    if (auto parent = getParentNode()) {
-        auto &siblings = parent->getChildNodes();
-        auto it = std::find(siblings.begin(), siblings.end(), this);
-        return (it != siblings.end() && it + 1 != siblings.end()) ? *(it + 1) : nullptr;
-    }
-    return nullptr;
+  if (auto parent = getParentNode())
+  {
+    auto& siblings = parent->getChildNodes();
+    auto it = std::find_if(siblings.begin(), siblings.end(), [this](const std::shared_ptr<DOMNode>& node)
+      { return node.get() == this; });
+    return (it != siblings.end() && it + 1 != siblings.end()) ? *(it + 1) : nullptr;
+  }
+  return nullptr;
 }
 
 void DOMNode::setNodeValue(const std::string &value) {

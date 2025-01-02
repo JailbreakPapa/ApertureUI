@@ -4,6 +4,12 @@
 
 #  include <Foundation/System/SystemInformation.h>
 
+# include <dxgi.h>
+# include <d3d11.h>
+#  ifdef _WIN32_WINNT_WIN10
+#    include <d3d11_3.h>
+#  endif
+
 #  include <Foundation/Platform/Win/Utils/IncludeWindows.h>
 
 #  include <Foundation/Strings/String.h>
@@ -11,11 +17,7 @@
 #  include <GPUDetect/GPUDetect.h>
 
 // For GPUDetect
-# include <dxgi.h>
-# include <d3d11.h>
-#ifdef _WIN32_WINNT_WIN10
-# include <d3d11_3.h>
-#endif
+
 
 // Helper function to detect a 64-bit Windows
 bool Is64BitWindows()

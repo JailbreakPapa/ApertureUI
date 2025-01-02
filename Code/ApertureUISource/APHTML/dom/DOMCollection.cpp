@@ -33,11 +33,10 @@ namespace aperture::dom
     }
 
     // If no parent exists, treat it as a root element.
-    if (element->GetParentElement().empty())
+    if (element->getParentNode().get() == nullptr)
     {
       m_rootElements.push_back(element);
     }
-
     // Update ID map if the element has an ID.
     const std::string& id = element->getId();
     if (!id.empty())
@@ -93,9 +92,9 @@ namespace aperture::dom
     {
       appendElement(element);
 
-      if (element->getParent())
+      if (element->getParentElement())
       {
-        setParentChildRelation(element->getParent(), element);
+        setParentChildRelation(element->getParentElement(), element);
       }
       else
       {
@@ -116,7 +115,7 @@ namespace aperture::dom
 
     if (parent)
     {
-      parent->addChild(child);
+      parent->appendChild(child);
     }
   }
 
