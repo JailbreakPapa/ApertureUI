@@ -194,13 +194,11 @@ function(ns_integrate_vcpkg target_name library_name)
         message(FATAL_ERROR "No libraries found for ${library_name} or its dependencies in packages directory.")
     endif()
 
-    # Copy DLLs to output directory for runtime
-    set_target_properties(${target_name} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
     foreach(DLL ${VCPKG_DLLS})
         add_custom_command(
             TARGET ${target_name} POST_BUILD
             COMMAND ${CMAKE_COMMAND} -E copy_if_different
-            "${DLL}" "${CMAKE_BINARY_DIR}/bin"
+            "${DLL}" "$<TARGET_FILE_DIR:${target_name}>"
         )
     endforeach()
 
