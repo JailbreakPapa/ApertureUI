@@ -52,6 +52,6 @@ namespace aperture
     }
     class NS_APERTURE_DLL UIView
     {
-
+        
     };
 }

@@ -18,6 +18,7 @@
 #include <thread>
 #include <condition_variable>
 #include <atomic>
+#include <functional>
 
 /// NOTE: The DLL/PCH Header should always be included last.
 #include <APHTML/APEngineDLL.h>

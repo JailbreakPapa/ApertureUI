@@ -35,94 +35,48 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #pragma once
 
-#include <yoga/Yoga.h>
 #include <APHTML/layout/Core/LayoutNode.h>
+#include <yoga/Yoga.h>
 
 namespace aperture::layout
 {
   class NS_APERTURE_DLL YogaLayoutNode : public LayoutNode
   {
-    public:
-    YogaLayoutNode()
-      : yogaNode(YGNodeNew())
-      , config({})
-    {
-    }
+  public:
+    YogaLayoutNode();
 
-    virtual ~YogaLayoutNode()
-    {
-      for (auto child : children)
-      {
-        delete child;
-      }
-      YGNodeFree(yogaNode);
-    }
+    virtual ~YogaLayoutNode();
 
     // Set layout properties
-    void setConfig(const LayoutConfig& newConfig)
-    {
-      config = newConfig;
-      applyConfig();
-    }
+    void setConfig(const LayoutConfig& newConfig);
 
-    const LayoutConfig& getConfig() const { return config; }
+    const LayoutConfig& getConfig() const;
 
     // Add child nodes
-    void appendChild(YogaLayoutNode* child)
-    {
-      children.push_back(child);
-      YGNodeInsertChild(yogaNode, child->getYogaNode(), children.size() - 1);
-    }
+    void appendChild(YogaLayoutNode* child);
 
     // Layout calculation
-    void calculateLayout(float width = YGUndefined, float height = YGUndefined)
-    {
-      YGNodeCalculateLayout(yogaNode, width, height, YGDirectionLTR);
-      for (auto child : children)
-      {   
-        child->calculateLayout(getComputedWidth(),getComputedHeight());
-      }
-    }
+    void calculateLayout(float width = YGUndefined, float height = YGUndefined);
 
     // Get computed layout values
-    float getComputedWidth() const { return YGNodeLayoutGetWidth(yogaNode); }
-    float getComputedHeight() const { return YGNodeLayoutGetHeight(yogaNode); }
-    float getComputedTop() const { return YGNodeLayoutGetTop(yogaNode); }
-    float getComputedLeft() const { return YGNodeLayoutGetLeft(yogaNode); }
-    public:
-    YGNodeRef getYogaNode() { return yogaNode; }
+    float getComputedWidth() const;
+    float getComputedHeight() const;
+    float getComputedTop() const;
+    float getComputedLeft() const;
+
+    //CSS layout properties
+    void setMargin(YGEdge edge, float value);
+    void setPadding(YGEdge edge, float value);
+    void setBorder(YGEdge edge, float value);
+
+    void setFlexDirection(const std::string& direction);
+    void setAlignItems(const std::string& alignment);
+    void setJustifyContent(const std::string& justify);
+  public:
+    YGNodeRef getYogaNode();
 
   protected:
-    void applyConfig()
-    {
-      // Map enum values to Yoga properties
-      YGNodeStyleSetDisplay(yogaNode, config.display == Display::None ? YGDisplayNone : YGDisplayFlex);
-
-      if (config.display == Display::Flex)
-      {
-        YGNodeStyleSetFlexDirection(
-          yogaNode, static_cast<YGFlexDirection>(config.flexDirection));
-      }
-
-      YGNodeStyleSetAlignItems(yogaNode, static_cast<YGAlign>(config.alignItems));
-      YGNodeStyleSetJustifyContent(
-        yogaNode, static_cast<YGJustify>(config.justifyContent));
-
-      YGNodeStyleSetPositionType(
-        yogaNode, static_cast<YGPositionType>(config.positionType));
-
-      YGNodeStyleSetFlexGrow(yogaNode, config.flexGrow);
-      YGNodeStyleSetFlexShrink(yogaNode, config.flexShrink);
-
-      YGNodeStyleSetWidth(yogaNode, config.width);
-      YGNodeStyleSetHeight(yogaNode, config.height);
-
-      // Margins
-      YGNodeStyleSetMargin(yogaNode, YGEdgeTop, config.marginTop);
-      YGNodeStyleSetMargin(yogaNode, YGEdgeBottom, config.marginBottom);
-      YGNodeStyleSetMargin(yogaNode, YGEdgeLeft, config.marginLeft);
-      YGNodeStyleSetMargin(yogaNode, YGEdgeRight, config.marginRight);
-    }
+    void applyConfig();
 
   private:
     YGNodeRef yogaNode;
