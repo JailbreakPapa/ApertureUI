@@ -140,7 +140,16 @@ namespace aperture::layout
     // performing layout calculations.
     LAYOUT_BOX_BREAK = 0x200
   };
-
+  enum class VerticalAlign
+  {
+    Baseline,
+    Sub,
+    Super,
+    TextTop,
+    TextBottom,
+    Middle,
+    Length
+  };
   struct LayoutConfig
   {
     Display display = Display::Flex;

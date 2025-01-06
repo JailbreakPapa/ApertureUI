@@ -43,6 +43,37 @@ namespace aperture::dom
   /*
    * @brief DOMEvent is a internal DOM representation of a Nodes Events.
    *
+   * @example Heres a basic example on how to use DOMEvent from C++(JavaScript is handled for you):
+   * void someFunction()
+   * {
+   * DOMEventTarget button;
+
+    button.addEventListener("click", [](DOMEvent& event) {
+        nsLog::Info("Button clicked! Event type: {0}"event.type());
+        event.preventDefault();
+    });
+
+    DOMEvent clickEvent("click", true, true);
+    button.dispatchEvent(clickEvent);
+
+    if (clickEvent.isDefaultPrevented()) {
+        nsLog::Info("Default action prevented!");
+    }
+    }
+    @example of a custom event:
+    class CustomEvent : public DOMEvent
+    {
+    public:
+    CustomEvent(const std::string& type, void* data = nullptr)
+        : DOMEvent(type), customData(data) {}
+
+    void* getCustomData() const { return customData; }
+    void setCustomData(void* data) { customData = data; }
+
+    private:
+      void* customData; // Pointer to user-defined data
+    };
+
    * @note This is somewhat compliant with W3C DOM specification, providing methods for accessing and manipulating event nodes in the DOM tree.
    * @see See https://www.w3.org/TR/uievents/ for reference.
    */
@@ -105,13 +136,36 @@ namespace aperture::dom
    *
    * Custom events should be the one that dispatches events (e.g. level change event, and you want the engine to clean up the GC, etc.)
    * Otherwise, any DOMNode will handle this for you.
-   *
-   * @note Events are naturally aysnc as well.
-  */
+   * @example of DOMEventTarget's features:
+   * EventTarget root;
+    EventTarget child;
+
+    child.setParent(&root);
+
+    root.addEventListener("click", [](DOMEvent& event) {
+        nsLog::Info(""Root listener invoked.");
+    });
+
+    child.addEventListener("click", [](DOMEvent& event) {
+        nsLog::Info("Child listener invoked.");
+        event.stopPropagation(); // Stop bubbling
+    });
+
+    DOMEvent clickEvent("click");
+    child.dispatchEventAsync(clickEvent); // Asynchronously dispatch the event
+
+    CustomEvent customEvent("custom", new std::string("Custom data"));
+    root.dispatchEvent(customEvent);
+
+   * @note Events are naturally async as well.
+   */
   class NS_APERTURE_DLL DOMEventTarget
   {
   public:
     using EventListener = std::function<void(DOMEvent&)>;
+
+    void setParent(DOMEventTarget* parent) { this->parent = parent; }
+    DOMEventTarget* getParent() const { return parent; }
 
     void addEventListener(const std::string& type, EventListener listener)
     {
@@ -121,6 +175,19 @@ namespace aperture::dom
     void dispatchEvent(DOMEvent& event)
     {
       event.setEventPhase(DOMEvent::Phase::AT_TARGET);
+
+      if (parent)
+      {
+        parent->dispatchEvent(event); // Propagate to parent (bubbling phase)
+      }
+
+      for (auto& listener : listeners)
+      {
+        if (!event.isPropagationStopped())
+        {
+          listener(event); // Invoke listeners
+        }
+      }
 
       auto& handlers = listeners_[event.type()];
       for (auto& handler : handlers)
@@ -132,7 +199,19 @@ namespace aperture::dom
       }
     }
 
+    void DOMEventTarget::dispatchEventAsync(DOMEvent& event)
+    {
+      // TODO: Replace this with a proper nsTask...
+        std::thread([this, &event]()
+        {
+          dispatchEvent(event); // Delegate to synchronous dispatch
+        })
+        .detach();
+    }
+
   private:
+    DOMEventTarget* parent = nullptr;
+    std::vector<std::function<void(DOMEvent&)>> listeners;
     std::unordered_map<std::string, std::vector<EventListener>> listeners_;
   };
 } // namespace aperture::dom

@@ -36,7 +36,6 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #pragma once
 
 #include <APHTML/APEngineCommonIncludes.h>
-#include <APHTML/V8Engine/System/JobSystem/V8EJobManager.h>
 #include <APHTML/V8Engine/V8EngineDLL.h>
 
 namespace aperture::v8
@@ -47,12 +46,8 @@ namespace aperture::v8
     bool InitializeV8Engine(const char* p_ccResources = nullptr);
 
     void ShutdownV8Engine();
-    
-    jobsystem::V8EJobManager* GetV8EJobManager();
-    jobsystem::V8EPlatform* GetV8EEnginePlatform();
 
   private:
-    std::unique_ptr<jobsystem::V8EJobManager> m_pV8EJobManager;
-    std::unique_ptr<jobsystem::V8EPlatform> m_pV8EPlatform;
+    nsUniquePtr<::v8::Platform> m_pV8EPlatform;
   };
 } // namespace aperture::v8::jobsystem

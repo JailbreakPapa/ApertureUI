@@ -32,24 +32,21 @@ STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
 ANY WAY OUT OF THE USE OR PERFORMANCE OF THIS SOFTWARE OR SOURCE CODE,
 EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-
 #pragma once
 
-#define NS_GIT_COMMIT_HASH_SHORT e1ba4025aea8
-#define NS_GIT_COMMIT_HASH_LONG e1ba4025aea8c15c8db7d4b514d6ff22a1d697d0
-#define NS_GIT_BRANCH_NAME "main"
 
-// NOTE(Mikael A.): Add APUI ending for naming rule. 
-#define APUI_GIT_COMMIT_HASH_SHORT NS_GIT_COMMIT_HASH_SHORT
-#define APUI_GIT_COMMIT_HASH_LONG NS_GIT_COMMIT_HASH_LONG
-#define APUI_GIT_BRANCH_NAME NS_GIT_BRANCH_NAME
+#include <APHTML/APEngineCommonIncludes.h>
+#include <Foundation/Threading/TaskSystem.h>
+#include <v8-snapshot.h>
+#include <APHTML/V8Engine/V8EngineDLL.h>
 
-// NOTE(Mikael A.): SDK Version. Format: Year.Month.BuildIndex.Patch, Just like O3DE.
-#define APUI_SDK_VERSION_MAJOR 24
-#define APUI_SDK_VERSION_MINOR 12
-#define APUI_SDK_VERSION_BUILD 1
-#define APUI_SDK_VERSION_PATCH 0
+namespace aperture::v8
+{
+    class NS_APERTURE_DLL V8EBindingCacheTask : public nsTask
+    {
+        public:
+        virtual void Execute() override;
 
-#define APUI_SDK_VERSION_STRING "ApertureUI SDK Version: " APUI_SDK_VERSION_MAJOR "." APUI_SDK_VERSION_MINOR "." APUI_SDK_VERSION_BUILD "." APUI_SDK_VERSION_PATCH
-#define APUI_SDK_VERSION_STRING_SHORT "ApertureUI SDK Version: " APUI_SDK_VERSION_MAJOR "." APUI_SDK_VERSION_MINOR "." APUI_SDK_VERSION_BUILD
-#define APUI_SDK_VERSION APUI_SDK_VERSION_MAJOR "." APUI_SDK_VERSION_MINOR "." APUI_SDK_VERSION_BUILD "." APUI_SDK_VERSION_PATCH
+        virtual void ExecuteWithMultiplicity(nsUInt32 uiMultiplicity) const override;
+    };
+}

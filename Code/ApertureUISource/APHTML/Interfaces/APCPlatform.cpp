@@ -2,6 +2,8 @@
 
 #include <APHTML/APEngine.h>
 
+NS_IMPLEMENT_SINGLETON(aperture::core::IAPCPlatform);
+
 bool aperture::core::IAPCPlatform::InitializePlatform(const char* licensekey)
 {
   // NOTE(Mikael A.): Removing All CryptoLens API calls for FOSS release.

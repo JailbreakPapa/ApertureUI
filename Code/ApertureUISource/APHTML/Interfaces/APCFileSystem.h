@@ -44,6 +44,13 @@ namespace aperture::core
   class NS_APERTURE_DLL IAPCFileSystem
   {
   public:
+    enum class EFileType
+    {
+      OSDependant,
+      VFS,
+    };
+
+  public:
     /// @brief Default constructor for the IAPCFileSystem class.
     IAPCFileSystem() = default;
 
@@ -57,10 +64,10 @@ namespace aperture::core
     /// @brief Gets the buffer of the file's data.
     /// @param in_filepath Path to the file.
     /// @return Buffer of the file's data.
-    virtual core::CoreBuffer<nsUInt8> GetFileData(const char* in_filepath)
-    {
-      return core::CoreBuffer<nsUInt8>();
-    }
+    virtual core::CoreBuffer<nsUInt8> GetFileData(const char* in_filepath, EFileType type = EFileType::OSDependant);
+
+    virtual bool RequestCreateFile(const char* in_filepath, core::CoreBuffer<nsUInt8> out_filedata, EFileType type = EFileType::OSDependant);
+    
     virtual const char* GetFileMimeType(const char* in_filepath);
     /// @brief Checks if a file exists.
     /// @param in_filepath Path to the file.
@@ -70,7 +77,7 @@ namespace aperture::core
     /// @brief Returns the file's charset.
     /// @param in_filepath Path to the file.
     /// @return The file's charset.
-    virtual nsString FileCharset(const nsString& in_filepath);
+    virtual const char* FileCharset(const nsString& in_filepath);
 
     /// @brief Sets the path to the UI resources.
     /// @param uiresources Path to the UI resources.
@@ -83,7 +90,7 @@ namespace aperture::core
     /// @brief Gets the full file path based on the given URI subpath.
     /// @param urisubpath The URI subpath.
     /// @return The full file path.
-    const char* GetFullFilePath(const char* urisubpath);
+    virtual const char* GetFullFilePath(const char* urisubpath);
 
     /// @brief Gets the raw file handle for the specified file. TODO: Currently only works for Windows.
     /// @param in_filepath Path to the file.
@@ -91,7 +98,7 @@ namespace aperture::core
     /// @return The raw file handle.
     nsOSFileData GetRawFileHandle(const char* in_filepath, const char* mode);
 
-    // Do Relative Path, etc...
+    // TODO: Do Relative Path, etc...
 
   protected:
     const char* m_uiresources; ///< Path to the UI resources.

@@ -91,6 +91,9 @@ namespace aperture
 
     static bool IsNDAPlatform();
 
+    static void SetIsCachingAllowed(bool p_allowcaching);
+
+    static bool IsCachingAllowed();
   private:
     static void SetSDKActive(bool p_active);
   

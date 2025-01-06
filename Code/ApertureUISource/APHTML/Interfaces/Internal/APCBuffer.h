@@ -41,9 +41,10 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 namespace aperture::core
 {
-  /// NOTE: DEPRECATED DONT USE: Use CoreBuffer Instead.
+  /// NOTE: DEPRECATED DONT USE! Use CoreBuffer Instead.
   using APCBuffer = nsDynamicArray<nsUInt8>;
 
+  /// @brief A Agnostic buffer that can be resized and copied into. Mainly used for File I/O.
   template <typename T>
   class CoreBuffer
   {
@@ -52,9 +53,19 @@ namespace aperture::core
     size_t m_size;
 
   public:
+    CoreBuffer(nsDynamicArray<T> in_Content, size_t initialSize = (size_t)128 * 128 * 1024);
+    CoreBuffer(void* in_Data, size_t in_Size, size_t initialSize = (size_t)128 * 128 * 1024);
+    CoreBuffer(const char* r_data, size_t initialSize = (size_t)128 * 128 * 1024);
+    
     explicit CoreBuffer(size_t initialSize = (size_t)128 * 128 * 1024);
+
+    NS_ADD_DEFAULT_OPERATOR_NOTEQUAL(const CoreBuffer<T>&);
+
     // @brief The Righthand side of the operator is the data to copy. this will forcefully copy the data into the buffer and resize it.
     void operator=(const char* r_data);
+
+    T& operator[](const char* r_data);
+
     ~CoreBuffer();
 
     void resize(size_t newSize);
@@ -62,6 +73,18 @@ namespace aperture::core
     T* get(size_t size = size());
 
     size_t size() const;
+
+    // All of the iterator stuff
+    CoreBuffer<T>::const_interator begin() const { return m_data; }
+    CoreBuffer<T>::const_interator end() const { return m_data + m_size; }
+    CoreBuffer<T>::const_reverse_interator rbegin() const { return m_data + m_size - 1; }
+    CoreBuffer<T>::const_reverse_interator rend() const { return m_data - 1; }
+    CoreBuffer<T>::const_interator cbegin() const { return m_data; }
+    CoreBuffer<T>::const_interator cend() const { return m_data + m_size; }
+
+    public:
+    using const_iterator = const T*;
+    using const_reverse_iterator = const_reverse_pointer_iterator<T>;
   };
 
   template <typename T>
@@ -87,10 +110,38 @@ namespace aperture::core
   }
 
   template <typename T>
+  inline T& CoreBuffer<T>::operator[](const char* r_data)
+  {
+    return m_data[r_data];
+  }
+
+  template <typename T>
   inline aperture::core::CoreBuffer<T>::~CoreBuffer()
   {
     if (m_data != nullptr)
       delete[] m_data;
+  }
+
+  template <typename T>
+  inline CoreBuffer<T>::CoreBuffer(nsDynamicArray<T> in_Content, size_t initialSize)
+  {
+    in_Content.Compact();
+    m_data = in_Content.GetElementsPtr();
+    m_size = sizeof(in_Content);
+  }
+
+  template <typename T>
+  inline CoreBuffer<T>::CoreBuffer(void* in_Data, size_t in_Size, size_t initialSize)
+  {
+    m_data = in_Data;
+    m_size = in_Size;
+  }
+
+  template <typename T>
+  inline CoreBuffer<T>::CoreBuffer(const char* r_data, size_t initialSize)
+  {
+    m_data = r_data;
+    m_size = sizeof(r_data);
   }
 
   template <typename T>

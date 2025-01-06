@@ -45,6 +45,8 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 namespace aperture::v8::binding
 {
+  /// @brief A class for binding C++ functions and variables to JS.
+  /// @warning This class is not thread-safe, due to the nature of Isolates. You can use this natively, but its recommended to just directly use the EngineRuntime to Bind Everything.
   class NS_V8ENGINE_DLL V8EBinder
   {
   public:
@@ -79,6 +81,7 @@ namespace aperture::v8::binding
     void SetIsolate(::v8::Isolate* isolate);
 
     ::v8::Isolate* GetIsolate() const;
+
   private:
     std::mutex mutex_;
     ::v8::Isolate* isolate_;

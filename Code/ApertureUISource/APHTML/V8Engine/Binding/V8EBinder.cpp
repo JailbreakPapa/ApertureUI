@@ -80,6 +80,7 @@ void aperture::v8::binding::V8EBinder::BindClassFunction(const char* className, 
                 } else {
                     args.GetReturnValue().Set((self->*func)(/* Extract args */));
                 } }));
+              
   }
 }
 

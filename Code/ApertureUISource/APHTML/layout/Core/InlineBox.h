@@ -35,21 +35,55 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #pragma once
 
-#define NS_GIT_COMMIT_HASH_SHORT e1ba4025aea8
-#define NS_GIT_COMMIT_HASH_LONG e1ba4025aea8c15c8db7d4b514d6ff22a1d697d0
-#define NS_GIT_BRANCH_NAME "main"
+#include <APHTML/APEngineCommonIncludes.h>
+#include <APHTML/layout/Core/LayoutCore.h>
 
-// NOTE(Mikael A.): Add APUI ending for naming rule. 
-#define APUI_GIT_COMMIT_HASH_SHORT NS_GIT_COMMIT_HASH_SHORT
-#define APUI_GIT_COMMIT_HASH_LONG NS_GIT_COMMIT_HASH_LONG
-#define APUI_GIT_BRANCH_NAME NS_GIT_BRANCH_NAME
+#include <vector>
+#include <yoga/Yoga.h>
 
-// NOTE(Mikael A.): SDK Version. Format: Year.Month.BuildIndex.Patch, Just like O3DE.
-#define APUI_SDK_VERSION_MAJOR 24
-#define APUI_SDK_VERSION_MINOR 12
-#define APUI_SDK_VERSION_BUILD 1
-#define APUI_SDK_VERSION_PATCH 0
+namespace aperture::layout
+{
+  class InlineBox
+  {
+  public:
+    ~InlineBox();
 
-#define APUI_SDK_VERSION_STRING "ApertureUI SDK Version: " APUI_SDK_VERSION_MAJOR "." APUI_SDK_VERSION_MINOR "." APUI_SDK_VERSION_BUILD "." APUI_SDK_VERSION_PATCH
-#define APUI_SDK_VERSION_STRING_SHORT "ApertureUI SDK Version: " APUI_SDK_VERSION_MAJOR "." APUI_SDK_VERSION_MINOR "." APUI_SDK_VERSION_BUILD
-#define APUI_SDK_VERSION APUI_SDK_VERSION_MAJOR "." APUI_SDK_VERSION_MINOR "." APUI_SDK_VERSION_BUILD "." APUI_SDK_VERSION_PATCH
+    InlineBox()
+      : width(0)
+      , height(0)
+      , baseline(0)
+      , verticalAlign(VerticalAlign::Baseline)
+      , verticalOffset(0)
+    {
+      yogaNode = YGNodeNew();
+      configureYogaNode();
+    }
+    void setSize(float width, float height); // Set box dimensions
+    void setBaseline(float baseline);        // Set baseline provided by an external module
+    void setVerticalAlign(VerticalAlign align, float length = 0.0f);
+
+    VerticalAlign getVerticalAlign() const;
+    float getVerticalOffset() const;
+
+    void addChild(std::shared_ptr<InlineBox> child);
+    void layout(float availableWidth); // Perform layout calculations
+    virtual void render();                     // Stub/TODO: Verification logic goes here!
+
+    YGNodeRef getYogaNode(); // Access Yoga node for external use
+
+  private:
+    float width;
+    float height;
+    float baseline; // Baseline from external module
+
+    VerticalAlign verticalAlign;
+    float verticalOffset; // Offset for length-based alignment
+
+    std::vector<std::shared_ptr<InlineBox>> children;
+    YGNodeRef yogaNode;
+
+    void configureYogaNode();
+    void handleOverflow(float availableWidth);
+    static float calculateBaseline(YGNodeConstRef node, float width, float height);
+  };
+} // namespace aperture::layout

@@ -61,6 +61,33 @@ float aperture::layout::YogaLayoutNode::getComputedLeft() const
   return YGNodeLayoutGetLeft(yogaNode);
 }
 
+void aperture::layout::YogaLayoutNode::setMargin(YGEdge edge, float value)
+{
+  YGNodeStyleSetMargin(yogaNode, edge, value);
+}
+
+void aperture::layout::YogaLayoutNode::setPadding(YGEdge edge, float value)
+{
+  YGNodeStyleSetPadding(yogaNode, edge, value);
+}
+
+void aperture::layout::YogaLayoutNode::setBorder(YGEdge edge, float value)
+{
+  YGNodeStyleSetBorder(yogaNode, edge, value);
+}
+
+void aperture::layout::YogaLayoutNode::setFlexDirection(const std::string& direction)
+{
+}
+
+void aperture::layout::YogaLayoutNode::setAlignItems(const std::string& alignment)
+{
+}
+
+void aperture::layout::YogaLayoutNode::setJustifyContent(const std::string& justify)
+{
+}
+
 YGNodeRef aperture::layout::YogaLayoutNode::getYogaNode()
 {
   return yogaNode;

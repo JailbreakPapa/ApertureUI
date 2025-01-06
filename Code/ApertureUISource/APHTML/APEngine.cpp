@@ -133,3 +133,15 @@ bool aperture::ApertureSDK::IsNDAPlatform()
   return m_bIsNDAPlatform;
 }
 
+void aperture::ApertureSDK::SetIsCachingAllowed(bool p_allowcaching)
+{
+  if (IsSDKActive())
+  {
+    nsLog::SeriousWarning("ApertureSDK: Cannot change the Caching Status after the SDK has been initialized. Please reinitialize your platform, then retry.");
+    return;
+  }
+  {
+    NS_LOCK(m_SDKLocker);
+    m_bIsSerializationAllowedforSDK = p_allowcaching;
+  }
+}

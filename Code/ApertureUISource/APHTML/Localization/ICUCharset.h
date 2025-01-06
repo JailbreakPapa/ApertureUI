@@ -35,21 +35,18 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #pragma once
 
-#define NS_GIT_COMMIT_HASH_SHORT e1ba4025aea8
-#define NS_GIT_COMMIT_HASH_LONG e1ba4025aea8c15c8db7d4b514d6ff22a1d697d0
-#define NS_GIT_BRANCH_NAME "main"
+#include <APHTML/Interfaces/Internal/APCBuffer.h>
+#include <APHTML/APEngineCommonIncludes.h>
 
-// NOTE(Mikael A.): Add APUI ending for naming rule. 
-#define APUI_GIT_COMMIT_HASH_SHORT NS_GIT_COMMIT_HASH_SHORT
-#define APUI_GIT_COMMIT_HASH_LONG NS_GIT_COMMIT_HASH_LONG
-#define APUI_GIT_BRANCH_NAME NS_GIT_BRANCH_NAME
+namespace aperture::localization
+{
+  class NS_APERTURE_DLL ICUCharset
+  {
+  public:
+    static const char* GetCharset(std::vector<char>& in_buffer);
 
-// NOTE(Mikael A.): SDK Version. Format: Year.Month.BuildIndex.Patch, Just like O3DE.
-#define APUI_SDK_VERSION_MAJOR 24
-#define APUI_SDK_VERSION_MINOR 12
-#define APUI_SDK_VERSION_BUILD 1
-#define APUI_SDK_VERSION_PATCH 0
+    static const char* GetCharset(core::CoreBuffer<char>& in_buffer);
 
-#define APUI_SDK_VERSION_STRING "ApertureUI SDK Version: " APUI_SDK_VERSION_MAJOR "." APUI_SDK_VERSION_MINOR "." APUI_SDK_VERSION_BUILD "." APUI_SDK_VERSION_PATCH
-#define APUI_SDK_VERSION_STRING_SHORT "ApertureUI SDK Version: " APUI_SDK_VERSION_MAJOR "." APUI_SDK_VERSION_MINOR "." APUI_SDK_VERSION_BUILD
-#define APUI_SDK_VERSION APUI_SDK_VERSION_MAJOR "." APUI_SDK_VERSION_MINOR "." APUI_SDK_VERSION_BUILD "." APUI_SDK_VERSION_PATCH
+    static const char* GetCharset(core::CoreBuffer<nsUInt8>& in_buffer);
+  };
+} // namespace aperture::localization

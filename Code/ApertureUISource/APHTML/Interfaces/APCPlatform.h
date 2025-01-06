@@ -36,6 +36,7 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #pragma once
 #include <APHTML/APEngineDLL.h>
 #include <APHTML/Interfaces/APCFileSystem.h>
+#include <Foundation/Configuration/Singleton.h>
 #include <APHTML/Interfaces/APCHarrlowInterface.h>
 #include <APHTML/Interfaces/APCLoggingSystem.h>
 #include <APHTML/Interfaces/APCMemoryAllocator.h>
@@ -50,10 +51,15 @@ namespace aperture::core
     friend class IAPCLoggingSystem;
     friend class IAPCMemoryAllocator;
 
+    NS_DECLARE_SINGLETON(IAPCPlatform);
+
   public:
-    IAPCPlatform() = default;
+  
+    IAPCPlatform() : m_SingletonRegistrar(this) {}
+
     /// @brief Initializes the Underlying platform implementation(memory handler, filesystem, etc).
     static bool InitializePlatform(const char* licensekey);
+    
     /// @brief Sets the filesystem for APUI to use.
     /// @param in_filesystem filesystem to use.
     void SetFileSystem(const IAPCFileSystem& in_filesystem);
@@ -91,4 +97,5 @@ namespace aperture::core
 
     IAPCLoggingSystem* m_loggingsystem = nullptr;
   };
+  
 } // namespace aperture::core

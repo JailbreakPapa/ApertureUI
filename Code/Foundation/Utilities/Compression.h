@@ -7,6 +7,7 @@
 enum class nsCompressionMethod : nsUInt16
 {
   ZStd = 0 ///< Only available when ZStd support is enabled in the build (default)
+  // TODO: Add LZ4!
 };
 
 /// \brief This namespace contains utilities which can be used to compress and decompress data.
