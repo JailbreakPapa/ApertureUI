@@ -123,4 +123,18 @@ private:
   nsAllocator* m_pAllocator;
 };
 
+/**
+ * @brief Creates a shared pointer of type T by forwarding the provided arguments to T's constructor.
+ *
+ * @tparam T The type of the object to be managed.
+ * @tparam Args The types of arguments to forward to T's constructor.
+ * @param args The arguments to forward to T's constructor.
+ * @return nsSharedPtr<T> A shared pointer managing the newly created object.
+ */
+template <typename T, typename... Args>
+NS_ALWAYS_INLINE nsSharedPtr<T> nsMakeShared(Args&&... args)
+{
+  return nsSharedPtr<T>(new T(std::forward<Args>(args)...), nullptr);
+}
+
 #include <Foundation/Types/Implementation/SharedPtr_inl.h>

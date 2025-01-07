@@ -93,13 +93,18 @@ private:
   T* m_pInstance = nullptr;
   nsAllocator* m_pAllocator = nullptr;
 };
-/// <summary>
-/// Function to create a unique ptr with a new instance of T. this is simular to std::make_unique.
-/// </summary>
-/// <typeparam name="T"></typeparam>
-/// <typeparam name="...Args"></typeparam>
-/// <param name="...args"></param>
-/// <returns></returns>
+
+/**
+ * @brief Creates a unique pointer to an object of type T.
+ *
+ * Constructs a new instance of T by forwarding the provided arguments and returns
+ * a `nsUniquePtr<T>` that manages the created object.
+ *
+ * @tparam T    The type of the object to create.
+ * @tparam Args The types of arguments to forward to T's constructor.
+ * @param args  The arguments to forward to T's constructor.
+ * @return A `nsUniquePtr<T>` managing the newly created object.
+ */
 template <typename T, typename... Args>
 NS_ALWAYS_INLINE nsUniquePtr<T> nsMakeUnique(Args&&... args)
 {

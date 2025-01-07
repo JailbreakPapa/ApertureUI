@@ -47,7 +47,9 @@ namespace aperture::v8
 
     void ShutdownV8Engine();
 
+    const char* GetSnapshotFile() const { return SnapshotFile; }
   private:
+    const char* SnapshotFile;
     nsUniquePtr<::v8::Platform> m_pV8EPlatform;
   };
 } // namespace aperture::v8::jobsystem

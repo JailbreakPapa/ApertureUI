@@ -24,6 +24,7 @@ bool aperture::v8::V8EEngineMain::InitializeV8Engine(const char* p_ccResources)
   if (::v8::V8::InitializeICUDefaultLocation(finalicuDatafile, p_ccResources))
   {
     finalSnapshot.AppendPath("/resources", "/snapshot_blob.bin");
+    SnapshotFile = finalSnapshot.GetData();
     ::v8::V8::InitializeExternalStartupDataFromFile(finalSnapshot.GetData());
     m_pV8EPlatform = nsMakeUnique<::v8::Platform>(::v8::platform::NewDefaultPlatform());
     ::v8::V8::InitializePlatform(m_pV8EPlatform.Borrow());

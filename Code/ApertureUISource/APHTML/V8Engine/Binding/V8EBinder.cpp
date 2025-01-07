@@ -1,4 +1,5 @@
 #include <APHTML/V8Engine/Binding/V8EBinder.h>
+#include <APHTML/V8Engine/Core/V8EngineRuntime.h>
 
 template <typename ReturnType, typename... Args>
 void aperture::v8::binding::V8EBinder::BindFunctionToJS(const char* name, ReturnType (*func)(Args...))
@@ -7,6 +8,7 @@ void aperture::v8::binding::V8EBinder::BindFunctionToJS(const char* name, Return
   global->Set(
     ::v8::String::NewFromUtf8(isolate_, name.c_str()).ToLocalChecked(),
     ::v8::FunctionTemplate::New(isolate_, func));
+  CACHE_OBJECT_FROM_JS(name, global);
 }
 
 template <typename T>
@@ -16,6 +18,7 @@ void aperture::v8::binding::V8EBinder::BindVariable(const char* name, const T& v
   global->Set(
     ::v8::String::NewFromUtf8(isolate_, name.c_str()).ToLocalChecked(),
     ::v8::Number::New(isolate_, value));
+  CACHE_OBJECT_FROM_JS(name, global);
 }
 
 template <typename ClassType>
@@ -24,6 +27,7 @@ void aperture::v8::binding::V8EBinder::BindClass(const char* name)
   ::v8::Local<::v8::FunctionTemplate> classTemplate = ::v8::FunctionTemplate::New(isolate_);
   classTemplate->SetClassName(::v8::String::NewFromUtf8(isolate_, name.c_str()).ToLocalChecked());
   class_templates_[name].Reset(isolate_, classTemplate);
+  CACHE_FUNCTION_FROM_JS(name, classTemplate);
 }
 
 template <typename ClassType, typename BaseType>
@@ -60,6 +64,7 @@ void aperture::v8::binding::V8EBinder::BindClassVariable(const char* className, 
         ::v8::Local<::v8::Value> value = info[0]; // Assuming value is the first argument
         self->*member = value->NumberValue(info.GetIsolate()->GetCurrentContext()).ToChecked();
       });
+      CACHE_FUNCTION_FROM_JS(memberName, classTemplate);
   }
 }
 
@@ -80,7 +85,7 @@ void aperture::v8::binding::V8EBinder::BindClassFunction(const char* className, 
                 } else {
                     args.GetReturnValue().Set((self->*func)(/* Extract args */));
                 } }));
-              
+    CACHE_FUNCTION_FROM_JS(functionName, classTemplate);
   }
 }
 
