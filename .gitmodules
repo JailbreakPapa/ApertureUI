@@ -19,9 +19,6 @@
 [submodule "Code/ThirdParty/ogg"]
 	path = Code/ThirdParty/ogg
 	url = https://github.com/xiph/ogg.git
-[submodule "Code/ThirdParty/opus"]
-	path = Code/ThirdParty/opus
-	url = https://github.com/xiph/opus.git
 [submodule "Code/ThirdParty/Boost.Parser"]
 	path = Code/ThirdParty/Boost.Parser
 	url = https://github.com/boostorg/parser.git
@@ -37,3 +34,6 @@
 [submodule "Code/ThirdParty/SDL2"]
 	path = Code/ThirdParty/SDL2
 	url = https://github.com/libsdl-org/SDL.git
+[submodule "Code/ThirdParty/opus"]
+	path = Code/ThirdParty/opus
+	url = https://github.com/xiph/opus.git
