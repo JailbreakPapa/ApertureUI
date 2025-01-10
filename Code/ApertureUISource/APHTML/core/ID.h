@@ -150,8 +150,8 @@ namespace aperture
     NavDown,
     NavLeft,
 
-    RmlUi_Language,
-    RmlUi_Direction,
+    Language,
+    Direction,
 
     NumDefinedIds,
     FirstCustomId = NumDefinedIds,
@@ -187,10 +187,10 @@ namespace aperture
     Invalid,
 
     // Core events
-    Mousedown,
-    Mousescroll,
-    Mouseover,
-    Mouseout,
+    MouseDown,
+    MouseScroll,
+    MouseOver,
+    MouseOut,
     Focus,
     Blur,
     Keydown,
@@ -210,12 +210,12 @@ namespace aperture
     Dragover,
     Dragdrop,
     Dragout,
-    Dragend,
+    DragEnd,
     Handledrag,
     Resize,
     Scroll,
-    Animationend,
-    Transitionend,
+    AnimationEnd,
+    TransitionEnd,
 
     // Form control events
     Change,

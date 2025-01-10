@@ -59,8 +59,8 @@ namespace aperture
 
   class NS_APERTURE_DLL Property : public dom::DOMAttribute
   {
-    template <typename PropertyType>
-    Property(PropertyType value, core::Unit unit, int specificity = -1)
+    template <typename PropertyType = nsUInt32>
+    Property(PropertyType value, core::Unit unit = core::Unit::PX, int specificity = -1)
       : value(value)
       , unit(unit)
       , specificity(specificity)

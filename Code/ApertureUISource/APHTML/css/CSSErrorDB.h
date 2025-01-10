@@ -8,38 +8,75 @@
 
 namespace aperture::css
 {
-    struct NS_APERTURE_DLL CSSParsedFileData
+  struct NS_APERTURE_DLL CSSParsedFileData
+  {
+  public:
+    std::size_t m_fileSize;
+    /// @brief Absolute or relative file path to the CSS file.
+    nsStringView m_filePath;
+  };
+
+  class NS_APERTURE_DLL CSSErrorDatabase
+  {
+  public:
+    enum CSSErrorType
     {
-        public:
-            std::size_t m_fileSize; 
-            /// @brief Hard/Memory Internal File path. this may be scuffed
-            nsStringView m_filePath;
+      CSS_ERROR_SYNTAX,      // Syntax Error.
+      CSS_ERROR_SEMANTIC,    // Semantic Error.
+      CSS_ERROR_COMPOSITION, // Composition Error, such as recursive variable resolution.
+      CSS_ERROR_UNKNOWN      // Unknown Error.
     };
-    // TODO: Refactor this class.
-    class NS_APERTURE_DLL CSSErrorDatabase
+
+    struct CSSErrorData
     {
-        public:
-            enum CSSErrorType
-            {
-                CSS_ERROR_SYNTAX, // Syntax Error.
-                CSS_ERROR_SEMANTIC, // Semantic Error.
-                CSS_ERROR_COMPOSITION, // Composition Error. This could mean that a recursive path was found (e.g. when resolving a variable that references itself).
-                CSS_ERROR_UNKNOWN
-            };
-            struct CSSErrorData
-            {
-                public:
-                    CSSErrorType m_errorType;
-                    CSSParsedFileData m_fileData;
-                    nsString m_errorMessage;
-                    int m_lineNumber;
-                    int m_columnNumber;
-            };
-        public:
-            void AddError(CSSErrorType in_errortype,CSSParsedFileData& in_fileData, const char* in_errorMessage, int in_lineNumber, int in_columnNumber);
-            void ClearErrors();
-            void PrintErrors();
-        private:
-            nsDynamicArray<CSSErrorData> m_errorData;
+    public:
+      CSSErrorType m_errorType;
+      CSSParsedFileData m_fileData;
+      nsString m_errorMessage;
+      int m_lineNumber;
+      int m_columnNumber;
     };
-}
+
+    // Adds an error to the database with detailed information.
+    void AddError(CSSErrorType in_errorType, const CSSParsedFileData& in_fileData, const std::string& in_errorMessage, int in_lineNumber, int in_columnNumber)
+    {
+      m_errorData.PushBack(CSSErrorData{in_errorType, in_fileData, in_errorMessage.c_str(), in_lineNumber, in_columnNumber});
+    }
+
+    // Clears all stored errors.
+    void ClearErrors()
+    {
+      m_errorData.Clear();
+    }
+
+    // Prints all errors in a user-friendly format.
+    void PrintErrors() const
+    {
+      for (const auto& error : m_errorData)
+      {
+        nsLog::Info("CSS Error: {0}\nFile: {1}\nLine: {2}\nColumn: {3}", error.m_errorMessage.GetData(), error.m_fileData.m_filePath.GetStartPointer(), error.m_lineNumber, error.m_columnNumber);
+      }
+    }
+
+  private:
+    nsDynamicArray<CSSErrorData> m_errorData;
+
+    // Converts error type to a string representation for user-friendly output.
+    const char* ErrorTypeToString(CSSErrorType type) const
+    {
+      switch (type)
+      {
+        case CSS_ERROR_SYNTAX:
+          return "Syntax Error";
+        case CSS_ERROR_SEMANTIC:
+          return "Semantic Error";
+        case CSS_ERROR_COMPOSITION:
+          return "Composition Error";
+        case CSS_ERROR_UNKNOWN:
+          return "Unknown Error";
+        default:
+          return "Invalid Error Type";
+      }
+    }
+  };
+} // namespace aperture::css

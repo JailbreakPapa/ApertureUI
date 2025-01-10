@@ -38,6 +38,7 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <APHTML/core/BaseProperty.h>
 #include <APHTML/core/ID.h>
 #include <APHTML/dom/DOMElement.h>
+
 namespace aperture
 {
   namespace css
@@ -150,7 +151,8 @@ namespace aperture
     /// @param[in] id The id of the new property.
     /// @param[in] property The parsed property to set.
     /// @return True if the property was set successfully, false otherwise.
-    bool SetProperty(PropertyId id, const Property& property);
+    template <typename T>
+    bool SetProperty(PropertyId id, const Property<T>& property);
     /// Removes a local property override on the element; its value will revert to that defined in the style sheet.
     /// @param[in] name The name of the local property definition to remove.
     void RemoveProperty(const nsString& name);
@@ -159,8 +161,10 @@ namespace aperture
     /// from an ancestor, the default value will be returned.
     /// @param[in] name The name of the property to fetch the value for.
     /// @return The value of this property for this element, or nullptr if no property exists with the given name.
-    const Property* GetProperty(const nsString& name);
-    const Property* GetProperty(PropertyId id);
+    template <typename T>
+    const Property<T>* GetProperty(const nsString& name);
+    template <typename T>
+    const Property<T>* GetProperty(PropertyId id);
     /// Returns the values of one of this element's properties.
     /// @param[in] name The name of the property to get.
     /// @return The value of this property.
@@ -170,8 +174,10 @@ namespace aperture
     /// returned.
     /// @param[in] name The name of the property to fetch the value for.
     /// @return The value of this property for this element, or nullptr if this property has not been explicitly defined for this element.
-    const Property* GetLocalProperty(const nsString& name);
-    const Property* GetLocalProperty(PropertyId id);
+    template <typename T>
+    const Property<T>* GetLocalProperty(const nsString& name);
+    template <typename T>
+    const Property<T>* GetLocalProperty(PropertyId id);
 
     /// Resolves a length to its canonical unit ('px').
     /// @param[in] value The numeric value.
@@ -187,6 +193,7 @@ namespace aperture
 
     /// Returns the size of the containing block. Often percentages are scaled relative to this.
     nsVec2 GetContainingBlock();
+
     /// Project a 2D point in pixel coordinates onto the element's plane.
     /// @param[in-out] point The point to project in, and the resulting projected point out.
     /// @return True on success, false if transformation matrix is singular.

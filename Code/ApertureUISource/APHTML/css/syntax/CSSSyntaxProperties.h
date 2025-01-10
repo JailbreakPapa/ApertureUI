@@ -219,6 +219,8 @@ namespace aperture::css
     word_break,
     word_spacing,
     word_wrap,
-    z_index
+    z_index,
+    language,
+    direction
   };
 }

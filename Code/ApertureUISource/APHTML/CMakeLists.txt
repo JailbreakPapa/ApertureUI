@@ -37,6 +37,7 @@ endif()
 ns_integrate_vcpkg(${PROJECT_NAME} icu) 
 
 target_include_directories(${PROJECT_NAME} PRIVATE ${CMAKE_SOURCE_DIR}/Code/ThirdParty/Boost.Parser/include)
+target_compile_definitions(${PROJECT_NAME} PRIVATE BOOST_PARSER_DISABLE_HANA_TUPLE)
 
 target_link_libraries(${PROJECT_NAME}
   PUBLIC

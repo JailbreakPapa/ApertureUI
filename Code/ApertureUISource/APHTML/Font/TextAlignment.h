@@ -32,36 +32,21 @@ STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
 ANY WAY OUT OF THE USE OR PERFORMANCE OF THIS SOFTWARE OR SOURCE CODE,
 EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
+
 #pragma once
-#include <APHTML/core/Unit.h>
 
-namespace aperture::core
+namespace aperture::font
 {
-  /**
-      A numeric value is a number combined with a unit.
-   */
-  struct NumericValue
-  {
-    NumericValue() noexcept
-      : number(0.f)
-      , unit(Unit::UNKNOWN)
+    enum class ETextAlignment
     {
-    }
-    NumericValue(float number, Unit unit) noexcept
-      : number(number)
-      , unit(unit)
-    {
-    }
-    float number;
-    Unit unit;
-  };
-  inline bool operator==(const NumericValue& a, const NumericValue& b)
-  {
-    return a.number == b.number && a.unit == b.unit;
-  }
-  inline bool operator!=(const NumericValue& a, const NumericValue& b)
-  {
-    return !(a == b);
-  }
-
-} // namespace aperture::core
+        Left,
+        Right,
+        Center,
+        Justify,
+        Start,
+        End,
+        Inherit,
+        Initial,
+        Unset
+    };
+}

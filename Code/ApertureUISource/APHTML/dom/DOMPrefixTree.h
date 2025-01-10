@@ -34,7 +34,130 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 #pragma once
 
+#include <APHTML/APEngineCommonIncludes.h>
+
 namespace aperture::dom
 {
-    
-}
+  // Represents a node in the DOM Prefix Tree.
+  class NS_APERTURE_DLL DOMPrefixTreeNode
+  {
+  public:
+    DOMPrefixTreeNode(const std::string& name)
+      : tagName(name)
+      , isEndOfTag(false)
+    {
+    }
+
+    // Adds a child node or retrieves an existing one.
+    std::shared_ptr<DOMPrefixTreeNode> addOrGetChild(const std::string& name)
+    {
+      if (!children.count(name))
+      {
+        children[name] = std::make_shared<DOMPrefixTreeNode>(name);
+      }
+      return children[name];
+    }
+
+    // Searches for a child node by name.
+    std::shared_ptr<DOMPrefixTreeNode> getChild(const std::string& name) const
+    {
+      auto it = children.find(name);
+      return it != children.end() ? it->second : nullptr;
+    }
+
+    // Returns all child nodes.
+    const std::unordered_map<std::string, std::shared_ptr<DOMPrefixTreeNode>>& getChildren() const
+    {
+      return children;
+    }
+
+    // Sets the node as the end of a valid tag.
+    void setEndOfTag(bool isEnd)
+    {
+      isEndOfTag = isEnd;
+    }
+
+    // Checks if this node marks the end of a tag.
+    bool isEnd() const
+    {
+      return isEndOfTag;
+    }
+
+    // Returns the tag name for this node.
+    const std::string& getTagName() const
+    {
+      return tagName;
+    }
+
+  private:
+    std::string tagName;
+    bool isEndOfTag;
+    std::unordered_map<std::string, std::shared_ptr<DOMPrefixTreeNode>> children;
+  };
+
+  // The DOM Prefix Tree class.
+  class NS_APERTURE_DLL DOMPrefixTree
+  {
+  public:
+    DOMPrefixTree()
+    {
+      root = std::make_shared<DOMPrefixTreeNode>("");
+    }
+
+    // Inserts a tag path into the tree.
+    void insert(const std::vector<std::string>& tagPath)
+    {
+      auto current = root;
+      for (const auto& tag : tagPath)
+      {
+        current = current->addOrGetChild(tag);
+      }
+      current->setEndOfTag(true);
+    }
+
+    // Checks if a full tag path exists in the tree.
+    bool contains(const std::vector<std::string>& tagPath) const
+    {
+      auto current = root;
+      for (const auto& tag : tagPath)
+      {
+        current = current->getChild(tag);
+        if (!current)
+        {
+          return false;
+        }
+      }
+      return current->isEnd();
+    }
+
+    // Prints all valid tag paths stored in the tree.
+    void printAllTags() const
+    {
+      std::vector<std::string> currentPath;
+      printAllTagsHelper(root, currentPath);
+    }
+
+  private:
+    std::shared_ptr<DOMPrefixTreeNode> root;
+
+    // Helper function for printing all tags recursively.
+    void printAllTagsHelper(std::shared_ptr<DOMPrefixTreeNode> node, std::vector<std::string>& currentPath) const
+    {
+      if (node->isEnd())
+      {
+        for (const auto& tag : currentPath)
+        {
+            nsLog::Info(tag.c_str());
+        }
+      }
+
+      for (const auto& [tagName, childNode] : node->getChildren())
+      {
+        currentPath.push_back(tagName);
+        printAllTagsHelper(childNode, currentPath);
+        currentPath.pop_back();
+      }
+    }
+  };
+
+} // namespace aperture::dom
