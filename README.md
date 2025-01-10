@@ -28,7 +28,7 @@ The current supported platforms that Aperture can work with is Windows, PS4, PS5
 
 ### Console Platforms (NDA)
 
-Please contact us at: <contact@wdstudios.tech> for more console builds (after verification)
+Please contact us at: <consoles@wdstudios.tech> for more console builds (after verification)
 
 ## License
 
