@@ -52,7 +52,7 @@ namespace aperture::core
     friend class IAPCMemoryAllocator;
 
     NS_DECLARE_SINGLETON(IAPCPlatform);
-
+    NS_DISALLOW_COPY_AND_ASSIGN(IAPCPlatform);
   public:
   
     IAPCPlatform() : m_SingletonRegistrar(this) {}

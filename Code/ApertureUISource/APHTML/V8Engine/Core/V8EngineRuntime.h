@@ -73,6 +73,7 @@ namespace aperture::v8
   {
   public:
     NS_DECLARE_SINGLETON(V8EEngineRuntime);
+    NS_DISALLOW_COPY_AND_ASSIGN(V8EEngineRuntime);
     class V8QuickScriptTask : public nsTask
     {
       friend class V8EEngineRuntime;
@@ -84,43 +85,9 @@ namespace aperture::v8
         , m_pRuntime(in_pRuntime)
       {
       }
-      virtual ~V8QuickScriptTask()
-      {
-        delete[] m_Script.get();
-        delete[] m_ScriptName;
-      }
-      virtual void Execute() override
-      {
-        // Execute the script.
-        // (Mikael A.): Attempt to get the current isolate. Due to the multithreaded nature of the Task System, the Thread we are on may not have an isolate, so we will create one ourself if needed.
-        ::v8::Isolate* isolate = ::v8::Isolate::GetCurrent();
-        if (!isolate || isolate->IsDead())
-        {
-          ::v8::Isolate::CreateParams create_params;
-          create_params.array_buffer_allocator = ::v8::ArrayBuffer::Allocator::NewDefaultAllocator();
-          if (m_pRuntime->GetSnapshots().GetCount() > 0)
-          {
-            for (auto& snapshot : m_pRuntime->GetSnapshots())
-            {
-              if (snapshot.second.IsValid())
-              {
-                create_params.snapshot_blob = &snapshot.second;
-              }
-            }
-          }
-          isolate = ::v8::Isolate::New(create_params);
-          auto script = helpers::compile(isolate->GetCurrentContext(), helpers::to_string(isolate, (const char*)m_Script.get()), m_ScriptName);
-          if(!script.ToLocalChecked()->Run(isolate->GetCurrentContext()).ToLocalChecked().IsEmpty())
-          {
-            nsLog::Success("V8QuickScriptTask::Execute: Successfully ran script: {0}", m_ScriptName);
-          }
-          nsLog::Error("V8QuickScriptTask::Execute: Failed to run script: {0}", m_ScriptName);
-        }
-      }
-      nsTaskGroupID GetTaskGroupID() const
-      {
-        return m_TaskGroupID;
-      }
+      virtual ~V8QuickScriptTask();
+      virtual void Execute() override;
+      nsTaskGroupID GetTaskGroupID() const;
 
     private:
       V8EEngineRuntime* m_pRuntime;
@@ -139,7 +106,9 @@ namespace aperture::v8
 
     ~V8EEngineRuntime();
     
-    void InitializeRuntime(const V8EEngineMain* pEngineMain);
+    void InitializeRuntime(V8EEngineMain* pEngineMain);
+
+    void SetScriptPath(const char* in_pScriptPath,  aperture::core::IAPCFileSystem::EFileType in_eFileType = aperture::core::IAPCFileSystem::EFileType::VFS);
 
     V8EEngineMain* GetV8EngineMain();
 
@@ -155,6 +124,8 @@ namespace aperture::v8
 
     nsHybridArray<std::pair<::v8::SnapshotCreator*, ::v8::StartupData>, 1> GetSnapshots() const;
 
+    nsResult ProcessAndTickEngine();
+
   private:
     /*
      * @brief Prepares the runtime for execution by checking for any snapshots.
@@ -163,7 +134,7 @@ namespace aperture::v8
      */
     void PrepareRuntime();
     
-    void CompileAndRunScripts();
+    nsResult CompileAndRunScripts();
 
     void Cleanup_TaskGroups();
 
@@ -195,7 +166,10 @@ namespace aperture::v8
  * @param func Pointer to the function to bind.
  */
 #define CACHE_FUNCTION_FROM_JS(name, func) \
-  (void)aperture::v8::CacheBoundObjects(nullptr, func, name, true);
+  if(aperture::v8::CacheBoundObjects(nullptr, func, name, true) == NS_FAILURE) \
+  { \
+    nsLog::SeriousWarning("Unable to Cache Object: {0}", name); \
+  }
 
 
 /**
@@ -207,4 +181,7 @@ namespace aperture::v8
  * @param obj Pointer to the object to bind.
  */
 #define CACHE_OBJECT_FROM_JS(name, obj) \
-  (void)aperture::v8::CacheBoundObjects(nullptr, obj, name, true);
+  if(aperture::v8::CacheBoundObjects(nullptr, obj, name, true) == NS_FAILURE) \
+  { \
+    nsLog::SeriousWarning("Unable to Cache Object: {0}", name); \
+  }

@@ -7,7 +7,7 @@
 // different license can be requested from the author.
 
 /** \mainpage tree.hh
-    \author   Kasper Peeters & WD Studios L.L.C.
+    \author   Kasper Peeters
     \version  3.19
     \date     2024-24-3
     \see      http://github.com/kpeeters/tree.hh/

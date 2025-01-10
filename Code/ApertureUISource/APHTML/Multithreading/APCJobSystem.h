@@ -89,6 +89,7 @@ namespace aperture::core::threading
    * @brief An custom made Job System for the Aperture SDK.
    * @note The Job System can take both CommandQueues, and Raw Functions if needed.
    * It is also possible for Queued Job to be executed by the User Directly.
+   * @warning Obsolete, use the wdtier0 Task System instead.
    */
   class NS_APERTURE_DLL APCJobSystem
   {

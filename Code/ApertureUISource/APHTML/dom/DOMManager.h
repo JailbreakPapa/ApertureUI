@@ -68,6 +68,7 @@ namespace aperture::dom
     DOMElement GetCurrentActedUponElement() const;
     bool operator<(const DOMManager& rhs) const;
   private:
+    // TODO: No Need, Caching the DOM is dumb since its volatile....
     /// <summary>
     /// Serializes & Caches DOMCollection(s), along with the files. this should be the "database" of all constructed layouts.
     /// </summary>

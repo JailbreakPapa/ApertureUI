@@ -49,7 +49,21 @@ namespace aperture::core
       OSDependant,
       VFS,
     };
-
+    enum class ERequestType
+    {
+      Script_JS,
+      CSS,
+      XML,
+      HTML,
+      JSON,
+      ImageOrResource,
+      OtherBinary
+    };
+    enum class ERequestAmmount
+    {
+      Single = 0x001,
+      GlobAll = 0x002
+    };
   public:
     /// @brief Default constructor for the IAPCFileSystem class.
     IAPCFileSystem() = default;
@@ -61,6 +75,14 @@ namespace aperture::core
     {
     }
 
+    /// @brief Required URI Resolve function to be implemented by the user. this is needed for the engine to get the data from managed place, whether it be VFS (PAK Based System) or OS.
+    /// @param in_uri Path to the file
+    /// @param out_filedatafiles vector of the file data
+    /// @param type what type of files are we retrieving
+    /// @param in_patharchivepath If we are using VFS, what is the path the the VFS Archive File?
+    /// @return If The Resolve Was Successful.
+    /// @warning Handling a Bad Resolve is weird to work with, as we rely on the user to handle the data. if the function returns false, we will not be able to get the data (e.g. parsing a CSS file will fail). **MAKE SURE THIS IS ALWAYS RETURNING TRUE.**
+    virtual bool RequestURIResolve(const char* in_uri, const char* in_patharchivepath, std::vector<core::CoreBuffer<nsUInt8>>& out_filedatafiles, EFileType type = EFileType::OSDependant, ERequestType filetype, ERequestAmmount ammount = ERequestAmmount::Single);
     /// @brief Gets the buffer of the file's data.
     /// @param in_filepath Path to the file.
     /// @return Buffer of the file's data.
@@ -85,6 +107,7 @@ namespace aperture::core
 
     /// @brief Gets the path to the UI resources.
     /// @return The path to the UI resources.
+    /// @note If We are working from VFS, then its really dependant on the user to resolve paths, and get us the needed data.
     const char* GetUIResourcesPath() { return m_uiresources; }
 
     /// @brief Gets the full file path based on the given URI subpath.
@@ -99,7 +122,8 @@ namespace aperture::core
     nsOSFileData GetRawFileHandle(const char* in_filepath, const char* mode);
 
     // TODO: Do Relative Path, etc...
-
+  private:
+  bool EvaluateVFSInternal(const char* in_uri, const char* in_patharchivepath, std::vector<core::CoreBuffer<nsUInt8>>& out_filedatafiles, EFileType type, ERequestType filetype, ERequestAmmount ammount);
   protected:
     const char* m_uiresources; ///< Path to the UI resources.
   };

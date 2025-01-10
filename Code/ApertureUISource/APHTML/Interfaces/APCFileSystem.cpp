@@ -2,6 +2,8 @@
 #include <APHTML/Interfaces/APCFileSystem.h>
 #include <APHTML/Interfaces/APCPlatform.h>
 #include <APHTML/Localization/ICUCharset.h>
+#include <Foundation/IO/Archive/ArchiveReader.h>
+#include <Foundation/IO/MemoryStream.h>
 #include <Foundation/IO/OSFile.h>
 
 const char* aperture::core::IAPCFileSystem::GetFullFilePath(const char* urisubpath)
@@ -25,9 +27,108 @@ nsOSFileData aperture::core::IAPCFileSystem::GetRawFileHandle(const char* in_fil
   return nsOSFileData();
 }
 
+
+bool aperture::core::IAPCFileSystem::EvaluateVFSInternal(const char* in_uri, const char* in_patharchivepath, std::vector<core::CoreBuffer<nsUInt8>>& out_filedatafiles, EFileType type, ERequestType filetype, ERequestAmmount ammount)
+{
+  nsUInt32 uiIndex = 0;
+  nsArchiveReader reader;
+  if (reader.OpenArchive(in_patharchivepath) == NS_FAILURE)
+  {
+    nsLog::SeriousWarning("Failed to open archive!");
+    return false;
+  }
+  auto toc = reader.GetArchiveTOC();
+  if (uiIndex = toc.FindEntry(in_uri) == nsInvalidIndex)
+  {
+
+    nsLog::SeriousWarning("Failed to find entry! Retrying with marker(SDK) files.");
+    // NOTE(Mikael A.): Attempt to find the entry in the archive with the required supplied files. If we fail to find the entry, we will return false.
+    switch(filetype)
+    {
+      case (ERequestType::Script_JS):
+      {
+        if (uiIndex = toc.FindEntry("aperturejs_sdk.js") == nsInvalidIndex)
+        {
+          nsLog::SeriousWarning("Failed to find entry for SDK files!");
+          return false;
+        }
+        break;
+      }
+      case (ERequestType::CSS):
+      {
+        if (uiIndex = toc.FindEntry("aperturecss_sdk.css") == nsInvalidIndex)
+        {
+          nsLog::SeriousWarning("Failed to find entry for SDK files!");
+          return false;
+        }
+        break;
+      }
+      case (ERequestType::XML):
+      {
+        if (uiIndex = toc.FindEntry("aperturexml_sdk.xml") == nsInvalidIndex)
+        {
+          nsLog::SeriousWarning("Failed to find entry for SDK files!");
+          return false;
+        }
+        break;
+      }
+      case (ERequestType::HTML):
+      {
+        if (uiIndex = toc.FindEntry("aperturehtml_sdk.html") == nsInvalidIndex)
+        {
+          nsLog::SeriousWarning("Failed to find entry for SDK files!");
+          return false;
+        }
+        break;
+      }
+      case (ERequestType::JSON):
+      {
+        if (uiIndex = toc.FindEntry("aperturejson_sdk.json") == nsInvalidIndex)
+        {
+          nsLog::SeriousWarning("Failed to find entry for SDK files!");
+          return false;
+        }
+        break;
+      }
+    }
+  }
+  auto sreader = reader.CreateEntryReader(uiIndex);
+  if (sreader->ReadBytes(out_filedatafiles[0].get(), toc.m_Entries[uiIndex].m_uiUncompressedDataSize) == toc.m_Entries[uiIndex].m_uiUncompressedDataSize)
+  {
+    return true;
+  }
+  return false;
+}
 const char* aperture::core::IAPCFileSystem::FileCharset(const nsString& in_filepath)
 {
   return localization::ICUCharset::GetCharset(GetFileData(in_filepath));
+}
+
+bool aperture::core::IAPCFileSystem::RequestURIResolve(const char* in_uri, const char* in_patharchivepath, std::vector<core::CoreBuffer<nsUInt8>>& out_filedatafiles, EFileType type, ERequestType filetype, ERequestAmmount ammount)
+{
+  switch (type)
+  {
+    case (EFileType::OSDependant):
+    {
+      nsOSFile apcfile;
+      nsStringBuilder filep(m_uiresources);
+      filep.Append(in_uri);
+      if (apcfile.Open(filep, nsFileOpenMode::Read) != NS_SUCCESS)
+      {
+        nsLog::SeriousWarning("Failed to read file data!");
+        return false;
+      }
+      nsDynamicArray<nsUInt8> filedata;
+      apcfile.ReadAll(filedata);
+      out_filedatafiles.push_back(core::CoreBuffer<nsUInt8>(filedata.GetData(), filedata.GetCount()));
+      return true;
+    }
+    case (EFileType::VFS):
+    {
+      // TODO(Mikael A.): ArchiveSystem Doesnt Allow Us to Effectively Glob Files. We Need to Implement a Better Way to Handle This.
+      return EvaluateVFSInternal(in_uri, in_patharchivepath, out_filedatafiles, type, filetype, ammount);
+    }
+  }
 }
 
 aperture::core::CoreBuffer<nsUInt8> aperture::core::IAPCFileSystem::GetFileData(const char* in_filepath, EFileType type)

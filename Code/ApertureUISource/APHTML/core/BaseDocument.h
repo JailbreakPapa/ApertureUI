@@ -76,6 +76,7 @@ namespace aperture
   protected:
     virtual void InternalLoadDocumentData() = 0;
 
+    // TODO: Move over to corebuffer.
     aperture::core::APCBuffer DocumentBuffer;
 
   public:

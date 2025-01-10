@@ -9,6 +9,7 @@ namespace aperture::core
   public:
     static inline void* Allocate(size_t size)
     {
+      // TODO: What????
       return nsFoundation::GetAlignedAllocator()->Allocate(size,0u);
     }
     static inline void Deallocate(void* pointer, size_t size)
