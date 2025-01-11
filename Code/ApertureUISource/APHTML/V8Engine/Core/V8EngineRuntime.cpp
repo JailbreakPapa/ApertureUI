@@ -1,3 +1,4 @@
+#include "V8EngineRuntime.h"
 #include <APHTML/APEngine.h>
 #include <APHTML/V8Engine/Core/V8EngineMain.h>
 #include <APHTML/V8Engine/Core/V8EngineRuntime.h>
@@ -37,12 +38,30 @@ nsResult aperture::v8::V8EEngineRuntime::ProcessAndTickEngine()
 
   if (m_ScriptsToCompileAndRun.GetCount() > 0)
   {
-    CompileAndRunScripts();
+    int failedC = 0;
+    if (CompileAndRunScripts() == NS_FAILURE)
+    {
+      failedC++;
+    }
+    if (failedC > 4)
+    {
+      UserPlatform->GetLoggingSystem()->LogError(
+        "V8EEngineRuntime::ProcessAndTickEngine: A Substaintial amount of scripts failed to compile and run, halting engine!");
+      return NS_FAILURE;
+    }
   }
-
   return NS_SUCCESS;
 }
 
+
+void aperture::v8::V8ErrorCallback(const char* location, const char* message)
+{
+  nsLog::Error("FATAL JavaScript(V8) Error: {0} - {1}", location, message);
+}
+void aperture::v8::V8EEngineRuntime::WDTaskSystemV8Callback(nsTaskGroupID in_TaskGroupID)
+{
+  m_TaskGroups.RemoveAndSwap(in_TaskGroupID);
+}
 aperture::v8::V8EEngineRuntime::~V8EEngineRuntime()
 {
   ShutdownRuntime();
@@ -163,9 +182,10 @@ void aperture::v8::V8EEngineRuntime::PrepareRuntime()
 nsResult aperture::v8::V8EEngineRuntime::CompileAndRunScripts()
 {
   auto UserPlatform = nsSingletonRegistry::GetSingletonInstance<aperture::core::IAPCPlatform>();
-  std::vector<core::CoreBuffer<nsUInt8>> filedatafiles;
+
   if (m_ScriptsToCompileAndRun.GetCount() == 0)
   {
+    std::vector<core::CoreBuffer<nsUInt8>> filedatafiles;
     UserPlatform->GetLoggingSystem()->LogInfo(
       "V8EEngineRuntime::CompileAndRunScripts: No scripts to compile and run! Attempting to Request from the User...");
     if (!UserPlatform->GetFileSystem()->RequestURIResolve("apui://script/aperturejs_sdk.js", "", filedatafiles, aperture::core::IAPCFileSystem::EFileType::OSDependant, aperture::core::IAPCFileSystem::ERequestType::Script_JS, aperture::core::IAPCFileSystem::ERequestAmmount::GlobAll))
@@ -176,7 +196,7 @@ nsResult aperture::v8::V8EEngineRuntime::CompileAndRunScripts()
     }
     for (auto& filedata : filedatafiles)
     {
-      if(filedata.size() == 0)
+      if (filedata.size() == 0)
       {
         UserPlatform->GetLoggingSystem()->LogError(
           "V8EEngineRuntime::CompileAndRunScripts: Script is empty, cannot compile and run!");
@@ -189,7 +209,7 @@ nsResult aperture::v8::V8EEngineRuntime::CompileAndRunScripts()
   for (auto& script : m_ScriptsToCompileAndRun)
   {
     nsSharedPtr<V8QuickScriptTask> task = nsMakeShared<V8QuickScriptTask>(script, "apui_managed_script", this);
-    m_TaskGroups.PushBack(nsTaskSystem::StartSingleTask(task, nsTaskPriority::EarlyThisFrame));
+    m_TaskGroups.PushBack(nsTaskSystem::StartSingleTask(task, nsTaskPriority::EarlyThisFrame, &WDTaskSystemV8Callback));
   }
   return NS_SUCCESS;
 }
@@ -219,6 +239,7 @@ void aperture::v8::V8EEngineRuntime::V8QuickScriptTask::Execute()
   {
     ::v8::Isolate::CreateParams create_params;
     create_params.array_buffer_allocator = ::v8::ArrayBuffer::Allocator::NewDefaultAllocator();
+    create_params.fatal_error_callback = &V8ErrorCallback;
     if (m_pRuntime->GetSnapshots().GetCount() > 0)
     {
       for (auto& snapshot : m_pRuntime->GetSnapshots())

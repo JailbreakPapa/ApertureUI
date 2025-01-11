@@ -105,10 +105,10 @@ namespace aperture::v8
     }
 
     ~V8EEngineRuntime();
-    
+
     void InitializeRuntime(V8EEngineMain* pEngineMain);
 
-    void SetScriptPath(const char* in_pScriptPath,  aperture::core::IAPCFileSystem::EFileType in_eFileType = aperture::core::IAPCFileSystem::EFileType::VFS);
+    void SetScriptPath(const char* in_pScriptPath, aperture::core::IAPCFileSystem::EFileType in_eFileType = aperture::core::IAPCFileSystem::EFileType::VFS);
 
     V8EEngineMain* GetV8EngineMain();
 
@@ -126,6 +126,8 @@ namespace aperture::v8
 
     nsResult ProcessAndTickEngine();
 
+    void WDTaskSystemV8Callback(nsTaskGroupID in_TaskGroupID);
+
   private:
     /*
      * @brief Prepares the runtime for execution by checking for any snapshots.
@@ -133,7 +135,7 @@ namespace aperture::v8
      * If there are snapshots, then it will load them and continue as normal.
      */
     void PrepareRuntime();
-    
+
     nsResult CompileAndRunScripts();
 
     void Cleanup_TaskGroups();
@@ -155,6 +157,10 @@ namespace aperture::v8
     nsHybridArray<core::CoreBuffer<nsUInt8>, 1> m_SnapshotData;
     V8EEngineMain* m_pV8EngineMain;
   };
+
+  static void V8ErrorCallback(const char* location, const char* message);
+
+  
 } // namespace aperture::v8
 
 /**
@@ -165,10 +171,10 @@ namespace aperture::v8
  * @param name Name of the function to bind.
  * @param func Pointer to the function to bind.
  */
-#define CACHE_FUNCTION_FROM_JS(name, func) \
-  if(aperture::v8::CacheBoundObjects(nullptr, func, name, true) == NS_FAILURE) \
-  { \
-    nsLog::SeriousWarning("Unable to Cache Object: {0}", name); \
+#define CACHE_FUNCTION_FROM_JS(name, func)                                      \
+  if (aperture::v8::CacheBoundObjects(nullptr, func, name, true) == NS_FAILURE) \
+  {                                                                             \
+    nsLog::SeriousWarning("Unable to Cache Object: {0}", name);                 \
   }
 
 
@@ -180,8 +186,8 @@ namespace aperture::v8
  * @param name Name of the object to bind.
  * @param obj Pointer to the object to bind.
  */
-#define CACHE_OBJECT_FROM_JS(name, obj) \
-  if(aperture::v8::CacheBoundObjects(nullptr, obj, name, true) == NS_FAILURE) \
-  { \
-    nsLog::SeriousWarning("Unable to Cache Object: {0}", name); \
+#define CACHE_OBJECT_FROM_JS(name, obj)                                        \
+  if (aperture::v8::CacheBoundObjects(nullptr, obj, name, true) == NS_FAILURE) \
+  {                                                                            \
+    nsLog::SeriousWarning("Unable to Cache Object: {0}", name);                \
   }

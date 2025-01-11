@@ -36,7 +36,7 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #pragma once
 
 #include <APHTML/APEngineCommonIncludes.h>
-#include <APHTML/layout/Core/LayoutDefinitions.h>
+#include <APHTML/layout/Core/LayoutNode.h>
 #include <vector>
 #include <yoga/Yoga.h>
 
@@ -49,67 +49,68 @@ namespace aperture::layout
    * The InlineContainer class provides functionality to add items with specific dimensions and margins,
    * set container dimensions and padding.
    */
-  class NS_APERTURE_DLL InlineContainer
+  class NS_APERTURE_DLL InlineContainer : public LayoutNode
   {
   public:
-    /**
-     * @brief Constructs a new InlineContainer object.
-     */
-    InlineContainer();
+    InlineContainer(const Style& style)
+      : LayoutNode(style)
+    {
+    }
 
-    /**
-     * @brief Destructs the InlineContainer object.
-     */
-    ~InlineContainer();
+    InlineContainer() {}
 
-    /**
-     * @brief Adds an item to the container with specified width, height, and optional margin.
-     *
-     * @param width The width of the item.
-     * @param height The height of the item.
-     * @param margin The margin around the item. Defaults to 0.0f.
-     */
-    void addItem(float width, float height, float margin = 0.0f);
+    void addChild(std::shared_ptr<LayoutNode> child) override
+    {
+      children_.push_back(child);
+    }
 
-    /**
-     * @brief Sets the width of the container.
-     *
-     * @param width The desired width of the container.
-     */
-    void setContainerWidth(float width);
-
-    /**
-     * @brief Sets the height of the container.
-     *
-     * @param height The desired height of the container.
-     */
-    void setContainerHeight(float height);
-
-    /**
-     * @brief Sets the padding of the container.
-     *
-     * @param padding The padding value to apply to the container.
-     */
-    void setPadding(float padding);
-
-    /**
-     * @brief Calculates the layout of the container and its contained items.
-     *
-     * This function computes the layout based on the current container dimensions, padding, and
-     * the dimensions and margins of the contained items using the Yoga layout engine.
-     */
-    void calculateLayout();
-
-    /**
-     * @brief Prints the current layout configuration of the container and its items.
-     *
-     * This function outputs the layout details, such as positions and sizes, of the container and
-     * each of its contained items for debugging or informational purposes.
-     */
-    void printLayout() const;
+    void calculateLayout(float width, float height) override
+    {
+      size_.width = width;
+      size_.height = height;
+      calculateInlineLayout(width);
+    }
 
   private:
-    YGNodeRef containerNode;
-    std::vector<std::unique_ptr<YGNodeRef>> itemNodes;
+    void calculateInlineLayout(float containerWidth)
+    {
+      float xOffset = 0.0f;
+      float yOffset = 0.0f;
+      float lineHeight = 0.0f;
+
+      for (auto& child : children_)
+      {
+        if (xOffset + child->size_.width > containerWidth)
+        {
+          xOffset = 0.0f; // Move to the next line
+          yOffset += lineHeight;
+          lineHeight = 0.0f;
+        }
+
+        child->position_ = {xOffset, yOffset};
+        xOffset += child->size_.width;
+        lineHeight = std::max(lineHeight, child->size_.height);
+      }
+
+      size_.height = yOffset + lineHeight; // Adjust container height
+    }
+
+  public:
+    void layout(float width, float height)
+    {
+      calculateLayout(width, height);
+    }
+
+    void printLayout()
+    {
+      for (const auto& child : children_)
+      {
+        nsLog::Info("Child: Left={0}, Top={1}, Width={3}, Height={4}",
+          child->position_.x,
+          child->position_.y,
+          child->size_.width,
+          child->size_.height);
+      }
+    }
   };
 } // namespace aperture::layout

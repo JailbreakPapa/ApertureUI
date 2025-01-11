@@ -35,17 +35,17 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #pragma once
 
-#include <APHTML/layout/Core/LayoutCore.h>
 #include <APHTML/APEngineCommonIncludes.h>
+#include <APHTML/layout/Core/LayoutCore.h>
 #include <vector>
 
 namespace aperture::layout
 {
   /*
-  * @brief Represents a node in the layout tree.
-  * This is the most basic building block of the layout system. 
-  * It is designed to be inherited from and extended to support more complex layout systems, e.g. Flexbox has its LayoutNode, Grid Has its LayoutNode, etc.
-  */
+   * @brief Represents a node in the layout tree.
+   * This is the most basic building block of the layout system.
+   * It is designed to be inherited from and extended to support more complex layout systems, e.g. Flexbox has its LayoutNode, Grid Has its LayoutNode, etc.
+   */
   class NS_APERTURE_DLL LayoutNode
   {
   public:
@@ -66,7 +66,8 @@ namespace aperture::layout
     virtual void calculateColumnLayout(const Size& availableSpace);
 
     virtual void positionChildren();
-
+    
+  public:
     Style style_;
     std::vector<std::shared_ptr<LayoutNode>> children_;
     Size size_;

@@ -3,10 +3,9 @@
 
 bool aperture::v8::V8EEngineMain::InitializeV8Engine(const char* p_ccResources)
 {
-  const char* s = nsOSFile::GetApplicationDirectory().GetStartPointer();
+  const char* s = nsOSFile::GetApplicationPath().GetStartPointer();
   nsStringBuilder finalSnapshot = s;
   nsStringBuilder finalicuDatafile = s;
-  finalicuDatafile.ChangeFileNameAndExtension("");
   if (!p_ccResources)
   {
     nsLog::SeriousWarning("V8Engine: Resource path provided (p_ccResources) is nullptr. Attempting to find resources in the current directory.");
@@ -20,7 +19,7 @@ bool aperture::v8::V8EEngineMain::InitializeV8Engine(const char* p_ccResources)
       }
     }
   }
-  
+
   if (::v8::V8::InitializeICUDefaultLocation(finalicuDatafile, p_ccResources))
   {
     finalSnapshot.AppendPath("/resources", "/snapshot_blob.bin");
