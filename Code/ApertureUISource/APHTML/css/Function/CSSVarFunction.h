@@ -32,24 +32,20 @@ STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
 ANY WAY OUT OF THE USE OR PERFORMANCE OF THIS SOFTWARE OR SOURCE CODE,
 EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-
 #pragma once
 
-#define NS_GIT_COMMIT_HASH_SHORT b29ee707ae9c
-#define NS_GIT_COMMIT_HASH_LONG b29ee707ae9cb3e3e4aeb8a9b1a07889bee2aad8
-#define NS_GIT_BRANCH_NAME "main"
+#include <APHTML/css/functions/CSSVarVariant.h>
+#include <APHTML/css/functions/CSSIFunction.h>
 
-// NOTE(Mikael A.): Add APUI ending for naming rule. 
-#define APUI_GIT_COMMIT_HASH_SHORT NS_GIT_COMMIT_HASH_SHORT
-#define APUI_GIT_COMMIT_HASH_LONG NS_GIT_COMMIT_HASH_LONG
-#define APUI_GIT_BRANCH_NAME NS_GIT_BRANCH_NAME
+namespace aperture::css
+{
+  class NS_APERTURE_DLL CSSVarFunction : public CSSIFunction
+  {
+  public:
+    virtual void RegisterFunction(const char* in_function, bool is_evaluatable) override;
 
-// NOTE(Mikael A.): SDK Version. Format: Year.Month.BuildIndex.Patch, Just like O3DE.
-#define APUI_SDK_VERSION_MAJOR 25
-#define APUI_SDK_VERSION_MINOR 01
-#define APUI_SDK_VERSION_BUILD 3
-#define APUI_SDK_VERSION_PATCH 0
-
-#define APUI_SDK_VERSION_STRING "ApertureUI SDK Version: " APUI_SDK_VERSION_MAJOR "." APUI_SDK_VERSION_MINOR "." APUI_SDK_VERSION_PATCH "." APUI_SDK_VERSION_BUILD
-#define APUI_SDK_VERSION_STRING_SHORT "ApertureUI SDK Version: " APUI_SDK_VERSION_MAJOR "." APUI_SDK_VERSION_MINOR "." APUI_SDK_VERSION_BUILD
-#define APUI_SDK_VERSION APUI_SDK_VERSION_MAJOR "." APUI_SDK_VERSION_MINOR "." APUI_SDK_VERSION_PATCH  "." APUI_SDK_VERSION_BUILD
+    virtual void EvaluateVariable(const char* in_variable, CSSVarVariant& out_var);
+  private:
+    CSSVarVariant m_var;
+  };
+} // namespace aperture::css

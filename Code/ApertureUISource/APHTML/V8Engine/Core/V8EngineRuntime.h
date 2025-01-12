@@ -38,7 +38,6 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <APHTML/APEngineCommonIncludes.h>
 #include <APHTML/V8Engine/System/Internal/V8Helpers.h>
 #include <APHTML/V8Engine/V8EngineDLL.h>
-#include <Foundation/Configuration/Singleton.h>
 #include <Foundation/Threading/TaskSystem.h>
 #include <v8-isolate.h>
 
@@ -88,8 +87,10 @@ namespace aperture::v8
       virtual ~V8QuickScriptTask();
       virtual void Execute() override;
       nsTaskGroupID GetTaskGroupID() const;
+      ::v8::Isolate* GetIsolate() const;
 
     private:
+      ::v8::Isolate* m_Isolate;
       V8EEngineRuntime* m_pRuntime;
       nsTaskGroupID m_TaskGroupID;
       core::CoreBuffer<nsUInt8> m_Script;
@@ -147,6 +148,8 @@ namespace aperture::v8
     void Cleanup_Scripts();
 
   private:
+  
+    bool m_bPopLatestIsolate = false;
     nsResult im_RuntimeStatus = NS_FAILURE;
     nsHybridArray<core::CoreBuffer<nsUInt8>, 1> m_ScriptsToCompileAndRun;
     nsHybridArray<nsTaskGroupID, 1> m_TaskGroups;

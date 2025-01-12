@@ -4,6 +4,7 @@
  *   You are only allowed access to this code, if given WRITTEN permission by WD Studios L.L.C.
  */
 #pragma once
+
 #include <APHTML/APEngineCommonIncludes.h>
 
 namespace aperture::css
@@ -12,13 +13,19 @@ namespace aperture::css
   {
   public:
     std::size_t m_fileSize;
-    /// @brief Absolute or relative file path to the CSS file.
+    /// @brief Absolute or relative (or VFS) file path to the CSS file.
     nsStringView m_filePath;
   };
 
   class NS_APERTURE_DLL CSSErrorDatabase
   {
   public:
+    NS_DECLARE_SINGLETON(CSSErrorDatabase);
+    NS_DISALLOW_COPY_AND_ASSIGN(CSSErrorDatabase);
+    friend class css_logger_error_handler;
+
+    CSSErrorDatabase() : m_SingletonRegistrar(this) {}
+
     enum CSSErrorType
     {
       CSS_ERROR_SYNTAX,      // Syntax Error.
@@ -50,7 +57,7 @@ namespace aperture::css
     }
 
     // Prints all errors in a user-friendly format.
-    void PrintErrors() const
+    void PrintErrors()
     {
       for (const auto& error : m_errorData)
       {
@@ -58,9 +65,17 @@ namespace aperture::css
       }
     }
 
+    void PrintErrorsUnstructured()
+    {
+      for (const auto& error : m_errorDataRaw)
+      {
+        nsLog::Info("CSS Error: {0}", error);
+      }
+    }
+
   private:
     nsDynamicArray<CSSErrorData> m_errorData;
-
+    nsDynamicArray<const char*> m_errorDataRaw;
     // Converts error type to a string representation for user-friendly output.
     const char* ErrorTypeToString(CSSErrorType type) const
     {

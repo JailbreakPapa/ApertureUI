@@ -64,6 +64,7 @@ namespace aperture::core
       Single = 0x001,
       GlobAll = 0x002
     };
+
   public:
     /// @brief Default constructor for the IAPCFileSystem class.
     IAPCFileSystem() = default;
@@ -88,8 +89,10 @@ namespace aperture::core
     /// @return Buffer of the file's data.
     virtual core::CoreBuffer<nsUInt8> GetFileData(const char* in_filepath, EFileType type = EFileType::OSDependant);
 
+    virtual core::CoreBuffer<const char*> GetFileDataChar(const char* in_filepath, EFileType type = EFileType::OSDependant);
+
     virtual bool RequestCreateFile(const char* in_filepath, core::CoreBuffer<nsUInt8> out_filedata, EFileType type = EFileType::OSDependant);
-    
+
     virtual const char* GetFileMimeType(const char* in_filepath);
     /// @brief Checks if a file exists.
     /// @param in_filepath Path to the file.
@@ -123,7 +126,8 @@ namespace aperture::core
 
     // TODO: Do Relative Path, etc...
   private:
-  bool EvaluateVFSInternal(const char* in_uri, const char* in_patharchivepath, std::vector<core::CoreBuffer<nsUInt8>>& out_filedatafiles, EFileType type, ERequestType filetype, ERequestAmmount ammount);
+    bool EvaluateVFSInternal(const char* in_uri, const char* in_patharchivepath, std::vector<core::CoreBuffer<nsUInt8>>& out_filedatafiles, EFileType type, ERequestType filetype, ERequestAmmount ammount);
+
   protected:
     const char* m_uiresources; ///< Path to the UI resources.
   };

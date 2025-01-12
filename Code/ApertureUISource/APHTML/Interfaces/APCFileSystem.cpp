@@ -43,7 +43,7 @@ bool aperture::core::IAPCFileSystem::EvaluateVFSInternal(const char* in_uri, con
 
     nsLog::SeriousWarning("Failed to find entry! Retrying with marker(SDK) files.");
     // NOTE(Mikael A.): Attempt to find the entry in the archive with the required supplied files. If we fail to find the entry, we will return false.
-    switch(filetype)
+    switch (filetype)
     {
       case (ERequestType::Script_JS):
       {
@@ -148,6 +148,25 @@ aperture::core::CoreBuffer<nsUInt8> aperture::core::IAPCFileSystem::GetFileData(
 
   return aperture::core::CoreBuffer<nsUInt8>(filedata.GetData(), filedata.GetCount());
 }
+aperture::core::CoreBuffer<const char*> aperture::core::IAPCFileSystem::GetFileDataChar(const char* in_filepath, EFileType type)
+{
+  nsOSFile apcfile;
+  nsStringBuilder filep(m_uiresources);
+  filep.Append(in_filepath);
+
+  if (apcfile.Open(filep, nsFileOpenMode::Read) != NS_SUCCESS)
+  {
+    nsLog::SeriousWarning("Failed to read file data!");
+    return CoreBuffer<const char*>();
+  }
+
+  nsDynamicArray<const char*> filedata;
+  nsDataBuffer filedatabf;
+  apcfile.ReadAll(filedatabf);
+
+  return aperture::core::CoreBuffer<const char*>(filedatabf.GetData(), filedatabf.GetCount());
+}
+
 bool aperture::core::IAPCFileSystem::RequestCreateFile(const char* in_filepath, core::CoreBuffer<nsUInt8> out_filedata, EFileType type)
 {
   nsOSFile apcfile;

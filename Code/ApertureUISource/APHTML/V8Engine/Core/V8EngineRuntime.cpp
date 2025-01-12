@@ -49,6 +49,11 @@ nsResult aperture::v8::V8EEngineRuntime::ProcessAndTickEngine()
         "V8EEngineRuntime::ProcessAndTickEngine: A Substaintial amount of scripts failed to compile and run, halting engine!");
       return NS_FAILURE;
     }
+    if(m_bPopLatestIsolate)
+    {
+      m_Isolates.PopBack();
+      m_bPopLatestIsolate = false;
+    }
   }
   return NS_SUCCESS;
 }
@@ -60,6 +65,7 @@ void aperture::v8::V8ErrorCallback(const char* location, const char* message)
 }
 void aperture::v8::V8EEngineRuntime::WDTaskSystemV8Callback(nsTaskGroupID in_TaskGroupID)
 {
+  nsLog::Info("V8EEngineRuntime::WDTaskSystemV8Callback: TaskGroupID: {0} has completed!", in_TaskGroupID);
   m_TaskGroups.RemoveAndSwap(in_TaskGroupID);
 }
 aperture::v8::V8EEngineRuntime::~V8EEngineRuntime()
@@ -209,6 +215,7 @@ nsResult aperture::v8::V8EEngineRuntime::CompileAndRunScripts()
   for (auto& script : m_ScriptsToCompileAndRun)
   {
     nsSharedPtr<V8QuickScriptTask> task = nsMakeShared<V8QuickScriptTask>(script, "apui_managed_script", this);
+    m_Isolates.PushBack(task->GetIsolate());
     m_TaskGroups.PushBack(nsTaskSystem::StartSingleTask(task, nsTaskPriority::EarlyThisFrame, &WDTaskSystemV8Callback));
   }
   return NS_SUCCESS;
@@ -234,8 +241,8 @@ void aperture::v8::V8EEngineRuntime::V8QuickScriptTask::Execute()
 {
   // Execute the script.
   // (Mikael A.): Attempt to get the current isolate. Due to the multithreaded nature of the Task System, the Thread we are on may not have an isolate, so we will create one ourself if needed.
-  ::v8::Isolate* isolate = ::v8::Isolate::GetCurrent();
-  if (!isolate || isolate->IsDead())
+  m_Isolate = ::v8::Isolate::GetCurrent();
+  if (!m_Isolate || m_Isolate->IsDead())
   {
     ::v8::Isolate::CreateParams create_params;
     create_params.array_buffer_allocator = ::v8::ArrayBuffer::Allocator::NewDefaultAllocator();
@@ -250,9 +257,9 @@ void aperture::v8::V8EEngineRuntime::V8QuickScriptTask::Execute()
         }
       }
     }
-    isolate = ::v8::Isolate::New(create_params);
-    auto script = helpers::compile(isolate->GetCurrentContext(), helpers::to_string(isolate, (const char*)m_Script.get()), m_ScriptName);
-    if (!script.ToLocalChecked()->Run(isolate->GetCurrentContext()).ToLocalChecked().IsEmpty())
+    m_Isolate = ::v8::Isolate::New(create_params);
+    auto script = helpers::compile(m_Isolate->GetCurrentContext(), helpers::to_string(m_Isolate, (const char*)m_Script.get()), m_ScriptName);
+    if (!script.ToLocalChecked()->Run(m_Isolate->GetCurrentContext()).ToLocalChecked().IsEmpty())
     {
       nsLog::Success("V8QuickScriptTask::Execute: Successfully ran script: {0}", m_ScriptName);
     }
@@ -269,4 +276,9 @@ aperture::v8::V8EEngineRuntime::V8QuickScriptTask::~V8QuickScriptTask()
 nsTaskGroupID aperture::v8::V8EEngineRuntime::V8QuickScriptTask::GetTaskGroupID() const
 {
   return m_TaskGroupID;
+}
+
+::v8::Isolate* aperture::v8::V8EEngineRuntime::V8QuickScriptTask::GetIsolate() const
+{
+  return m_Isolate;
 }

@@ -1,4 +1,6 @@
 #include <APHTML/APEngine.h>
+#include <SDKBuildInfo.h>
+
 void aperture::ApertureSDK::Initialize()
 {
   NS_ASSERT_DEBUG(GetScriptThreadCount() <= std::thread::hardware_concurrency(), "ApertureSDK: The amount of Script Threads is more than the amount of hardware threads. This may cause issues for the engine.");
@@ -24,7 +26,10 @@ nsUInt8 aperture::ApertureSDK::GetScriptThreadCount()
 {
   return m_pScriptThreadCount;
 }
-
+const char* aperture::ApertureSDK::GetSDKVersion()
+{
+  return (APUI_SDK_VERSION_STRING);
+}
 inline void aperture::ApertureSDK::SetRenderThreadCount(nsUInt8 p_threadcount)
 {
   if (IsSDKActive())

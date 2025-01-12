@@ -32,24 +32,62 @@ STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
 ANY WAY OUT OF THE USE OR PERFORMANCE OF THIS SOFTWARE OR SOURCE CODE,
 EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
+#include <APHTML/APEngineCommonIncludes.h>
+#include <APHTML/Interfaces/Internal/APCBuffer.h>
+#include <fstream>
+#include <ostream>
 
-#pragma once
+namespace converterhelpers
+{
+  template <typename T, typename Derived = nsDefaultAllocatorWrapper>
+  NS_ALWAYS_INLINE nsArrayBase<T, Derived> ToArrayBase(aperture::core::CoreBuffer<T>& buffer)
+  {
+    return nsArrayBase<T, Derived>(buffer.get(), buffer.size());
+  }
 
-#define NS_GIT_COMMIT_HASH_SHORT b29ee707ae9c
-#define NS_GIT_COMMIT_HASH_LONG b29ee707ae9cb3e3e4aeb8a9b1a07889bee2aad8
-#define NS_GIT_BRANCH_NAME "main"
+  // Overload operator<< for vector of strings
+  NS_ALWAYS_INLINE std::ostream& operator<<(std::ostream& os, const std::vector<std::string>& log)
+  {
+    os << "[";
+    for (size_t i = 0; i < log.size(); ++i)
+    {
+      os << log[i];
+      if (i != log.size() - 1)
+      {
+        os << ", ";
+      }
+    }
+    os << "]";
+    return os;
+  }
 
-// NOTE(Mikael A.): Add APUI ending for naming rule. 
-#define APUI_GIT_COMMIT_HASH_SHORT NS_GIT_COMMIT_HASH_SHORT
-#define APUI_GIT_COMMIT_HASH_LONG NS_GIT_COMMIT_HASH_LONG
-#define APUI_GIT_BRANCH_NAME NS_GIT_BRANCH_NAME
+  NS_ALWAYS_INLINE std::ostream& operator<<(std::ostream& os, const nsArrayBase<const char*, nsDefaultAllocatorWrapper>& log)
+  {
+    os << "[";
+    for (size_t i = 0; i < sizeof(log.GetData()); ++i)
+    {
+      os << log[i];
+      if (i != sizeof(log.GetData()) - 1)
+      {
+        os << ", ";
+      }
+    }
+    os << "]";
+    return os;
+  }
 
-// NOTE(Mikael A.): SDK Version. Format: Year.Month.BuildIndex.Patch, Just like O3DE.
-#define APUI_SDK_VERSION_MAJOR 25
-#define APUI_SDK_VERSION_MINOR 01
-#define APUI_SDK_VERSION_BUILD 3
-#define APUI_SDK_VERSION_PATCH 0
-
-#define APUI_SDK_VERSION_STRING "ApertureUI SDK Version: " APUI_SDK_VERSION_MAJOR "." APUI_SDK_VERSION_MINOR "." APUI_SDK_VERSION_PATCH "." APUI_SDK_VERSION_BUILD
-#define APUI_SDK_VERSION_STRING_SHORT "ApertureUI SDK Version: " APUI_SDK_VERSION_MAJOR "." APUI_SDK_VERSION_MINOR "." APUI_SDK_VERSION_BUILD
-#define APUI_SDK_VERSION APUI_SDK_VERSION_MAJOR "." APUI_SDK_VERSION_MINOR "." APUI_SDK_VERSION_PATCH  "." APUI_SDK_VERSION_BUILD
+  NS_ALWAYS_INLINE std::ostream& operator<<(std::ostream& os, aperture::core::CoreBuffer<const char*>& log)
+  {
+    os << "[";
+    for (size_t i = 0; i < log.size(); ++i)
+    {
+      os << log.get(i);
+      if (i != log.size(); -1)
+      {
+        os << ", ";
+      }
+    }
+    os << "]";
+    return os;
+  }
+} // namespace converterhelpers

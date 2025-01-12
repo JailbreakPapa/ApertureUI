@@ -3,14 +3,14 @@
 @import url('https://fonts.googleapis.com/css?family=Montserrat:400,500,600,700');
 
 * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
 a {
-    color: inherit;
-    text-decoration: none;
+  color: inherit;
+  text-decoration: none;
 }
 
 body {
@@ -35,8 +35,7 @@ p {
   background-color: #fff;
 }
 
-.grid {
-}
+.grid {}
 
 .header {
   grid-column: 1 / 4;
@@ -50,28 +49,26 @@ p {
   align-items: center;
 }
 
-.header nav {
-   
-}
+.header nav {}
 
 .header nav ul {
-    display: flex;
-/*     align-items: baseline; */
-    list-style-type: none;
+  display: flex;
+  /*     align-items: baseline; */
+  list-style-type: none;
 }
 
 .header nav li {
-    margin-right: 15px;
+  margin-right: 15px;
 }
 
 .header button {
-    border: none;
-    padding: 8px 25px;
-    color: #fff;
-    font-weight: 600;
-    cursor: pointer;
-    border-radius: 1.25rem;
-    background-color: #51bb7b;
+  border: none;
+  padding: 8px 25px;
+  color: #fff;
+  font-weight: 600;
+  cursor: pointer;
+  border-radius: 1.25rem;
+  background-color: #51bb7b;
 }
 
 .logo {
@@ -89,8 +86,8 @@ p {
 }
 
 .hero-unit img {
- width: 100%; 
- height: auto;   
+  width: 100%;
+  height: auto;
 }
 
 .sidebar {
@@ -111,8 +108,8 @@ p {
   font-size: .75rem;
 }
 
-.sidebar ul > li {
-    padding: .25rem 0;
+.sidebar ul>li {
+  padding: .25rem 0;
 }
 
 .sidebar img {
@@ -122,22 +119,22 @@ p {
 .main {
   grid-column: 2 / 4;
   grid-row: 2 / 4;
-/*   min-height: 500px; */
+  /*   min-height: 500px; */
 }
 
 .main h2 {
-    font-size: 32px;
-    margin-bottom: 1rem;
-    color: #50c6db;
+  font-size: 32px;
+  margin-bottom: 1rem;
+  color: #50c6db;
 }
 
 .main p {
-    font-size: 1rem;
-    margin-bottom: .75rem;
+  font-size: 1rem;
+  margin-bottom: .75rem;
 }
 
 .main img {
-    width: 100%;
+  width: 100%;
 }
 
 .extra {
@@ -167,25 +164,26 @@ p {
   color: #50c6db;
   padding: .5rem;
 }
+
 .content-block-info {
-   flex: 0 1 calc(33% - .5rem);
+  flex: 0 1 calc(33% - .5rem);
 }
 
 .related-images {
   grid-column: 1 / 3;
   grid-row: 5 / 6;
   display: grid;
-  grid-template-columns: repeat(4,1fr);
+  grid-template-columns: repeat(4, 1fr);
   grid-gap: 1rem;
 }
 
 .related-images .icon {
-    background-color: white;
-    flex: 1 1 150px;
+  background-color: white;
+  flex: 1 1 150px;
 }
 
 .related-images .icon img {
- max-width: 100%;
+  max-width: 100%;
 }
 
 .related-posts {
@@ -212,13 +210,10 @@ footer {
   text-align: center;
   padding: 20px 0;
   background-color: #9f9c9c;
-}  
-
-footer p {
-    color: #434344;
-    font-size: 12px;
-    padding: 10px;
 }
 
-    
-    
+footer p {
+  color: #434344;
+  font-size: 12px;
+  padding: 10px;
+}

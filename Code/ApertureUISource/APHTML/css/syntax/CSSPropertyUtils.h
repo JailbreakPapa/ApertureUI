@@ -5,29 +5,9 @@
  */
 #pragma once
 #include <APHTML/css/syntax/CSSSyntaxCommon.h>
-#include <APHTML/css/SpiritIncludes.h>
 #include <APHTML/APEngineCommonIncludes.h>
-
-using boost::spirit::x3::lexeme;
-using boost::spirit::x3::traits::move_to;
 
 namespace aperture::css
 {
-  template <typename Context, typename... PointerToMemberTypes>
-  auto& MemberReference(Context& context, PointerToMemberTypes... member)
-  {
-    return (_val(context).*....*member);
-  }
 
-  template <typename PropertyType, typename ParserType, typename... PointerToMemberTypes>
-  auto make_property(const PropertyType& property,
-    const ParserType& parser,
-    PointerToMemberTypes... member)
-  {
-    const auto setter = [member...](auto& context)
-    {
-      move_to(_attr(context), MemberReference(context, member...));
-    };
-    return lexeme[property] >> ':' >> parser[setter] >> ';';
-  }
 }

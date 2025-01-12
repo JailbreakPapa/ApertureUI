@@ -42,6 +42,7 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <Foundation/Types/SharedPtr.h>
 #include <Foundation/Containers/DynamicArray.h>
 #include <Foundation/Types/ObjectPtr.h>
+#include <Foundation/Configuration/Singleton.h>
 
 // STD INCLUDES
 #include <mutex>

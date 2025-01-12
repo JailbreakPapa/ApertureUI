@@ -61,6 +61,8 @@ namespace aperture
   public:
     /// @brief Initializes the SDK. This should be called before using the SDK, and always succeeds, but will assert on values that are incorrect.
     static void Initialize();
+
+    static const char* GetSDKVersion();
     // @note We scope lock write access to these values for protection.
     // @note Also, we do not allow for the values to be changed after the SDK is active.
     static void SetScriptThreadCount(nsUInt8 p_threadcount);
