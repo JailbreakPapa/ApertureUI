@@ -22,7 +22,6 @@ namespace aperture::css
         NS_FORCE_INLINE const char* url = "url";
         NS_FORCE_INLINE const char* linear = "linear";
         NS_FORCE_INLINE const char* radial = "radial";
-        NS_FORCE_INLINE const char* var = "var";
         NS_FORCE_INLINE const char* linear_gradient = "linear-gradient";
         NS_FORCE_INLINE const char* radial_gradient = "radial-gradient";
         NS_FORCE_INLINE const char* conic_gradient = "conic-gradient";

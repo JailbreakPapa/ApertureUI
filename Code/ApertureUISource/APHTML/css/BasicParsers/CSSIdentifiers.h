@@ -33,23 +33,20 @@ ANY WAY OUT OF THE USE OR PERFORMANCE OF THIS SOFTWARE OR SOURCE CODE,
 EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#pragma once
+#include <APHTML/CSS/Parser/CSSRuleParser.h>
 
-#define NS_GIT_COMMIT_HASH_SHORT e1a14a292a20
-#define NS_GIT_COMMIT_HASH_LONG e1a14a292a20fbce3401bf5f54a707f5be8270f1
-#define NS_GIT_BRANCH_NAME "main"
+namespace aperture::css::parser::basic
+{
+    auto identifier_p = CSSRuleParser::MakeRule<struct identifier,std::string> ("identifier", CSSSyntaxProperties::fundamental__identifier);
+    auto string_literal_p = CSSRuleParser::MakeRule<struct string_literal,std::string> ("string_literal", CSSSyntaxProperties::fundamental__string_literal);
 
-// NOTE(Mikael A.): Add APUI ending for naming rule. 
-#define APUI_GIT_COMMIT_HASH_SHORT NS_GIT_COMMIT_HASH_SHORT
-#define APUI_GIT_COMMIT_HASH_LONG NS_GIT_COMMIT_HASH_LONG
-#define APUI_GIT_BRANCH_NAME NS_GIT_BRANCH_NAME
+    CSS_RPL_START(identifier)
+    CSS_RPL_NOC(bp::char_("a-zA-Z0-9-_"),+)
+    CSS_RPL_NOC_END()
 
-// NOTE(Mikael A.): SDK Version. Format: Year.Month.BuildIndex.Patch, Just like O3DE.
-#define APUI_SDK_VERSION_MAJOR 25
-#define APUI_SDK_VERSION_MINOR 01
-#define APUI_SDK_VERSION_BUILD 3
-#define APUI_SDK_VERSION_PATCH 0
+    CSS_RPL_START(string_literal)
+    CSS_RPL_NOC(bp::repeat(6)[bp::char_("0-9a-fA-F")])
+    CSS_RPL_NOC_END()
 
-#define APUI_SDK_VERSION_STRING "ApertureUI SDK Version: " APUI_SDK_VERSION_MAJOR "." APUI_SDK_VERSION_MINOR "." APUI_SDK_VERSION_PATCH "." APUI_SDK_VERSION_BUILD
-#define APUI_SDK_VERSION_STRING_SHORT "ApertureUI SDK Version: " APUI_SDK_VERSION_MAJOR "." APUI_SDK_VERSION_MINOR "." APUI_SDK_VERSION_BUILD
-#define APUI_SDK_VERSION APUI_SDK_VERSION_MAJOR "." APUI_SDK_VERSION_MINOR "." APUI_SDK_VERSION_PATCH  "." APUI_SDK_VERSION_BUILD
+
+}

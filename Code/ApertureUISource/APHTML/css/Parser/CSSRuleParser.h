@@ -105,6 +105,8 @@ namespace aperture::css::parser
     nsMap<std::pair<bp::rule<StructOrClass>, bp::rule<StructOrClass>>, CSSSyntaxProperties> m_ruleBank; /**< Container storing CSS rule pairs and their properties */
   };
 
+
+
   /**
    * @class CSSRuleParser
    * @brief Helper class for parsing CSS rules using Boost Parser.
@@ -131,6 +133,8 @@ namespace aperture::css::parser
     /**
      * @brief Parses the given data and checks it against the specified rule.
      *
+     * @warning Your Rule should already be pre-declared to parser with this: BOOST_PARSER_DEFINE_RULES()
+     *
      * @tparam StructOrClass The structure or class type associated with the rule.
      * @tparam TypeToContain The type contained by the rule.
      * @tparam ParserObject The parser object type.
@@ -139,9 +143,10 @@ namespace aperture::css::parser
      * @param rule The Boost Parser rule to apply (optional).
      * @return True if parsing is successful, false otherwise.
      */
-    template <typename StructOrClass, typename TypeToContain, typename ParserObject>
-    bool ParseAndCheck(core::CoreBuffer<nsUInt8>& data, ParserObject& object, bp::rule<StructOrClass, TypeToContain>& rule = nullptr);
+    template <typename ParserObject>
+    static bool ParseAndCheck(const char* in_name, core::CoreBuffer<nsUInt8>& data, ParserObject& object);
   };
+
 } // namespace aperture::css::parser
 
 /**
@@ -157,6 +162,7 @@ namespace aperture::css::parser
 
 /**
  * @brief Helper macro to select the correct version of the macro based on the number of arguments.
+ * TODO: Whitespace Support
  */
 #define CSS_RP_2(symbol, breaker) symbol >> bp::lit(breaker)
 #define CSS_RP_1(symbol) CSS_RP_2(symbol, ',') >> // Default breaker is ','
@@ -177,6 +183,25 @@ namespace aperture::css::parser
  */
 #define CSS_RP_END(symbol) symbol;
 
+#define CSS_RPL_START(name, containingsymbol) \
+auto name##_p = bp::lexeme[##containingsymbol 
+
+#define CSS_RPL(symbol,operation) >> operation(symbol)
+#define CSS_RPL_NOC(symbol, operation) operation(symbol)
+#define CSS_RPL_END(symbol) >> ##symbol];
+#define CSS_RPL_NOC_END() ];
+/*
+// @example How to use the CSS Lexer Based Macros:
+inline namespace
+{
+  void testrpl()
+  {
+    CSS_RPL_START(test, '{')
+    CSS_RPL(bp::int_, bp::int_)
+    CSS_RPL_END('}')
+  }
+}
+*/
 /*
 @example How to use the CSSRuleParser class and macros:
 inline namespace
