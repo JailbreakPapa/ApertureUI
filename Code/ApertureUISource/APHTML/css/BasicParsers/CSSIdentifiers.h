@@ -40,8 +40,11 @@ namespace aperture::css::parser::basic
   auto identifier_r = CSSRuleParser::MakeRule<struct identifier, std::string>("identifier", CSSSyntaxProperties::fundamental__identifier);
   auto string_literal_r = CSSRuleParser::MakeRule<struct string_literal, std::string>("string_literal", CSSSyntaxProperties::fundamental__string_literal);
   auto hex_value_r = CSSRuleParser::MakeRule<struct hex_value, std::string>("hex_value", CSSSyntaxProperties::fundamental__hexvalue);
-  auto value_r = CSSRuleParser::MakeRule<struct value, std::string>("value", CSSSyntaxProperties::fundamental__value);
-  auto property_r = CSSRuleParser::MakeRule<struct property, std::string>("property", CSSSyntaxProperties::fundamental__property);
+  auto value_r = CSSRuleParser::MakeRule<struct value, std::string>("value", CSSSyntaxProperties::fundamental__value); 
+  auto property_r = CSSRuleParser::MakeRule<struct property, std::string /*TODO: Assign AST Representation*/>("property", CSSSyntaxProperties::fundamental__property);
+  auto block_r = CSSRuleParser::MakeRule<struct block, std::string>("block", CSSSyntaxProperties::fundamental__block);
+  auto css_rule_r = CSSRuleParser::MakeRule<struct css_rule, std::string /*TODO: Assign AST Representation*/>("css_rule", CSSSyntaxProperties::fundamental__css_rule);
+  auto css_file_r = CSSRuleParser::MakeRule<struct css_file, std::string /* std::vector<Rule>*/>("css_file", CSSSyntaxProperties::fundamental__css_rule); 
 
   CSS_RPL_START(identifier)
   CSS_RPL_NOC(bp::char_("a-zA-Z0-9-_"), +)
@@ -53,19 +56,33 @@ namespace aperture::css::parser::basic
   CSS_RPL_NOC_END()
 
   CSS_RPL_START(value)
-  CSS_RPL_REF(identifier)
+  CSS_RPL_NOC(bp::char_("a-zA-Z0-9.%"),+)
   CSS_RPL_NOC_END()
 
   CSS_RPL_START(property)
   CSS_RPL_NOC(bp::char_("a-zA-Z0-9.%"),+)
   CSS_RPL(':')
   CSS_RPL_REF_P(value)
-  CSS_RPL(';')
+  CSS_RPL_END(';')
+
 
   CSS_RPL_START(string_literal)
   CSS_RPL_NOC('"')
-  CSS_RPL(~x3::char_('"'), *)
+  CSS_RPL(bp::char_('"'), *)
   CSS_RPL_END('"')
+
+  CSS_RPL_START(block)
+  CSS_RPL_NOC('{')
+  CSS_RPL_REF_P(property,*)
+  CSS_RPL_END('}')
+
+  CSS_RPL_START(css_rule)
+  CSS_RPL_REF(identifier)
+  CSS_RPL_END(CSS_RPL_REF(block))
+
+  CSS_RPL_START(css_file)
+  CSS_RPL_REF(css_rule,*)
+  CSS_RPL_NOC_END()
 
   BOOST_PARSER_DEFINE_RULES(identifier_r, string_literal_r, hex_value_r, value_r, property_r)
 } // namespace aperture::css::parser::basic

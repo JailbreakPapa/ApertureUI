@@ -150,6 +150,7 @@ namespace aperture::v8
   private:
   
     bool m_bPopLatestIsolate = false;
+    nsString m_ScriptPath;
     nsResult im_RuntimeStatus = NS_FAILURE;
     nsHybridArray<core::CoreBuffer<nsUInt8>, 1> m_ScriptsToCompileAndRun;
     nsHybridArray<nsTaskGroupID, 1> m_TaskGroups;

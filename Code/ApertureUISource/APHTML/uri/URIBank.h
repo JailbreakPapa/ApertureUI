@@ -38,24 +38,41 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <APHTML/APEngineCommonIncludes.h>
 #include <APHTML/Interfaces/Internal/APCBuffer.h>
 #include <uriparser/Uri.h>
-#include <APHTML/Interfaces/APCPlatform.h>
 
 namespace aperture::uri
 {
-  class NS_APERTURE_DLL URIManager
+  class NS_APERTURE_DLL URIBank
   {
-    NS_DISALLOW_COPY_AND_ASSIGN(URIManager);
+  public:
+    URIBank() = default;
 
-  public:
-    static bool VerifyURI(const char* in_uri);
-    static const char* ConvertOSPathToURI(const char* in_uri);
-  public:
-    static const char* GetScheme(const UriUriA& in_uri);
-    static const char* GetHost(const UriUriA& in_uri);
-    static const char* GetPath(const UriUriA& in_uri);
-    static const char* GetQuery(const UriUriA& in_uri);
-    static const char* GetFragment(const UriUriA& in_uri);
-    static const char* GetPort(const UriUriA& in_uri);
-    private:
+    explicit URIBank(const char* in_uribankname);
+    void SetURIBankName(const char* in_uribankname);
+    const char* GetURIBankName();
+
+    UriUriA* FindRawURI(const nsString& in_uri);
+    const char* FindStringURI(const UriUriA& in_uri);
+
+    void AddURI(const nsString& in_uri, UriUriA* in_rawuri);
+    void AddURI(const UriUriA& in_uri);
+    void AddURI(const nsString& in_uri);
+
+    void RemoveURI(const nsString& in_uri);
+
+    const char* FindResolvedPath(const nsString& in_uri);
+    const char* FindOSPath(const nsString& in_uri);
+    const char* FindOSPath(const UriUriA& in_uri);
+
+    const char* GetRequestedFileName(const nsString& in_uri);
+    const char* GetRequestedFileName(const UriUriA& in_uri);
+
+    const char* GetRequestedFileExtension(const nsString& in_uri);
+    const char* GetRequestedFileExtension(const UriUriA& in_uri);
+
+    bool IsContentURI(const nsString& in_uri);
+    bool IsContentURI(const UriUriA& in_uri);
+
+  private:
+    nsMap<nsString, UriUriA> m_uriBank;
   };
 } // namespace aperture::uri

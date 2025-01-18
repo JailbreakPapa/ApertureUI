@@ -40,15 +40,18 @@ namespace aperture::css
   /// @brief Enum class for Currently Supported CSS3 Syntax Properties
   enum class CSSSyntaxProperties
   {
-    // NOTE(Mikael A.)Fundamental CSS3 Syntax, Dont Reference As Properties!
-    fundamental__identifier, // identifier
-    fundamental__string_literal, // actual string literal (e.g. 'value', or "value")
-    fundamental__value, // value
-    fundamental__hexvalue, // hex value
-    fundamental__property, // property
-    
+    // NOTE: Fundamental CSS3 Syntax, Don't Reference As Properties!
+    fundamental__identifier,     // identifier
+    fundamental__string_literal, // actual string literal (e.g., 'value' or "value")
+    fundamental__value,          // value
+    fundamental__hexvalue,       // hex value
+    fundamental__property,       // property
+    fundamental__block,          // block
+    fundamental__css_rule,       // CSS Rule
+
     // Aperture UI Specific CSS3 Syntax Properties
-    aperture_sdf_font_support, // apui-sdf-font: true,false,auto
+    aperture_sdf_font_support, // apui-sdf-font: true, false, auto
+
     // W3C Compliant CSS3 Syntax Properties
     align_content,
     align_items,
@@ -142,9 +145,9 @@ namespace aperture::css
     flex_grow,
     flex_shrink,
     flex_wrap,
-    float_, //float
+    float_, // float
     font,
-    font_face,//@font_face
+    font_face, //@font_face
     font_family,
     font_kerning,
     font_size,
@@ -177,7 +180,7 @@ namespace aperture::css
     import, //@import
     isolation,
     justify_content,
-    keyframes,// @keyframes
+    keyframes, // @keyframes
     left,
     letter_spacing,
     line_height,
@@ -259,4 +262,4 @@ namespace aperture::css
     language,
     direction
   };
-}
+} // namespace aperture::css

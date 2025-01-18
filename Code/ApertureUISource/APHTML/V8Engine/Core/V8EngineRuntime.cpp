@@ -80,10 +80,17 @@ void aperture::v8::V8EEngineRuntime::InitializeRuntime(V8EEngineMain* pEngineMai
   {
     UserPlatform->GetLoggingSystem()->LogError(
       "V8EEngineRuntime::InitializeRuntime: V8EEngineMain is nullptr, cannot initialize runtime!");
+    im_RuntimeStatus = NS_FAILURE;
     return;
   }
   m_pV8EngineMain = pEngineMain;
   im_RuntimeStatus = NS_SUCCESS;
+}
+
+void aperture::v8::V8EEngineRuntime::SetScriptPath(const char* in_pScriptPath, aperture::core::IAPCFileSystem::EFileType in_eFileType)
+{
+  // TODO: Implement URI Reference for Script Path!
+  m_ScriptPath = in_pScriptPath;
 }
 
 aperture::v8::V8EEngineMain* aperture::v8::V8EEngineRuntime::GetV8EngineMain()

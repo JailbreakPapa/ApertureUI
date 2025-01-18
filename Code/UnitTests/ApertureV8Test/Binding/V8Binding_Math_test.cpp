@@ -10,12 +10,16 @@
 
 #include <functional>
 #include <APHTML/APEngine.h>
-#include <V8Engine/Core/V8EngineMain.h>
-#include <V8Engine/Binding/V8EBinder.h>
+#include <APHTML/V8Engine/Core/V8EngineMain.h>
+#include <APHTML/V8Engine/Core/V8EngineRuntime.h>
+#include <APHTML/V8Engine/Binding/V8EBinder.h>
 
 NS_CREATE_SIMPLE_TEST_GROUP(Binding);
 NS_CREATE_SIMPLE_TEST(Binding, V8EBinder)
 {
+  aperture::core::IAPCPlatform platform;
+  aperture::core::DefaultLoggingSystem loggingSystem;
+  aperture::core::IAPCMemoryAllocator memoryAllocator;
   NS_TEST_BLOCK(nsTestBlock::Enabled, "Setup SDK")
   {
     aperture::ApertureSDK::SetScriptThreadCount(2);
@@ -23,19 +27,23 @@ NS_CREATE_SIMPLE_TEST(Binding, V8EBinder)
   }
   NS_TEST_BLOCK(nsTestBlock::Enabled, "Setup Platform")
   {
-    aperture::core::IAPCPlatform platform;
-    aperture::core::DefaultLoggingSystem loggingSystem;
-    aperture::core::IAPCMemoryAllocator memoryAllocator;
     platform.SetLoggingSystem(loggingSystem);
     platform.SetMemoryAllocator(memoryAllocator);
     NS_TEST_BOOL(aperture::core::IAPCPlatform::InitializePlatform("") == true);
   }
   NS_TEST_BLOCK(nsTestBlock::Enabled, "Setup V8Engine and Run Script.")
   {
-    aperture::v8::V8EEngineMain engineMain;
-    NS_TEST_BOOL(engineMain.InitializeV8Engine() == true);
-    engineMain.GetV8EJobManager()->Initialize();
-    engineMain.GetV8EJobManager()->SetPlatform(engineMain.GetV8EEnginePlatform());
+    nsUniquePtr<aperture::v8::V8EEngineMain> engineMain = nsMakeUnique<aperture::v8::V8EEngineMain>();
+    nsUniquePtr<aperture::v8::V8EEngineRuntime> runtimeEngine = nsMakeUnique<aperture::v8::V8EEngineRuntime>();
+    NS_TEST_BOOL(engineMain->InitializeV8Engine() == true);
+    runtimeEngine->InitializeRuntime(engineMain.Borrow());
+    runtimeEngine->InitializeRuntime(engineMain.Borrow());
+    NS_TEST_BOOL(runtimeEngine->GetRuntimeStatus() == NS_SUCCESS);
+    nsStringBuilder datap = nsTestFramework::GetInstance() -> GetRelTestDataPath();
+    datap.AppendPath("Binding");
+    runtimeEngine->SetScriptPath(datap, aperture::core::IAPCFileSystem::EFileType::OSDependant);
+    // NOTE: URI Needs to be implemented before we procced with this test.
+    ///runtimeEngine->RequestScriptToBeCompiledAndRan(aperture::core::CoreBuffer<nsUInt8>(), false, "testFunction");
 
     v8::Isolate::CreateParams create_params;
     create_params.array_buffer_allocator =

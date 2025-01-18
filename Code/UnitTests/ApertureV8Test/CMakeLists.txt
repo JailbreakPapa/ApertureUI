@@ -7,7 +7,7 @@ ns_create_target(APPLICATION ${PROJECT_NAME})
 
 target_link_libraries(${PROJECT_NAME}
   PUBLIC
-  apertureuiv8
+  apertureuihtmlengine
   TestFramework
   ToolsFoundation
 )

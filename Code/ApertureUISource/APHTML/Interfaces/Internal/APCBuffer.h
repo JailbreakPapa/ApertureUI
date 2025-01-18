@@ -75,17 +75,17 @@ namespace aperture::core
 
     void resize(size_t newSize);
 
-    T* get(size_t size);
+    T* get(size_t size = size());
 
     size_t size() const;
 
     // All of the iterator stuff
-    CoreBuffer<T>::const_interator begin() const { return m_data; }
-    CoreBuffer<T>::const_interator end() const { return m_data + m_size; }
-    CoreBuffer<T>::const_reverse_interator rbegin() const { return m_data + m_size - 1; }
-    CoreBuffer<T>::const_reverse_interator rend() const { return m_data - 1; }
-    CoreBuffer<T>::const_interator cbegin() const { return m_data; }
-    CoreBuffer<T>::const_interator cend() const { return m_data + m_size; }
+    CoreBuffer<T>::const_iterator end() const { return m_data + m_size; }
+    CoreBuffer<T>::const_iterator begin() const { return m_data; }
+    CoreBuffer<T>::const_reverse_iterator rbegin() const { return m_data + m_size - 1; }
+    CoreBuffer<T>::const_reverse_iterator rend() const { return m_data - 1; }
+    CoreBuffer<T>::const_iterator cbegin() const { return m_data; }
+    CoreBuffer<T>::const_iterator cend() const { return m_data + m_size; }
   };
 
   template <typename T>

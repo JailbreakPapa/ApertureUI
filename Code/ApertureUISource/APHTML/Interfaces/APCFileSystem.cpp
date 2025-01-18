@@ -101,7 +101,8 @@ bool aperture::core::IAPCFileSystem::EvaluateVFSInternal(const char* in_uri, con
 }
 const char* aperture::core::IAPCFileSystem::FileCharset(const nsString& in_filepath)
 {
-  return localization::ICUCharset::GetCharset(GetFileData(in_filepath));
+  auto sa = GetFileData(in_filepath);
+  return localization::ICUCharset::GetCharset(sa);
 }
 
 bool aperture::core::IAPCFileSystem::RequestURIResolve(const char* in_uri, const char* in_patharchivepath, std::vector<core::CoreBuffer<nsUInt8>>& out_filedatafiles, EFileType type, ERequestType filetype, ERequestAmmount ammount)
@@ -110,6 +111,9 @@ bool aperture::core::IAPCFileSystem::RequestURIResolve(const char* in_uri, const
   {
     case (EFileType::OSDependant):
     {
+      // NOTE(Mikael A.): We haven't done anything with URI's yet, so we will just append the URI to the path.
+      // TODO: Implement Proper URI Logic....
+      
       nsOSFile apcfile;
       nsStringBuilder filep(m_uiresources);
       filep.Append(in_uri);
