@@ -20,7 +20,7 @@ namespace aperture::core
       pVal = nullptr;
     }
   }
-  /// @brief Utility class to format a string quickly!
+  /// @brief Utility func to format a string quickly!
   template <typename... ARGS>
   inline nsString Format(nsStringView sFormat, ARGS&&... args)
   {

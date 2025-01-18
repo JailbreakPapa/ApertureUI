@@ -182,13 +182,14 @@ namespace aperture::css::parser
  * @brief Ends the CSS rule parser declaration.
  */
 #define CSS_RP_END(symbol) symbol;
-
+#define CSS_RPL_REF_P(symbol) | symbol##_p
+#define CSS_RPL_REF(symbol) symbol##_p
 #define CSS_RPL_START(name, containingsymbol) \
 auto name##_p = bp::lexeme[##containingsymbol 
 
 #define CSS_RPL(symbol,operation) >> operation(symbol)
 #define CSS_RPL_NOC(symbol, operation) operation(symbol)
-#define CSS_RPL_END(symbol) >> ##symbol];
+#define CSS_RPL_END(symbol) >> ##symbol ];
 #define CSS_RPL_NOC_END() ];
 /*
 // @example How to use the CSS Lexer Based Macros:

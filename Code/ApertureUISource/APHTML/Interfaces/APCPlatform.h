@@ -36,30 +36,42 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #pragma once
 #include <APHTML/APEngineDLL.h>
 #include <APHTML/Interfaces/APCFileSystem.h>
-#include <Foundation/Configuration/Singleton.h>
 #include <APHTML/Interfaces/APCHarrlowInterface.h>
 #include <APHTML/Interfaces/APCLoggingSystem.h>
 #include <APHTML/Interfaces/APCMemoryAllocator.h>
+#include <Foundation/Configuration/Singleton.h>
+#include <Foundation/Time/Stopwatch.h>
+#include <Foundation/Utilities/EnumerableClass.h>
 
 namespace aperture::core
 {
-  /// @brief Interface for applications to provide a interface to APUI.
-  class NS_APERTURE_DLL IAPCPlatform
+  /// @brief Interface for applications to provide a interfaces to APUI. Also Represents the Lifetime of The SDK.
+  class NS_APERTURE_DLL IAPCPlatform : public nsEnumerable<IAPCPlatform>
   {
     friend class IAPCFileSystem;
     friend class IAPCHarrlowInterface;
     friend class IAPCLoggingSystem;
     friend class IAPCMemoryAllocator;
 
+    NS_DECLARE_ENUMERABLE_CLASS(IAPCPlatform);
     NS_DECLARE_SINGLETON(IAPCPlatform);
     NS_DISALLOW_COPY_AND_ASSIGN(IAPCPlatform);
-  public:
-  
-    IAPCPlatform() : m_SingletonRegistrar(this) {}
 
+  public:
+    IAPCPlatform()
+      : m_SingletonRegistrar(this)
+    {
+      m_Stopwatch.StopAndReset();
+    }
+
+    virtual ~IAPCPlatform()
+    {
+      KillPlatform();
+    }
+    
     /// @brief Initializes the Underlying platform implementation(memory handler, filesystem, etc).
     static bool InitializePlatform(const char* licensekey);
-    
+
     /// @brief Sets the filesystem for APUI to use.
     /// @param in_filesystem filesystem to use.
     void SetFileSystem(const IAPCFileSystem& in_filesystem);
@@ -68,6 +80,8 @@ namespace aperture::core
     void SetMemoryAllocator(const IAPCMemoryAllocator& in_memorysystem);
 
     void SetLoggingSystem(const IAPCLoggingSystem& in_loggingsystem);
+
+    void KillPlatform();
 
     IAPCFileSystem* GetFileSystem()
     {
@@ -84,9 +98,15 @@ namespace aperture::core
       return m_loggingsystem;
     }
 
+    nsTime GetTimeSinceStart()
+    {
+      return m_Stopwatch.GetRunningTotal();
+    }
+
     static bool IsEngineReady();
 
   private:
+    nsStopwatch m_Stopwatch;
     static inline bool m_bEngineStatus;
 
     nsMutex lockermt;
@@ -97,5 +117,5 @@ namespace aperture::core
 
     IAPCLoggingSystem* m_loggingsystem = nullptr;
   };
-  
+
 } // namespace aperture::core

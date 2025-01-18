@@ -37,16 +37,35 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 namespace aperture::css::parser::basic
 {
-    auto identifier_p = CSSRuleParser::MakeRule<struct identifier,std::string> ("identifier", CSSSyntaxProperties::fundamental__identifier);
-    auto string_literal_p = CSSRuleParser::MakeRule<struct string_literal,std::string> ("string_literal", CSSSyntaxProperties::fundamental__string_literal);
+  auto identifier_r = CSSRuleParser::MakeRule<struct identifier, std::string>("identifier", CSSSyntaxProperties::fundamental__identifier);
+  auto string_literal_r = CSSRuleParser::MakeRule<struct string_literal, std::string>("string_literal", CSSSyntaxProperties::fundamental__string_literal);
+  auto hex_value_r = CSSRuleParser::MakeRule<struct hex_value, std::string>("hex_value", CSSSyntaxProperties::fundamental__hexvalue);
+  auto value_r = CSSRuleParser::MakeRule<struct value, std::string>("value", CSSSyntaxProperties::fundamental__value);
+  auto property_r = CSSRuleParser::MakeRule<struct property, std::string>("property", CSSSyntaxProperties::fundamental__property);
 
-    CSS_RPL_START(identifier)
-    CSS_RPL_NOC(bp::char_("a-zA-Z0-9-_"),+)
-    CSS_RPL_NOC_END()
+  CSS_RPL_START(identifier)
+  CSS_RPL_NOC(bp::char_("a-zA-Z0-9-_"), +)
+  CSS_RPL_NOC_END()
 
-    CSS_RPL_START(string_literal)
-    CSS_RPL_NOC(bp::repeat(6)[bp::char_("0-9a-fA-F")])
-    CSS_RPL_NOC_END()
+  CSS_RPL_START(hex_value)
+  CSS_RPL_NOC(bp::char_('#'))
+  CSS_RPL(bp::repeat(6)[bp::char_("0-9a-fA-F")])
+  CSS_RPL_NOC_END()
 
+  CSS_RPL_START(value)
+  CSS_RPL_REF(identifier)
+  CSS_RPL_NOC_END()
 
-}
+  CSS_RPL_START(property)
+  CSS_RPL_NOC(bp::char_("a-zA-Z0-9.%"),+)
+  CSS_RPL(':')
+  CSS_RPL_REF_P(value)
+  CSS_RPL(';')
+
+  CSS_RPL_START(string_literal)
+  CSS_RPL_NOC('"')
+  CSS_RPL(~x3::char_('"'), *)
+  CSS_RPL_END('"')
+
+  BOOST_PARSER_DEFINE_RULES(identifier_r, string_literal_r, hex_value_r, value_r, property_r)
+} // namespace aperture::css::parser::basic

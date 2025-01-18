@@ -58,7 +58,8 @@ namespace aperture::core
       if (duration > m_desiredDuration)
       {
         // Report to the user that we are over frame!.
-        core::IAPCPlatform::GetLoggingSystem()->LogWarning("APCore: Frame Over Budget! %s:%d %s took %d ms", m_file, m_line, m_name, duration);
+        auto UserPlatform = nsSingletonRegistry::GetSingletonInstance<IAPCPlatform>();
+        UserPlatform->GetLoggingSystem()->LogWarning("APCore: Frame Over Budget! {0}:{1} {2} took {3} ms", m_file, m_line, m_name, duration);
       }
     }
 
@@ -70,6 +71,7 @@ namespace aperture::core
     nsUInt64 m_desiredDuration;
   };
 } // namespace aperture::core
+
 #define APUI_BENCHMARK_THREAD_SCOPE(RegionName, DetailName)                         \
   static nsString __String__##RegionName##DetailName = #RegionName "." #DetailName; \
   aperture::core::IAPCLocalBenchmark __Benchmark__##RegionName##DetailName(__String__##RegionName##DetailName, __FILE__, __LINE__)
