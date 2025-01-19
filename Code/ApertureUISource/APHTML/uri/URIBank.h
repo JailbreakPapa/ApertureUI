@@ -51,28 +51,30 @@ namespace aperture::uri
     const char* GetURIBankName();
 
     UriUriA* FindRawURI(const nsString& in_uri);
-    const char* FindStringURI(const UriUriA& in_uri);
+    const char* FindStringURI(UriUriA* in_uri);
 
     void AddURI(const nsString& in_uri, UriUriA* in_rawuri);
-    void AddURI(const UriUriA& in_uri);
-    void AddURI(const nsString& in_uri);
+    void AddURI(UriUriA* in_uri, nsUInt8 in_accessType = 0 /* 0 = OSDependant, 1 = VFS */);
+    void AddURI(const nsString& in_uri, nsUInt8 in_accessType = 0 /* 0 = OSDependant, 1 = VFS */);
 
     void RemoveURI(const nsString& in_uri);
 
     const char* FindResolvedPath(const nsString& in_uri);
     const char* FindOSPath(const nsString& in_uri);
-    const char* FindOSPath(const UriUriA& in_uri);
+    const char* FindOSPath(UriUriA* in_uri);
 
     const char* GetRequestedFileName(const nsString& in_uri);
-    const char* GetRequestedFileName(const UriUriA& in_uri);
+    const char* GetRequestedFileName(UriUriA* in_uri);
 
     const char* GetRequestedFileExtension(const nsString& in_uri);
-    const char* GetRequestedFileExtension(const UriUriA& in_uri);
+    const char* GetRequestedFileExtension(UriUriA* in_uri);
 
     bool IsContentURI(const nsString& in_uri);
-    bool IsContentURI(const UriUriA& in_uri);
-
+    bool IsContentURI(UriUriA* in_uri);
+    // Helper for nsMap
+    static nsStringView UriObjToStringView(UriUriA* in_uri);
   private:
-    nsMap<nsString, UriUriA> m_uriBank;
+    nsString m_uribankname;
+    nsMap<nsString, UriUriA*> m_uriBank;
   };
 } // namespace aperture::uri

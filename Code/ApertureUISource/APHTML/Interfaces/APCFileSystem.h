@@ -94,6 +94,7 @@ namespace aperture::core
     virtual bool RequestCreateFile(const char* in_filepath, core::CoreBuffer<nsUInt8> out_filedata, EFileType type = EFileType::OSDependant);
 
     virtual bool RequestCreateFile(const char* in_filepath, core::CoreBuffer<const char*> out_filedata, EFileType type = EFileType::OSDependant);
+    
     virtual const char* GetFileMimeType(const char* in_filepath);
     /// @brief Checks if a file exists.
     /// @param in_filepath Path to the file.

@@ -92,8 +92,11 @@ function(ns_link_v8_target TARGET_PROJECT)
     message(STATUS "Finding V8 libraries at: ${NS_V8_ROOT}/v8_prebuiltzip/${NS_V8_BINARY_PATH_NAME}")
     ns_glob_library_files("${NS_V8_ROOT}/v8_prebuiltzip/${NS_V8_BINARY_PATH_NAME}" V8_NEEDED_LIBS)
     message(STATUS "Linking V8 libraries: ${V8_NEEDED_LIBS}")
-    target_link_libraries(${TARGET_PROJECT} PUBLIC ${V8_NEEDED_LIBS})
 
+    #target_link_libraries(${TARGET_PROJECT} PUBLIC ${V8_NEEDED_LIBS})
+    target_link_libraries(${TARGET_PROJECT} PUBLIC "${NS_V8_ROOT}/v8_prebuiltzip/${NS_V8_BINARY_PATH_NAME}/v8.dll.lib")
+    target_link_libraries(${TARGET_PROJECT} PUBLIC "${NS_V8_ROOT}/v8_prebuiltzip/${NS_V8_BINARY_PATH_NAME}/v8_libbase.dll.lib")
+    target_link_libraries(${TARGET_PROJECT} PUBLIC "${NS_V8_ROOT}/v8_prebuiltzip/${NS_V8_BINARY_PATH_NAME}/v8_libplatform.dll.lib")
     # Link target to dynamic link libraries.
     ns_glob_dynamiclink_files(${NS_V8_ROOT}/v8_prebuiltzip/${NS_V8_BINARY_PATH_NAME} V8_DLLS)
 
@@ -102,7 +105,9 @@ function(ns_link_v8_target TARGET_PROJECT)
 
     # Copy DLLs to the target output directory
     add_custom_command(TARGET ${TARGET_PROJECT} POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${V8_DLLS} ${TARGET_OUTPUT_DIR}
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different "${NS_V8_ROOT}/v8_prebuiltzip/${NS_V8_BINARY_PATH_NAME}/v8.dll" ${TARGET_OUTPUT_DIR}
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different "${NS_V8_ROOT}/v8_prebuiltzip/${NS_V8_BINARY_PATH_NAME}/v8_libbase.dll" ${TARGET_OUTPUT_DIR}
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different "${NS_V8_ROOT}/v8_prebuiltzip/${NS_V8_BINARY_PATH_NAME}/v8_libplatform.dll" ${TARGET_OUTPUT_DIR}
         WORKING_DIRECTORY ${CMAKE_CURRENT_FUNCTION_LIST_DIR}
     )
 

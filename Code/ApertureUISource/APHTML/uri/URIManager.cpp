@@ -28,32 +28,56 @@ bool aperture::uri::URIManager::VerifyURI(const char* in_uri)
   return true;
 }
 
-const char* aperture::uri::URIManager::GetScheme(const UriUriA& in_uri)
+bool aperture::uri::URIManager::VerifyURI(UriUriA* in_uri)
 {
-  return in_uri.scheme.first;
+  auto UserPlatform = nsSingletonRegistry::GetSingletonInstance<aperture::core::IAPCPlatform>();
+  // Verify and normalize the URI
+  if (uriNormalizeSyntaxA(in_uri) != URI_SUCCESS)
+  {
+    UserPlatform->GetLoggingSystem()->LogError("The UriUriA object is invalid or malformed.");
+    return false;
+  }
+
+  // Additional component validation (optional)
+  if (in_uri->scheme.first == NULL)
+  {
+    UserPlatform->GetLoggingSystem()->LogError("The URI is missing a scheme.");
+    return false;
+  }
+
+  if (in_uri->hostText.first == NULL)
+  {
+    UserPlatform->GetLoggingSystem()->LogError("The URI is missing a host.");
+    return false;
+  }
+  return true;
+}
+const char* aperture::uri::URIManager::GetScheme(UriUriA* in_uri)
+{
+  return in_uri->scheme.first;
 }
 
-const char* aperture::uri::URIManager::GetHost(const UriUriA& in_uri)
+const char* aperture::uri::URIManager::GetHost(UriUriA* in_uri)
 {
-  return in_uri.hostText.first;
+  return in_uri->hostText.first;
 }
 
-const char* aperture::uri::URIManager::GetPath(const UriUriA& in_uri)
+const char* aperture::uri::URIManager::GetPath(UriUriA* in_uri)
 {
-  return in_uri.pathHead->text.first;
+  return in_uri->pathHead->text.first;
 }
 
-const char* aperture::uri::URIManager::GetQuery(const UriUriA& in_uri)
+const char* aperture::uri::URIManager::GetQuery(UriUriA* in_uri)
 {
-  return in_uri.query.first;
+  return in_uri->query.first;
 }
 
-const char* aperture::uri::URIManager::GetFragment(const UriUriA& in_uri)
+const char* aperture::uri::URIManager::GetFragment(UriUriA* in_uri)
 {
-  return in_uri.fragment.first;
+  return in_uri->fragment.first;
 }
 
-const char* aperture::uri::URIManager::GetPort(const UriUriA& in_uri)
+const char* aperture::uri::URIManager::GetPort(UriUriA* in_uri)
 {
-  return in_uri.portText.first;
+  return in_uri->portText.first;
 }

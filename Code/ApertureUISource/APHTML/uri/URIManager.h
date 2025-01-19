@@ -48,14 +48,15 @@ namespace aperture::uri
 
   public:
     static bool VerifyURI(const char* in_uri);
+    static bool VerifyURI(UriUriA* in_uri);
     static const char* ConvertOSPathToURI(const char* in_uri);
   public:
-    static const char* GetScheme(const UriUriA& in_uri);
-    static const char* GetHost(const UriUriA& in_uri);
-    static const char* GetPath(const UriUriA& in_uri);
-    static const char* GetQuery(const UriUriA& in_uri);
-    static const char* GetFragment(const UriUriA& in_uri);
-    static const char* GetPort(const UriUriA& in_uri);
+    static const char* GetScheme(UriUriA* in_uri);
+    static const char* GetHost(UriUriA* in_uri);
+    static const char* GetPath(UriUriA* in_uri);
+    static const char* GetQuery(UriUriA* in_uri);
+    static const char* GetFragment(UriUriA* in_uri);
+    static const char* GetPort(UriUriA* in_uri);
     private:
   };
 } // namespace aperture::uri
