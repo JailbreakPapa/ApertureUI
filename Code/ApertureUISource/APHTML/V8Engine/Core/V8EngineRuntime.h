@@ -37,13 +37,13 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include <APHTML/APEngineCommonIncludes.h>
 #include <APHTML/V8Engine/System/Internal/V8Helpers.h>
+#include <APHTML/V8Engine/Core/V8EngineMain.h>
 #include <APHTML/V8Engine/V8EngineDLL.h>
 #include <Foundation/Threading/TaskSystem.h>
 #include <v8-isolate.h>
 
 namespace aperture::v8
 {
-  class V8EEngineMain;
   /**
    * @class V8EEngineRuntime
    * @brief Manages the V8 Engine runtime environment as a singleton.
@@ -72,7 +72,6 @@ namespace aperture::v8
   {
   public:
     NS_DECLARE_SINGLETON(V8EEngineRuntime);
-    NS_DISALLOW_COPY_AND_ASSIGN(V8EEngineRuntime);
     class V8QuickScriptTask : public nsTask
     {
       friend class V8EEngineRuntime;
@@ -176,7 +175,7 @@ namespace aperture::v8
  * @param func Pointer to the function to bind.
  */
 #define CACHE_FUNCTION_FROM_JS(name, func)                                      \
-  if (aperture::v8::CacheBoundObjects(nullptr, func, name, true) == NS_FAILURE) \
+  if (aperture::v8::V8EEngineRuntime::CacheBoundObjects(nullptr, func, name, true) == NS_FAILURE) \
   {                                                                             \
     nsLog::SeriousWarning("Unable to Cache Object: {0}", name);                 \
   }
@@ -191,7 +190,7 @@ namespace aperture::v8
  * @param obj Pointer to the object to bind.
  */
 #define CACHE_OBJECT_FROM_JS(name, obj)                                        \
-  if (aperture::v8::CacheBoundObjects(nullptr, obj, name, true) == NS_FAILURE) \
+  if (aperture::v8::V8EEngineRuntime::CacheBoundObjects(nullptr, obj, name, true) == NS_FAILURE) \
   {                                                                            \
     nsLog::SeriousWarning("Unable to Cache Object: {0}", name);                \
   }

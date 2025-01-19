@@ -34,7 +34,7 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
 #pragma once
-#include <APHTML/APEngineDLL.h>
+#include <APHTML/APEngineCommonIncludes.h>
 #include <APHTML/Interfaces/Internal/APCBuffer.h>
 #include <Foundation/IO/OSFile.h>
 #include <Foundation/Types/UniquePtr.h>
@@ -83,7 +83,7 @@ namespace aperture::core
     /// @param in_patharchivepath If we are using VFS, what is the path the the VFS Archive File?
     /// @return If The Resolve Was Successful.
     /// @warning Handling a Bad Resolve is weird to work with, as we rely on the user to handle the data. if the function returns false, we will not be able to get the data (e.g. parsing a CSS file will fail). **MAKE SURE THIS IS ALWAYS RETURNING TRUE.**
-    virtual bool RequestURIResolve(const char* in_uri, const char* in_patharchivepath, std::vector<core::CoreBuffer<nsUInt8>>& out_filedatafiles, EFileType type = EFileType::OSDependant, ERequestType filetype, ERequestAmmount ammount = ERequestAmmount::Single);
+    virtual bool RequestURIResolve(const char* in_uri, const char* in_patharchivepath, std::vector<core::CoreBuffer<nsUInt8>>& out_filedatafiles, EFileType type = EFileType::OSDependant, ERequestType filetype = ERequestType::Script_JS, ERequestAmmount ammount = ERequestAmmount::Single);
     /// @brief Gets the buffer of the file's data.
     /// @param in_filepath Path to the file.
     /// @return Buffer of the file's data.
@@ -93,6 +93,7 @@ namespace aperture::core
 
     virtual bool RequestCreateFile(const char* in_filepath, core::CoreBuffer<nsUInt8> out_filedata, EFileType type = EFileType::OSDependant);
 
+    virtual bool RequestCreateFile(const char* in_filepath, core::CoreBuffer<const char*> out_filedata, EFileType type = EFileType::OSDependant);
     virtual const char* GetFileMimeType(const char* in_filepath);
     /// @brief Checks if a file exists.
     /// @param in_filepath Path to the file.

@@ -19,9 +19,9 @@ namespace aperture::css
 
   class NS_APERTURE_DLL CSSErrorDatabase
   {
-  public:
     NS_DECLARE_SINGLETON(CSSErrorDatabase);
-    NS_DISALLOW_COPY_AND_ASSIGN(CSSErrorDatabase);
+  public:
+    
     friend class css_logger_error_handler;
 
     CSSErrorDatabase() : m_SingletonRegistrar(this) {}

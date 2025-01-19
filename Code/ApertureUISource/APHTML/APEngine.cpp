@@ -28,7 +28,7 @@ nsUInt8 aperture::ApertureSDK::GetScriptThreadCount()
 }
 const char* aperture::ApertureSDK::GetSDKVersion()
 {
-  return (APUI_SDK_VERSION_STRING);
+  return APUI_SDK_VERSION_STRING;
 }
 inline void aperture::ApertureSDK::SetRenderThreadCount(nsUInt8 p_threadcount)
 {
@@ -149,4 +149,9 @@ void aperture::ApertureSDK::SetIsCachingAllowed(bool p_allowcaching)
     NS_LOCK(m_SDKLocker);
     m_bIsSerializationAllowedforSDK = p_allowcaching;
   }
+}
+
+bool aperture::ApertureSDK::IsCachingAllowed()
+{
+  return m_bIsSerializationAllowedforSDK;
 }

@@ -37,10 +37,6 @@ public:
         return *this;
     }
 
-    // Disable Copy Constructor and Copy Assignment
-    nsObjectPtr(const nsObjectPtr&) = delete;
-    nsObjectPtr& operator=(const nsObjectPtr&) = delete;
-
     // Access Operators with Verification
     T& operator*() const {
         if (!ptr) {

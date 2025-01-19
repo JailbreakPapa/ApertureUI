@@ -55,7 +55,6 @@ namespace aperture::core
 
     NS_DECLARE_ENUMERABLE_CLASS(IAPCPlatform);
     NS_DECLARE_SINGLETON(IAPCPlatform);
-    NS_DISALLOW_COPY_AND_ASSIGN(IAPCPlatform);
 
   public:
     IAPCPlatform()
@@ -71,7 +70,7 @@ namespace aperture::core
     
     /// @brief Initializes the Underlying platform implementation(memory handler, filesystem, etc).
     static bool InitializePlatform(const char* licensekey);
-
+    void StartPlatform();
     /// @brief Sets the filesystem for APUI to use.
     /// @param in_filesystem filesystem to use.
     void SetFileSystem(const IAPCFileSystem& in_filesystem);

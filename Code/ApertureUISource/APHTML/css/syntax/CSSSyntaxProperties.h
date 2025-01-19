@@ -260,6 +260,5 @@ namespace aperture::css
     word_wrap,
     z_index,
     language,
-    direction
   };
 } // namespace aperture::css

@@ -35,14 +35,13 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #pragma once
 #include <APHTML/APEngineDLL.h>
+#include <Foundation/Containers/Implementation/ArrayIterator.h>
 #include <Foundation/Containers/StaticArray.h>
 #include <Foundation/Logging/Log.h>
 #include <Foundation/Types/Delegate.h>
-#include <Foundation/Containers/Implementation/ArrayIterator.h>
 
 namespace aperture::core
 {
-
   /// @brief A Agnostic buffer that can be resized and copied into. Mainly used for File I/O.
   template <typename T>
   class CoreBuffer
@@ -59,7 +58,7 @@ namespace aperture::core
     CoreBuffer(nsDynamicArray<T> in_Content, size_t initialSize = (size_t)128 * 128 * 1024);
     CoreBuffer(void* in_Data, size_t in_Size, size_t initialSize = (size_t)128 * 128 * 1024);
     CoreBuffer(const char* r_data, size_t initialSize = (size_t)128 * 128 * 1024);
-
+    CoreBuffer(const char* r_data, size_t in_Size, size_t initialSize = (size_t)128 * 128 * 1024);
     explicit CoreBuffer(size_t initialSize = (size_t)128 * 128 * 1024);
 
     NS_ADD_DEFAULT_OPERATOR_NOTEQUAL(const CoreBuffer<T>&);
@@ -70,12 +69,17 @@ namespace aperture::core
     T& operator[](T* r_data);
 
     T& operator[](nsUInt32 index);
-    
+
     ~CoreBuffer();
 
     void resize(size_t newSize);
 
-    T* get(size_t size = size());
+    T* get(size_t size);
+
+    T* get()
+    {
+      return get(size());
+    }
 
     size_t size() const;
 
@@ -97,7 +101,7 @@ namespace aperture::core
   template <typename T>
   inline T* aperture::core::CoreBuffer<T>::get(size_t size)
   {
-    if(size == 0)
+    if (size == 0)
     {
       size = m_size;
     }
@@ -123,7 +127,7 @@ namespace aperture::core
   template <typename T>
   inline T& CoreBuffer<T>::operator[](nsUInt32 index)
   {
-    return static_cast<const T*>(this)->get()[uiIndex];
+    return static_cast<const T*>(this)->get()[index];
   }
 
   template <typename T>
@@ -144,15 +148,24 @@ namespace aperture::core
   template <typename T>
   inline CoreBuffer<T>::CoreBuffer(void* in_Data, size_t in_Size, size_t initialSize)
   {
-    m_data = in_Data;
+    m_data = reinterpret_cast<T*>(in_Data);
     m_size = in_Size;
   }
 
   template <typename T>
   inline CoreBuffer<T>::CoreBuffer(const char* r_data, size_t initialSize)
   {
-    m_data = r_data;
-    m_size = sizeof(r_data);
+    m_size = strlen(r_data) + 1;    // Calculate the size needed
+    m_data = new T[m_size];         // Allocate memory for T
+    memcpy(m_data, r_data, m_size); // Copy the data from r_data to m_data
+  }
+
+  template <typename T>
+  inline CoreBuffer<T>::CoreBuffer(const char* r_data, size_t in_Size, size_t initialSize)
+  {
+    m_size = in_Size;
+    m_data = new T[m_size];         // Allocate memory for T
+    memcpy(m_data, r_data, m_size); // Copy the data from r_data to m_data
   }
 
   template <typename T>

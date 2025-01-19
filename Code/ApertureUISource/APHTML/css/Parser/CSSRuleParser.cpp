@@ -1,4 +1,5 @@
 #include <APHTML/CSS/Parser/CSSRuleParser.h>
+#include <Foundation/Types/UniquePtr.h>
 
 template <typename StructOrClass /*= struct unknownplaceholder*/>
 std::pair<bp::rule<StructOrClass>, bp::rule<StructOrClass>> aperture::css::parser::CSSRuleBank<StructOrClass>::GetRulePair(CSSSyntaxProperties in_rulename)
@@ -40,9 +41,8 @@ bp::rule<StructOrClass> aperture::css::parser::CSSRuleBank<StructOrClass>::GetRu
 template <typename StructOrClass, typename TypeToContain>
 bp::rule<StructOrClass, TypeToContain> aperture::css::parser::CSSRuleParser::MakeRule(const char* in_rulename, CSSSyntaxProperties in_propertytoassign)
 {
-  auto UserCSSRuleBank = nsMakeUnique<aperture::css::parser::CSSRuleBank>();
   bp::rule<StructOrClass, TypeToContain> rule = in_rulename;
-  UserCSSRuleBank->AddRule(rule, rule, in_propertytoassign);
+  AddRule(rule, rule, in_propertytoassign);
   return rule;
 }
 

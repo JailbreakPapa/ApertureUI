@@ -61,28 +61,13 @@ namespace converterhelpers
     return os;
   }
 
-  NS_ALWAYS_INLINE std::ostream& operator<<(std::ostream& os, const nsArrayBase<const char*, nsDefaultAllocatorWrapper>& log)
-  {
-    os << "[";
-    for (size_t i = 0; i < sizeof(log.GetData()); ++i)
-    {
-      os << log[i];
-      if (i != sizeof(log.GetData()) - 1)
-      {
-        os << ", ";
-      }
-    }
-    os << "]";
-    return os;
-  }
-
   NS_ALWAYS_INLINE std::ostream& operator<<(std::ostream& os, aperture::core::CoreBuffer<const char*>& log)
   {
     os << "[";
-    for (size_t i = 0; i < log.size(); ++i)
+    for (nsUInt32 i = 0; i < static_cast<nsUInt32>(log.size()); ++i)
     {
       os << log.get(i);
-      if (i != log.size(); -1)
+      if (i != static_cast<nsUInt32>(log.size()) - 1)
       {
         os << ", ";
       }

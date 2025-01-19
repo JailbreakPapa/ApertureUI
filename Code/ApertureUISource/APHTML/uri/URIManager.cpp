@@ -11,6 +11,7 @@ const char* aperture::uri::URIManager::ConvertOSPathToURI(const char* in_uri)
     UserPlatform->GetAllocatorSystem()->Free(absUri);
     UserPlatform->GetLoggingSystem()->LogError("URIManager::ConvertOSPathToURI: Failed to convert OS Path to URI!");
   }
+  return absUri;
 }
 
 bool aperture::uri::URIManager::VerifyURI(const char* in_uri)

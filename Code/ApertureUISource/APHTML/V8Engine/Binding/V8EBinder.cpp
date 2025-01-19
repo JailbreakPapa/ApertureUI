@@ -85,7 +85,7 @@ void aperture::v8::binding::V8EBinder::BindClassFunction(const char* className, 
                 } else {
                     args.GetReturnValue().Set((self->*func)(/* Extract args */));
                 } }));
-    CACHE_FUNCTION_FROM_JS(functionName, classTemplate);
+    CACHE_FUNCTION_FROM_JS(functionName.c_str(), classTemplate);
   }
 }
 

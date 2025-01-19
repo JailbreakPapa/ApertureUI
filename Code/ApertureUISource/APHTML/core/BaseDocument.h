@@ -77,7 +77,7 @@ namespace aperture
     virtual void InternalLoadDocumentData() = 0;
 
     // TODO: Move over to corebuffer.
-    aperture::core::APCBuffer DocumentBuffer;
+    aperture::core::CoreBuffer<nsUInt8> DocumentBuffer;
 
   public:
     tree<ElementType> InternalDocumentTree;

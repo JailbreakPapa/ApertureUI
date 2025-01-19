@@ -1,5 +1,7 @@
 #include <APHTML/APEngine.h>
 #include <APHTML/V8Engine/Core/V8EngineMain.h>
+#include <v8-platform.h>
+#include <libplatform/libplatform.h>
 
 bool aperture::v8::V8EEngineMain::InitializeV8Engine(const char* p_ccResources)
 {
@@ -25,8 +27,8 @@ bool aperture::v8::V8EEngineMain::InitializeV8Engine(const char* p_ccResources)
     finalSnapshot.AppendPath("/resources", "/snapshot_blob.bin");
     SnapshotFile = finalSnapshot.GetData();
     ::v8::V8::InitializeExternalStartupDataFromFile(finalSnapshot.GetData());
-    m_pV8EPlatform = nsMakeUnique<::v8::Platform>(::v8::platform::NewDefaultPlatform());
-    ::v8::V8::InitializePlatform(m_pV8EPlatform.Borrow());
+    m_pV8EPlatform = ::v8::platform::NewDefaultPlatform();
+    ::v8::V8::InitializePlatform(m_pV8EPlatform.get());
     if (::v8::V8::Initialize())
     {
       nsLog::Success("V8Engine: Successfully Initialized V8.");
@@ -40,6 +42,6 @@ void aperture::v8::V8EEngineMain::ShutdownV8Engine()
 {
   ::v8::V8::Dispose();
   ::v8::V8::DisposePlatform();
-  m_pV8EPlatform.Clear();
+  m_pV8EPlatform.release();
   nsLog::Success("V8Engine: Successfully Shutdown V8.");
 }

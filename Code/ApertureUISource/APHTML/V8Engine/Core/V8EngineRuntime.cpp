@@ -4,10 +4,11 @@
 #include <APHTML/V8Engine/Core/V8EngineRuntime.h>
 #include <APHTML/V8Engine/System/Internal/V8Helpers.h>
 #include <Foundation/Utilities/Compression.h>
+#include "../../Types/Delegate.h"
 
 NS_IMPLEMENT_SINGLETON(aperture::v8::V8EEngineRuntime);
 
-nsResult aperture::v8::V8EEngineRuntime::RequestScriptToBeCompiledAndRan(const aperture::core::CoreBuffer<nsUInt8>& in_Script, bool in_bRunImmediately = false, const char* in_pScriptName = "default_apui_js_script")
+nsResult aperture::v8::V8EEngineRuntime::RequestScriptToBeCompiledAndRan(const aperture::core::CoreBuffer<nsUInt8>& in_Script, bool in_bRunImmediately, const char* in_pScriptName)
 {
   auto UserPlatform = nsSingletonRegistry::GetSingletonInstance<aperture::core::IAPCPlatform>();
   auto UserRuntime = nsSingletonRegistry::GetSingletonInstance<aperture::v8::V8EEngineRuntime>();
@@ -65,7 +66,7 @@ void aperture::v8::V8ErrorCallback(const char* location, const char* message)
 }
 void aperture::v8::V8EEngineRuntime::WDTaskSystemV8Callback(nsTaskGroupID in_TaskGroupID)
 {
-  nsLog::Info("V8EEngineRuntime::WDTaskSystemV8Callback: TaskGroupID: {0} has completed!", in_TaskGroupID);
+  nsLog::Info("V8EEngineRuntime::WDTaskSystemV8Callback: A V8 TaskGroup has completed!");
   m_TaskGroups.RemoveAndSwap(in_TaskGroupID);
 }
 aperture::v8::V8EEngineRuntime::~V8EEngineRuntime()
@@ -171,7 +172,7 @@ nsResult aperture::v8::V8EEngineRuntime::CacheBoundObjects(::v8::Isolate* in_iso
       return NS_FAILURE;
     }
 
-    aperture::core::CoreBuffer<nsUInt8> buffer(startupData->data, startupData->raw_size);
+    aperture::core::CoreBuffer<nsUInt8> buffer(startupData->data, startupData->raw_size, (size_t)128 * 128 * 1024);
     if (UserPlatform->GetFileSystem()->RequestCreateFile(in_pCacheName, buffer))
     {
       UserPlatform->GetLoggingSystem()->LogInfo(
@@ -221,9 +222,11 @@ nsResult aperture::v8::V8EEngineRuntime::CompileAndRunScripts()
 
   for (auto& script : m_ScriptsToCompileAndRun)
   {
+    auto callback = nsMakeDelegate(&V8EEngineRuntime::WDTaskSystemV8Callback, this);
+
     nsSharedPtr<V8QuickScriptTask> task = nsMakeShared<V8QuickScriptTask>(script, "apui_managed_script", this);
     m_Isolates.PushBack(task->GetIsolate());
-    m_TaskGroups.PushBack(nsTaskSystem::StartSingleTask(task, nsTaskPriority::EarlyThisFrame, &WDTaskSystemV8Callback));
+    m_TaskGroups.PushBack(nsTaskSystem::StartSingleTask(task, nsTaskPriority::EarlyThisFrame, callback));
   }
   return NS_SUCCESS;
 }
@@ -265,7 +268,7 @@ void aperture::v8::V8EEngineRuntime::V8QuickScriptTask::Execute()
       }
     }
     m_Isolate = ::v8::Isolate::New(create_params);
-    auto script = helpers::compile(m_Isolate->GetCurrentContext(), helpers::to_string(m_Isolate, (const char*)m_Script.get()), m_ScriptName);
+    auto script = helpers::compile(m_Isolate->GetCurrentContext(), helpers::to_string(m_Isolate, (const char*)m_Script.get(m_Script.size())), m_ScriptName);
     if (!script.ToLocalChecked()->Run(m_Isolate->GetCurrentContext()).ToLocalChecked().IsEmpty())
     {
       nsLog::Success("V8QuickScriptTask::Execute: Successfully ran script: {0}", m_ScriptName);
@@ -276,7 +279,7 @@ void aperture::v8::V8EEngineRuntime::V8QuickScriptTask::Execute()
 
 aperture::v8::V8EEngineRuntime::V8QuickScriptTask::~V8QuickScriptTask()
 {
-  delete[] m_Script.get();
+  delete[] m_Script.get(m_Script.size());
   delete[] m_ScriptName;
 }
 

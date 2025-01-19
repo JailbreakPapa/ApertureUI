@@ -12,8 +12,12 @@ bool aperture::core::IAPCPlatform::InitializePlatform(const char* licensekey)
   // TODO: #1: Implement Resources Check(https://github.com/WatchDogStudios/ApertureUI/issues/1).
   nsLog::Info("IAPCPlatform::InitializePlatform: Platform Initialized! Aperture Version: {0}", ApertureSDK::GetSDKVersion());
   m_bEngineStatus = true;
-  m_Stopwatch.Resume();
   return true;
+}
+
+void aperture::core::IAPCPlatform::StartPlatform()
+{
+  m_Stopwatch.Resume();
 }
 
 void aperture::core::IAPCPlatform::SetFileSystem(const IAPCFileSystem& in_filesystem)
@@ -43,9 +47,6 @@ void aperture::core::IAPCPlatform::KillPlatform()
   NS_LOCK(lockermt);
   m_bEngineStatus = false;
   m_Stopwatch.StopAndReset();
-  SetFileSystem(nullptr);
-  SetMemoryAllocator(nullptr);
-  SetLoggingSystem(nullptr);
 }
 
 bool aperture::core::IAPCPlatform::IsEngineReady()

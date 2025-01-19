@@ -34,8 +34,8 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 #pragma once
 
-#include <APHTML/css/functions/CSSVarVariant.h>
-#include <APHTML/css/functions/CSSIFunction.h>
+#include <APHTML/CSS/Function/CSSVarVariant.h>
+#include <APHTML/CSS/Function/CSSIFunction.h>
 
 namespace aperture::css
 {

@@ -124,7 +124,7 @@ bool aperture::core::IAPCFileSystem::RequestURIResolve(const char* in_uri, const
       }
       nsDynamicArray<nsUInt8> filedata;
       apcfile.ReadAll(filedata);
-      out_filedatafiles.push_back(core::CoreBuffer<nsUInt8>(filedata.GetData(), filedata.GetCount()));
+      out_filedatafiles.push_back(core::CoreBuffer<nsUInt8>(static_cast<void*>(filedata.GetData()), filedata.GetCount()));
       return true;
     }
     case (EFileType::VFS):
@@ -168,7 +168,7 @@ aperture::core::CoreBuffer<const char*> aperture::core::IAPCFileSystem::GetFileD
   nsDataBuffer filedatabf;
   apcfile.ReadAll(filedatabf);
 
-  return aperture::core::CoreBuffer<const char*>(filedatabf.GetData(), filedatabf.GetCount());
+  return aperture::core::CoreBuffer<const char*>(static_cast<void*>(filedatabf.GetData()), filedatabf.GetCount());
 }
 
 bool aperture::core::IAPCFileSystem::RequestCreateFile(const char* in_filepath, core::CoreBuffer<nsUInt8> out_filedata, EFileType type)
@@ -184,6 +184,21 @@ bool aperture::core::IAPCFileSystem::RequestCreateFile(const char* in_filepath, 
   apcfile.Write(out_filedata.get(), out_filedata.size());
   return true;
 }
+
+bool aperture::core::IAPCFileSystem::RequestCreateFile(const char* in_filepath, core::CoreBuffer<const char*> out_filedata, EFileType type /*= EFileType::OSDependant*/)
+{
+  nsOSFile apcfile;
+  nsStringBuilder filep(m_uiresources);
+  filep.Append(in_filepath);
+  if (apcfile.Open(filep, nsFileOpenMode::Write) != NS_SUCCESS)
+  {
+    nsLog::SeriousWarning("Failed to create file!");
+    return false;
+  }
+  apcfile.Write(out_filedata.get(), out_filedata.size());
+  return true;
+}
+
 const char* aperture::core::IAPCFileSystem::GetFileMimeType(const char* in_filepath)
 {
   nsOSFile apcfile;
