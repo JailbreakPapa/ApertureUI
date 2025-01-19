@@ -458,7 +458,7 @@ jobs:
           echo _____sync_____
           call gclient sync
           echo _____ninja_____ dont know why v8gen.py cant properly generate files we want
-          call gn gen .\out.gn\x64.release -args="v8_static_library=false v8_symbol_level=0 v8_enable_pointer_compression=true v8_enable_sandbox = true v8_use_external_startup_data=true is_clang=false v8_enable_i18n_support=false v8_enable_webassembly=false is_component_build=true is_debug=false target_cpu=""x64"" target_os=""win"" v8_jitless=false treat_warnings_as_errors=false"
+          call gn gen .\out.gn\x64.release -args="v8_symbol_level=0 v8_enable_pointer_compression=true v8_use_external_startup_data=true v8_enable_i18n_support=false v8_enable_webassembly=false is_component_build=true is_debug=false target_cpu=""x64"" target_os=""win"" v8_jitless=false treat_warnings_as_errors=false"
           echo _____list_____
           dir .\out.gn\x64.release
           more .\out.gn\x64.release\args.gn
